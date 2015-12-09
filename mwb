@@ -16,9 +16,15 @@ let op = {
 	bundle(){this.clean(); exec('node ' + __dirname + '/tool/bundle.js')},
 	serve(){exec('node ./build/server/serverBundle')},
 	postinstall() {		
-		let tmp = require(path.resolve('../../package.json'))		
+		try {
+			var tmp = require(path.resolve('../../package.json'))					
+		} catch (err) {
+			var e = err
+		}
+		if (e) return
+			
 		if (!tmp.scripts) tmp.scripts = {}
-		tmp.scripts.mwb = 'mwb'		
+		tmp.scripts.mwb = 'mwb'
 		JSON.stringify(tmp,null,2).to('../../package.json')
 		require('./template/ascii_cat.js').ascii_cat()
 		console.log('To start with an express js server, type: npm run mwb init')
