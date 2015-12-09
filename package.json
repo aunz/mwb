@@ -1,0 +1,50 @@
+{
+  "name": "mwb",
+  "version": "0.0.1",
+  "description": "Minimalistic webpack boilerplate",
+  "repository": "_",
+  "main": "",
+  "bin": {
+    "mwb": "mwb"
+  },
+  "scripts": {
+    "dev": "node mwb dev",
+    "serve": "node mwb serve",
+    "bundle": "node mwb bundle",
+    "clean": "node mwb clean",
+    "postinstall": "node mwb postinstall",
+    "test": "node ./test/index.js"
+  },
+  "author": "KN <aunz10@yahoo.com>",
+  "license": "MIT",
+  "devDependencies": {
+  },
+  "dependencies": {
+    "assets-webpack-plugin": "^3.2.0",
+    "autoprefixer": "^6.1.2",
+    "babel": "^6.1.18",
+    "babel-cli": "^6.2.0",
+    "babel-core": "^6.2.1",
+    "babel-loader": "^6.2.0",
+    "babel-plugin-transform-runtime": "^6.1.18",
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-react": "^6.1.18",
+    "babel-preset-stage-0": "^6.1.18",
+    "css-loader": "^0.23.0",    
+    "extract-text-webpack-plugin": "^0.9.1",
+    "file-loader": "^0.8.5",
+    "html-loader": "^0.4.0",
+    "html-webpack-plugin": "^1.7.0",
+    "json-loader": "^0.5.4",
+    "postcss-loader": "^0.8.0",
+    "raw-loader": "^0.5.1",    
+    "style-loader": "^0.13.0",
+    "url-loader": "^0.5.7",
+    "webpack": "^2.0.1-beta",
+    "webpack-hot-middleware": "^2.5.0",
+    "shelljs": "^0.5.3"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  }
+}
