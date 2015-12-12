@@ -1,0 +1,108 @@
+#! /usr/bin/env node
+'use strict'
+
+const a = process.argv[2]
+const command = {
+	clean,
+	dev,
+	bundle,
+	serve,
+	initBare,
+	init,
+	postinstall,
+}
+
+if (!a || Object.keys(command).indexOf(a) < 0) return console.error('Need to supply an argument, either of:',Object.keys(command))
+
+/** 
+ * Dependencies & variables
+ */
+const path = require('path')
+require('shelljs/global')
+let templatePath = path.resolve(__dirname,'../template') +'/'
+
+command[a]()
+
+function clean() {
+	test('-e','build') && rm('-rf', 'build/*')
+}
+
+function dev() {
+	clean()
+	exec('node '+path.resolve(__dirname,'..','tool/devServerHot.js'))
+}
+
+function bundle() {
+	clean()
+	exec('node '+path.resolve(__dirname,'..','tool/bundle.js'))	
+}
+
+
+function serve(){
+	exec('node ./build/server/serverBundle')
+}
+
+function postinstall () {
+	//path.resolve('') -> the node_modules/mwb because this script run within mwb
+	try {
+		var tmp = require(path.resolve('../../package.json'))					
+	} catch (err) {
+		var e = err
+	}
+	if (e) return
+		
+	if (!tmp.scripts) tmp.scripts = {}
+	if (tmp.scripts.mwb) return //has been installed already
+
+	tmp.scripts.mwb = 'mwb'
+	JSON.stringify(tmp,null,2).to('../../package.json')
+	require('./ascii_cat.js').cat1()
+	console.log('To start with an express js server, type: npm run mwb init')
+	console.log('Without an express js server, type: npm run mwb initBare')
+	console.log()
+	console.log()
+}
+
+
+function initBare (){
+	console.log(' * Creating src folder\n')
+	mkdir('-p','src/client','src/shared','src/server')	
+	
+	cp(templatePath + 'entryEmpty.js','src/client/entry.js')	
+	cp(templatePath + 'entryServer.js','src/server/entry.js')
+	cp(templatePath + 'entryEmpty.js','src/server/server.js')	
+	cp(templatePath + 'alias.json','src/alias.json')	
+	cp(templatePath + 'loaders.json','src/loaders.json')
+	cp(templatePath + 'loaders.json','src/plugins.json')
+
+	//add scripts to the existing package.json file
+	//make a copy
+	console.log(' * Updating package.json file\n')
+	let oldName = 'package.'+Date.now()+'.json'
+	cp('./package.json',oldName)
+	let tmp = require(path.resolve('package.json'))		
+	if (!tmp.scripts) tmp.scripts = {}		
+	tmp.scripts.dev = 'mwb dev'
+	tmp.scripts.serve = 'node build/server/serverBundle'
+	tmp.scripts.bundle = 'mwb bundle'
+	tmp.scripts.clean = 'mwb clean'
+	JSON.stringify(tmp,null,2).to('package.json')
+	console.log(' * Boilerplate created, package.json file has been updated. The old package.json file has been renamed to',oldName,'\n')
+}
+
+
+
+
+
+function init (){
+	initBare()
+	
+	cp('-f',templatePath + 'expressServer.js','src/server/server.js')	
+	console.log('Installing the latest version of express')
+	exec('npm i express --save')
+	console.log('Installing the latest version of compression')
+	exec('npm i compression --save')
+	console.log()
+	console.log()
+	console.log('Initiation completed, to start developing, type: npm run dev')
+}

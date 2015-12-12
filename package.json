@@ -5,19 +5,22 @@
   "repository": "https://github.com/aunz/mwb",
   "main": "",
   "bin": {
-    "mwb": "mwb"
+    "mwb": "bin/mwb"
   },
   "scripts": {
-    "dev": "node mwb dev",
-    "serve": "node mwb serve",
-    "bundle": "node mwb bundle",
-    "clean": "node mwb clean",
-    "postinstall": "node mwb postinstall",
-    "test": "node ./test/index.js"
+    "dev": "node bin/mwb dev",
+    "serve": "node bin/mwb serve",
+    "bundle": "node bin/mwb bundle",
+    "clean": "node bin/mwb clean",
+    "postinstall": "node bin/mwb postinstall",
+    "test": "mocha --compilers js:babel-register -R min -w",
+    "test:single": "mocha --compilers js:babel-register"
   },
   "author": "KN <aunz10@yahoo.com>",
   "license": "MIT",
   "devDependencies": {
+    "chai": "^3.4.1",
+    "mocha": "^2.3.4"
   },
   "dependencies": {
     "assets-webpack-plugin": "^3.2.0",
@@ -30,12 +33,12 @@
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-react": "^6.1.18",
     "babel-preset-stage-0": "^6.1.18",
-    "css-loader": "^0.23.0",    
+    "css-loader": "^0.23.0",
     "extract-text-webpack-plugin": "^0.9.1",
-    "file-loader": "^0.8.5",    
+    "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
     "postcss-loader": "^0.8.0",
-    "raw-loader": "^0.5.1",    
+    "raw-loader": "^0.5.1",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
     "webpack": "^2.0.1-beta",
@@ -44,5 +47,10 @@
   },
   "engines": {
     "node": ">=4.0.0"
+  },
+  "babel": {
+    "presets": ["es2015","stage-0","react"],
+    "plugins": ["transform-runtime"]
+
   }
 }
