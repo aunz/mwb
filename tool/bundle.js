@@ -9,6 +9,10 @@ const webpack = require('webpack')
 
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
+let commonLoaders = [
+	{test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&minimize&localIdentName=[local]_[hash:6]!postcss') }
+]
+
 let commonPlugins = [
 	new webpack.DefinePlugin({
 		__DEV__ : false,
@@ -20,15 +24,12 @@ let commonPlugins = [
 ]
 
 
-let commonLoaders = [
-	{test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&minimize&localIdentName=[local]_[hash:6]!postcss') }
-]
 
 
 /**
  * Client
  */
-let clientConfig  = require('./webpack.config.js')[0]
+let clientConfig  = require('./webpack.config.js').clientConfig
 
 clientConfig.module.loaders.push(...commonLoaders)
 clientConfig.plugins.push(...commonPlugins,new ExtractTextPlugin("styles_[contenthash:6].css",{allChunks:true}))
@@ -41,9 +42,9 @@ webpack(clientConfig).run((err,stats) => {
 /**
  * Server
  */
-let serverConfig  = require('./webpack.config.js')[1]
-serverConfig.plugins.push(...commonPlugins)
+let serverConfig  = require('./webpack.config.js').serverConfig
 serverConfig.module.loaders.push(...commonLoaders)
+serverConfig.plugins.push(...commonPlugins)
 
 
 webpack(serverConfig).run((err, stats) => {

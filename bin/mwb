@@ -68,12 +68,17 @@ function initBare (){
 	console.log(' * Creating src folder\n')
 	mkdir('-p','src/client','src/shared','src/server')	
 	
-	cp(templatePath + 'entryEmpty.js','src/client/entry.js')	
-	cp(templatePath + 'entryServer.js','src/server/entry.js')
-	cp(templatePath + 'entryEmpty.js','src/server/server.js')	
-	cp(templatePath + 'alias.json','src/alias.json')	
-	cp(templatePath + 'loaders.json','src/loaders.json')
-	cp(templatePath + 'loaders.json','src/plugins.json')
+	//server
+	cp(templatePath + 'serverEntry.js','src/server/entry.js')
+	''.to('src/client/entry.js')	
+
+	//client, just an empty file
+	''.to('src/server/app.js')	
+
+	//config
+	''.to('src/alias.json')	
+	'[]'.to('src/loaders.json')
+	'[]'.to('src/plugins.json')
 
 	//add scripts to the existing package.json file
 	//make a copy
@@ -97,7 +102,8 @@ function initBare (){
 function init (){
 	initBare()
 	
-	cp('-f',templatePath + 'expressServer.js','src/server/server.js')	
+	cp('-f',templatePath + 'expressApp.js','src/server/app.js')		
+	cp(templatePath + 'main.js','src/server/main.js')
 	console.log('Installing the latest version of express')
 	exec('npm i express --save')
 	console.log('Installing the latest version of compression')

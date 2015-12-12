@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 const path = require('path')
 const _root = path.resolve()
@@ -6,8 +6,6 @@ const _root = path.resolve()
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
 const postcss = () => [require('autoprefixer')]
-
-
 
 let commonLoaders = [{
   test: /\.jsx?$/,
@@ -51,7 +49,7 @@ let clientConfig = {
 		client: ['./src/client/entry.js']
 	},	
 	output: {
-		path: './build/client', 
+		path: './build/public', 
 		// filename: 'clientBundle.js', //during development
 		filename: 'clientBundle_[hash:6].js',		
 	},
@@ -104,4 +102,4 @@ let serverConfig = {
 }
 
 
-module.exports = [clientConfig,serverConfig]
+module.exports = {clientConfig,serverConfig}

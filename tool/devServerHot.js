@@ -9,6 +9,10 @@ const _root = path.resolve()
 
 const webpack = require('webpack')
 
+let commonLoaders = [
+  {test: /\.css$/, loader: 'style!css?modules!postcss' }
+]
+
 let commonPlugins = [
   new webpack.HotModuleReplacementPlugin(),
   new webpack.DefinePlugin({
@@ -16,14 +20,11 @@ let commonPlugins = [
     'process.env.NODE_ENV':'"development"'
   }),
 ]
-let commonLoaders = [
-  {test: /\.css$/, loader: 'style!css?modules!postcss' }
-]
 
 /**
  * Client
  */
-let clientConfig  = require('./webpack.config.js')[0]
+let clientConfig  = require('./webpack.config.js').clientConfig
 clientConfig.devtool = 'eval'
 
 //add hot middleware on port 8080
@@ -60,7 +61,7 @@ require('http').createServer((req, res) => {
 /**
  * Server
  */
-let serverConfig  = require('./webpack.config.js')[1]
+let serverConfig  = require('./webpack.config.js').serverConfig
 serverConfig.devtool = 'eval'
 
 //allow hot module on server side
