@@ -2,6 +2,7 @@ build
 src
 temp
 tmp
+db
 
 # Created by https://www.gitignore.io/api/node
 

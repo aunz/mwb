@@ -3,13 +3,10 @@
 
 const a = process.argv[2]
 const command = {
-	clean,
-	dev,
-	bundle,
-	serve,
-	initBare,
-	init,
 	postinstall,
+	initMin,
+	init,
+	initMongo
 }
 
 if (!a || Object.keys(command).indexOf(a) < 0) return console.error('Need to supply an argument, either of:',Object.keys(command))
@@ -23,48 +20,36 @@ let templatePath = path.resolve(__dirname,'../template') +'/'
 
 command[a]()
 
-function clean() {
-	test('-e','build') && rm('-rf', 'build/*')
-}
 
-function dev() {
-	clean()
-	exec('node '+path.resolve(__dirname,'..','tool/devServerHot.js'))
-}
-
-function bundle() {
-	clean()
-	exec('node '+path.resolve(__dirname,'..','tool/bundle.js'))	
-}
-
-
-function serve(){
-	exec('node ./build/server/serverBundle')
-}
 
 function postinstall () {
 	//path.resolve('') -> the node_modules/mwb because this script run within mwb
 	try {
-		var tmp = require(path.resolve('../../package.json'))					
+		var tmp = require(path.resolve('../../package.json'))		
 	} catch (err) {
-		var e = err
+		console.error(err)
+		return
 	}
-	if (e) return
+	
 		
 	if (!tmp.scripts) tmp.scripts = {}
 	if (tmp.scripts.mwb) return //has been installed already
-
+	
 	tmp.scripts.mwb = 'mwb'
+	tmp.private = true //your app shouldn't be published in npm public :)
+	tmp.license = 'UNLICENSED'
 	JSON.stringify(tmp,null,2).to('../../package.json')
-	require('./ascii_cat.js').cat1()
-	console.log('To start with an express js server, type: npm run mwb init')
-	console.log('Without an express js server, type: npm run mwb initBare')
-	console.log()
-	console.log()
+	setTimeout(()=>{
+		require('./ascii_cat.js').cat1()
+		console.log('To start with an express js server, type: npm run mwb init\n')
+		console.log('Without an express js server, type: npm run mwb initMin\n')
+		console.log('To add mongodb, type: npm run mwb initMongo\n')
+		console.log()				
+	})
 }
 
 
-function initBare (){
+function initMin (){
 	console.log(' * Creating src folder\n')
 	mkdir('-p','src/client','src/shared','src/server')	
 	
@@ -84,31 +69,59 @@ function initBare (){
 	//make a copy
 	console.log(' * Updating package.json file\n')
 	let oldName = 'package.'+Date.now()+'.json'
-	cp('./package.json',oldName)
-	let tmp = require(path.resolve('package.json'))		
+	cp('package.json',oldName)
+
+	let tmp = require(path.resolve('package.json'))
 	if (!tmp.scripts) tmp.scripts = {}		
-	tmp.scripts.dev = 'mwb dev'
+	tmp.scripts.dev = 'npm run clean && node node_modules/mwb/tool/devServerHot'
 	tmp.scripts.serve = 'node build/server/serverBundle'
-	tmp.scripts.bundle = 'mwb bundle'
-	tmp.scripts.clean = 'mwb clean'
+	tmp.scripts.bundle = 'npm run clean && node node_modules/mwb/tool/bundle'
+	tmp.scripts.clean = 'rm -rf build'
+	JSON.stringify(tmp,null,2).to('package.json')	
+	console.log(' * Boilerplate created, package.json file has been updated. The old package.json file has been renamed to',oldName,'\n')		
+	
+}
+
+function initMongo() {
+	console.log('Installing the latest version of mongoDB from "node-mongodb-native"')
+	exec('npm i mongodb -S')
+	
+	mkdir('-p','db')
+
+	let tmp = require(path.resolve('package.json'))
+
+	tmp.scripts['mongo'] = 'mongod --dbpath db'
+	tmp.scripts.start = process.platform === 'win32' 
+	  ? 'mongod --dbpath db | npm run clean | node node_modules/mwb/tool/devServerHot' //change the start script
+	  : 'npm run clean && node node_modules/mwb/tool/devServerHot'
+	
+	let oldName = 'package.'+Date.now()+'.json'
+	cp('package.json',oldName)
+	
 	JSON.stringify(tmp,null,2).to('package.json')
-	console.log(' * Boilerplate created, package.json file has been updated. The old package.json file has been renamed to',oldName,'\n')
+	console.log('\nA folder named db has been created, and package.json has been udpated. The old package.json file has been renamed to',oldName,'\n')
+}
+
+
+
+
+function init (){
+	initMin()
+	
+	cp('-f',templatePath + 'expressApp.js','src/server/app.js')		
+	cp(templatePath + 'main.js','src/server/main.js')
+	console.log('Installing the latest version of express')
+	exec('npm i express -S')
+	console.log('Installing the latest version of compression')
+	exec('npm i compression -S')	
+	console.log()
+	console.log('Initiation completed, to start developing, type: npm run dev')
 }
 
 
 
 
 
-function init (){
-	initBare()
-	
-	cp('-f',templatePath + 'expressApp.js','src/server/app.js')		
-	cp(templatePath + 'main.js','src/server/main.js')
-	console.log('Installing the latest version of express')
-	exec('npm i express --save')
-	console.log('Installing the latest version of compression')
-	exec('npm i compression --save')
-	console.log()
-	console.log()
-	console.log('Initiation completed, to start developing, type: npm run dev')
+function test(){
+	console.log(11)
 }

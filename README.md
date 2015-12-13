@@ -17,7 +17,7 @@ npm init
 npm i --save-dev mwb
 
 npm run mwb init # generate the boilerplate with an express server
-npm run mwb initBare # generate the boilerplate without a server
+npm run mwb initMin # generate the boilerplate without a server
 
 npm run dev # start live coding & editing in development mode
 
@@ -35,7 +35,9 @@ App
      |    └─ entry.js
      ├─ /shared/
      ├─ /server/
-     |     └─ entry.js
+     |     ├─ entry.js
+     |     ├─ app.js // the express server app
+     |     └─ main.js
      ├─ alias.json
      ├─ loaders.json
      └─ plugins.json
@@ -45,7 +47,7 @@ App
 ###How it works:
 * After initiation, an entry.js file is placed in the src/client and src/server folder
 * `npm run dev` uses webpack to compile and watch these files and output them into the build folder -> clientBundle.js and serverBundle.js
-* serverBundle.js is run automatically and will serve at localhost:3000 (default using express js)
+* serverBundle.js is run automatically and will be served at localhost:3000 (default using express js)
 * When you edit the files in the source folder, webpack re-compile required files
 * To enable hot module replacement, add `if (module.hot) {module.hot.accept()}` in your code
 

@@ -8,19 +8,13 @@
     "mwb": "bin/mwb"
   },
   "scripts": {
-    "dev": "node bin/mwb dev",
-    "serve": "node bin/mwb serve",
-    "bundle": "node bin/mwb bundle",
-    "clean": "node bin/mwb clean",
     "postinstall": "node bin/mwb postinstall",
-    "test": "mocha --compilers js:babel-register -R min -w",
-    "test:single": "mocha --compilers js:babel-register"
+    "test": " ",
+    "test:single": " "
   },
   "author": "KN <aunz10@yahoo.com>",
   "license": "MIT",
-  "devDependencies": {
-    "chai": "^3.4.1",
-    "mocha": "^2.3.4"
+  "devDependencies": {    
   },
   "dependencies": {
     "assets-webpack-plugin": "^3.2.0",
