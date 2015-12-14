@@ -105,4 +105,15 @@ When bundling for production, a single style sheet is **extracted** by `extract-
 ```
 
 
-###Todo
+### Mongodb
+
+```shell
+npm run mwb initMongo
+```
+This add the latest mongodb native driver to the app
+This also add a file named `mongo.js` into the src/server folder.
+The mongo.js file contains and export the default connection
+In an imported file, use async & await to retrive the connection and db
+
+
+### Todo

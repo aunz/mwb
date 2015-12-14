@@ -16,8 +16,10 @@ if (!a || Object.keys(command).indexOf(a) < 0) return console.error('Need to sup
  */
 const path = require('path')
 require('shelljs/global')
-let templatePath = path.resolve(__dirname,'../template') +'/'
+const templatePath = path.resolve(__dirname,'../template') +'/'
 
+
+/** The command */
 command[a]()
 
 
@@ -78,31 +80,31 @@ function initMin (){
 	tmp.scripts.bundle = 'npm run clean && node node_modules/mwb/tool/bundle'
 	tmp.scripts.clean = 'rm -rf build'
 	JSON.stringify(tmp,null,2).to('package.json')	
-	console.log(' * Boilerplate created, package.json file has been updated. The old package.json file has been renamed to',oldName,'\n')		
-	
+	console.log(' * Boilerplate created, package.json file has been updated')
+  console.log(' * The old package.json file has been renamed to',oldName,'\n')	
 }
 
 function initMongo() {
 	console.log('Installing the latest version of mongoDB from "node-mongodb-native"')
-	exec('npm i mongodb -S')
+	// exec('npm i mongodb -S')
 	
 	mkdir('-p','db')
 
 	let tmp = require(path.resolve('package.json'))
-
-	tmp.scripts['mongo'] = 'mongod --dbpath db'
+	//change the start script
 	tmp.scripts.start = process.platform === 'win32' 
-	  ? 'mongod --dbpath db | npm run clean | node node_modules/mwb/tool/devServerHot' //change the start script
-	  : 'npm run clean && node node_modules/mwb/tool/devServerHot'
-	
+	  ? 'start /B mongod --dbpath db --bind_ip 127.0.0.1 && npm run clean && node node_modules/mwb/tool/devServerHot'  //to stop this, has to use ctrl + break, NOT ctrl + c due to the use of start /B
+	  : 'npm run clean && node node_modules/mwb/tool/devServerHot'	
 	let oldName = 'package.'+Date.now()+'.json'
-	cp('package.json',oldName)
-	
+	cp('package.json',oldName)	
 	JSON.stringify(tmp,null,2).to('package.json')
-	console.log('\nA folder named db has been created, and package.json has been udpated. The old package.json file has been renamed to',oldName,'\n')
+	
+	cp(templatePath + 'mongo.js','src/server/mongo.js')
+
+	console.log('\nA folder named db has been created, and package.json has been udpated.')
+	console.log('The old package.json file has been renamed to',oldName,'\n')
+	console.log('The connection file mongo.js has been added to the src/server folder')
 }
-
-
 
 
 function init (){
@@ -116,12 +118,4 @@ function init (){
 	exec('npm i compression -S')	
 	console.log()
 	console.log('Initiation completed, to start developing, type: npm run dev')
-}
-
-
-
-
-
-function test(){
-	console.log(11)
 }
