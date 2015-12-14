@@ -75,7 +75,7 @@ When bundling for production, a single style sheet is **extracted** by `extract-
 
 ### Express server
 * Listen to 3000 by default or `process.env.PORT`
-* Use `compression` middleware, then `static('./build/client')` middleware
+* Use `compression` middleware, then `static('./build/public')` middleware
 * Server code is hot replaced in development mode, but NOT in production mode
 * All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z\/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
 
