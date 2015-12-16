@@ -8,9 +8,10 @@ const path = require('path')
 const _root = path.resolve()
 
 const webpack = require('webpack')
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
 let commonLoaders = [
-  {test: /\.css$/, loader: 'style!css?modules!postcss' }
+  {test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss') } 
 ]
 
 let commonPlugins = [
@@ -19,19 +20,25 @@ let commonPlugins = [
     __DEV__ : true,
     'process.env.NODE_ENV':'"development"'
   }),
+  new ExtractTextPlugin("styles.css",{allChunks:true}) //has to use this for universal server client rendering
 ]
 
 /**
  * Client
  */
 let clientConfig  = require('./webpack.config.js').clientConfig
-clientConfig.devtool = 'eval'
+clientConfig.devtool = 'cheap-module-eval-source-map'
 
 //add hot middleware on port 8080
-clientConfig.entry.client.push('webpack-hot-middleware/client?reload=true&noInfo=true&path=http://localhost:8080/__webpack_hmr&overlay=false')
+clientConfig.entry.client.push('webpack-hot-middleware/client?path=http://localhost:8080/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true')
 clientConfig.output.filename = 'clientBundle.js'
-clientConfig.module.loaders.push(...commonLoaders)
-clientConfig.plugins.push(...commonPlugins)
+clientConfig.module.loaders.push(
+  ...commonLoaders 
+)
+
+clientConfig.plugins.push(
+  ...commonPlugins,
+)
 
 /* Adding alias and noParse during development only
  * For production, these settings in commbination with UglifyJsPlugin make build 10x slower
@@ -62,12 +69,17 @@ require('http').createServer((req, res) => {
  * Server
  */
 let serverConfig  = require('./webpack.config.js').serverConfig
-serverConfig.devtool = 'eval'
+serverConfig.devtool = 'cheap-module-eval-source-map'
 
 //allow hot module on server side
 serverConfig.entry.server.push(__dirname+'/signal.js?hmr')
-serverConfig.module.loaders.push(...commonLoaders)
-serverConfig.plugins.push(...commonPlugins)
+serverConfig.module.loaders.push(
+  ...commonLoaders,
+)
+
+serverConfig.plugins.push(
+  ...commonPlugins
+)
 
 
 let child

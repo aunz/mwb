@@ -33,11 +33,12 @@ App
  └─ /src/ 
      ├─ /client/
      |    └─ entry.js
-     ├─ /shared/
+     ├─ /share/
      ├─ /server/
      |     ├─ entry.js
      |     ├─ app.js // the express server app
      |     └─ main.js
+     ├─ favicon.ico
      ├─ alias.json
      ├─ loaders.json
      └─ plugins.json
@@ -114,6 +115,3 @@ This add the latest mongodb native driver to the app.
 This also add a file named `mongo.js` into the src/server folder.
 The mongo.js file contains and export the default connection. 
 In an imported file, use async & await to retrive the connection and db. 
-
-
-### Todo

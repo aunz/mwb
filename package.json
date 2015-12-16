@@ -27,16 +27,17 @@
     "babel-preset-react": "^6.1.18",
     "babel-preset-stage-0": "^6.1.18",
     "css-loader": "^0.23.0",
+    "cssnano": "^3.3.2",
     "extract-text-webpack-plugin": "^0.9.1",
     "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
     "postcss-loader": "^0.8.0",
     "raw-loader": "^0.5.1",
+    "shelljs": "^0.5.3",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
     "webpack": "^2.0.1-beta",
-    "webpack-hot-middleware": "^2.5.0",
-    "shelljs": "^0.5.3"
+    "webpack-hot-middleware": "^2.5.0"
   },
   "engines": {
     "node": ">=4.0.0"

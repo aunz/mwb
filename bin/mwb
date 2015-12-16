@@ -5,8 +5,10 @@ const a = process.argv[2]
 const command = {
 	postinstall,
 	initMin,
+	initMongo,
+	initReact,	
 	init,
-	initMongo
+	initFull,
 }
 
 if (!a || Object.keys(command).indexOf(a) < 0) return console.error('Need to supply an argument, either of:',Object.keys(command))
@@ -53,7 +55,7 @@ function postinstall () {
 
 function initMin (){
 	console.log(' * Creating src folder\n')
-	mkdir('-p','src/client','src/shared','src/server')	
+	mkdir('-p','src/client','src/share','src/server')	
 	
 	//server
 	cp(templatePath + 'serverEntry.js','src/server/entry.js')
@@ -86,7 +88,7 @@ function initMin (){
 
 function initMongo() {
 	console.log('Installing the latest version of mongoDB from "node-mongodb-native"')
-	// exec('npm i mongodb -S')
+	exec('npm i -S mongodb')
 	
 	mkdir('-p','db')
 
@@ -106,6 +108,17 @@ function initMongo() {
 	console.log('The connection file mongo.js has been added to the src/server folder')
 }
 
+function initReact (){
+  console.log('Installing the latest version of React & react-dom')
+  exec('npm i -S react react-dom')
+
+}
+
+function initPage (){
+	console.log('Installing the latest version of Page from "visionmedia/page.js"')
+  exec('npm i -S page')
+
+}
 
 function init (){
 	initMin()
@@ -113,9 +126,16 @@ function init (){
 	cp('-f',templatePath + 'expressApp.js','src/server/app.js')		
 	cp(templatePath + 'main.js','src/server/main.js')
 	console.log('Installing the latest version of express')
-	exec('npm i express -S')
+	exec('npm i -S express')
 	console.log('Installing the latest version of compression')
-	exec('npm i compression -S')	
+	exec('npm i -S compression')	
 	console.log()
 	console.log('Initiation completed, to start developing, type: npm run dev')
+}
+
+function initFull (){
+	init()
+	initMongo()
+	initReact()
+	initPage()
 }

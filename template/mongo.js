@@ -3,13 +3,13 @@ import {MongoClient} from 'mongodb'
 
 export default MongoClient.connect(
   process.env.MONGO_URL 
-  || 'mongodb://localhost:27017/'+path.basename(path.resolve('')),
+  || 'mongodb://localhost:27017/app',
   {native_parser: true}
 )
 
 /**
- * By default, the database name will be based on the app folder name
- * Then in the imported file use async function
+ * By default, the database name is app
+ * Use async function to retrive the connection 
  * e.g.
  * import connection from './mongo.js'
  * ;(async function(){
@@ -18,5 +18,3 @@ export default MongoClient.connect(
  * })()
  * 
  */
-
-

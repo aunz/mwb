@@ -7,14 +7,14 @@ app.use((req,res,next) => {
 	let html = `
 <html>
 	<head>
-		 <link rel='stylesheet' type='text/css' href='${assets.client.css || ''}'>
+		 <link rel="stylesheet" type="text/css" href="${assets.client.css || ''}"">
 	</head>
 	<body>
 		Hello World
+	<script src="${assets.client.js}"></script>
 	</body>
-	<script src='${assets.client.js}'></script>
-</html>
-	`
+</html>`
+
 	res.type('html')
 	res.send(html)
 })

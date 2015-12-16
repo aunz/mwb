@@ -43,6 +43,8 @@ try {
 	commonPlugins.push(...extraPlugins)
 } catch (e) {/*do nothing if the json is not found*/}
 
+// copy favicon.ico
+// require('./copy.js')
 
 let clientConfig = {
 	entry: {
@@ -64,11 +66,12 @@ let clientConfig = {
 	plugins: [
 		...commonPlugins,
 		new AssetsPlugin({path:'./build'}),
-		new webpack.DefinePlugin({__CLIENT__ : true})
+		new webpack.DefinePlugin({
+			__CLIENT__ : true,
+			__SERVER__ : false,
+		})
 		// new HtmlWebpackPlugin(),
 	],
-	
-
 }
 
 
@@ -88,7 +91,10 @@ let serverConfig = {
 	postcss,
 	plugins: [
 		...commonPlugins,
-		new webpack.DefinePlugin({__SERVER__:true})
+		new webpack.DefinePlugin({
+			__CLIENT__: false,
+			__SERVER__: true
+		})
 	],
 	externals: [
 		/^[@a-z][a-z\/\.\-0-9]*$/i, //native modules will be excluded, e.g require('react/server')
@@ -100,6 +106,5 @@ let serverConfig = {
 		__dirname: true,
 	}
 }
-
 
 module.exports = {clientConfig,serverConfig}
