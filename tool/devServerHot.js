@@ -37,7 +37,7 @@ clientConfig.module.loaders.push(
 )
 
 clientConfig.plugins.push(
-  ...commonPlugins,
+  ...commonPlugins
 )
 
 /* Adding alias and noParse during development only
@@ -61,7 +61,7 @@ clientCompiler.watch({},(err,stats) => {
 //use inbuilt http module 
 require('http').createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*")
-  require('webpack-hot-middleware')(clientCompiler)(req,res)
+  require('webpack-hot-middleware')(clientCompiler,{log:false})(req,res)
 }).listen(8080)
 
 
@@ -74,7 +74,7 @@ serverConfig.devtool = 'cheap-module-eval-source-map'
 //allow hot module on server side
 serverConfig.entry.server.push(__dirname+'/signal.js?hmr')
 serverConfig.module.loaders.push(
-  ...commonLoaders,
+  ...commonLoaders
 )
 
 serverConfig.plugins.push(

@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 'use strict'
 
 const a = process.argv[2]
@@ -111,6 +111,9 @@ function initMongo() {
 function initReact (){
   console.log('Installing the latest version of React & react-dom')
   exec('npm i -S react react-dom')
+
+  mkdir('-p','share/components')
+  console.log('Folder components has been created under share')
 
 }
 

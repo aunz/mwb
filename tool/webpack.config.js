@@ -17,13 +17,13 @@ let commonLoaders = [{
     cacheDirectory: true, //cache into OS temp folder by default
   }
 }, {
-  test: /png|jpg|jpeg|gif|mp3/,
+  test: /\.(png|jpg|jpeg|gif|mp3)$/,
   loader: 'url?limit=10000&name=[name]_[hash:6].[ext]',
 }, {
-  test: /txt/,
+  test: /\.txt$/,
   loader: 'raw',
 }, {
-  test: /json/,
+  test: /\.json$/,
   loader: 'json'
 }]
 

@@ -41,12 +41,14 @@ clientConfig.plugins.push(
 webpack(clientConfig).run((err,stats) => {  
 	console.log('Client Bundles \n',stats.toString({colors:true}),'\n')
 	//cssnano, temparory work around
-	const fileName = require(path.resolve('build/webpack-assets.json')).client.css
-	const filePath = path.resolve('build/public',fileName)	
-	let css = fs.readFileSync(filePath)
-	require('cssnano').process(css).then((result)=>{
-		require('fs').writeFileSync(filePath, result.css)
-	})
+	try {
+		const fileName = require(path.resolve('build/webpack-assets.json')).client.css
+		const filePath = path.resolve('build/public',fileName)
+		let css = fs.readFileSync(filePath)
+		require('cssnano').process(css).then((result)=>{
+			require('fs').writeFileSync(filePath, result.css)
+		})
+	} catch (e) {/*do nothing*/}
 
 })
 
@@ -65,8 +67,10 @@ serverConfig.plugins.push(
 webpack(serverConfig).run((err, stats) => {
   console.log('Server Bundle \n',stats.toString({colors:true}),'\n') 
   // then delele the styles.css in the server folder
+  try {
   const styleFile = _root+'/build/server/styles.css'
-  fs.statSync(styleFile) && fs.unlinkSync(styleFile)
+  	fs.statSync(styleFile) && fs.unlinkSync(styleFile)
+  } catch(e) {/*do nothing*/}
 
 
 })

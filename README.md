@@ -5,6 +5,7 @@
  * CSS module + postcss + autoprefixer
  * Assets minification for production
  * Client files hashing for caching
+ * Focus on your app logics, leave the build tools to others
 
 ### 
   
