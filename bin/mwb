@@ -56,18 +56,23 @@ function postinstall () {
 function initMin (){
 	console.log(' * Creating src folder\n')
 	mkdir('-p','src/client','src/share','src/server')	
+	mkdir('-p','test/client','test/server')	
 	
 	//server
-	cp(templatePath + 'serverEntry.js','src/server/entry.js')
-	''.to('src/client/entry.js')	
+	cp(templatePath + 'entry.js','src/server/entry.js')
+	''.toEnd('src/server/app.js')
 
 	//client, just an empty file
-	''.to('src/server/app.js')	
+	''.toEnd('src/client/entry.js')	
+
+	//test
+  ''.toEnd('test/server/entry.js')
+  ''.toEnd('test/client/entry.js')
 
 	//config
-	''.to('src/alias.json')	
-	'[]'.to('src/loaders.json')
-	'[]'.to('src/plugins.json')
+	''.toEnd('src/alias.json')	
+	'[]'.toEnd('src/loaders.json')
+	'[]'.toEnd('src/plugins.json')
 
 	//add scripts to the existing package.json file
 	//make a copy
@@ -81,9 +86,23 @@ function initMin (){
 	tmp.scripts.serve = 'node build/server/serverBundle'
 	tmp.scripts.bundle = 'npm run clean && node node_modules/mwb/tool/bundle'
 	tmp.scripts.clean = 'rm -rf build'
+	tmp.scripts.test = 'rm -rf test/build && node node_modules/mwb/tool/test'
 	JSON.stringify(tmp,null,2).to('package.json')	
 	console.log(' * Boilerplate created, package.json file has been updated')
   console.log(' * The old package.json file has been renamed to',oldName,'\n')	
+}
+
+function init (){
+	initMin()
+	
+	cp('-f',templatePath + 'expressApp.js','src/server/app.js')		
+	cp(templatePath + 'main.js','src/server/main.js')
+	console.log('Installing the latest version of express')
+	exec('npm i -S express')
+	console.log('Installing the latest version of compression')
+	exec('npm i -S compression')	
+	console.log()
+	console.log('Initiation completed, to start developing, type: npm run dev')
 }
 
 function initMongo() {
@@ -109,11 +128,20 @@ function initMongo() {
 }
 
 function initReact (){
-  console.log('Installing the latest version of React & react-dom')
-  exec('npm i -S react react-dom')
+  console.log('Installing the latest version of React & react-dom & redux')
+  exec('npm i -S react react-dom redux @aunz/simple-template')
 
-  mkdir('-p','share/components')
-  console.log('Folder components has been created under share')
+  mkdir('-p','share/actions/constants','share/Components','share/reducers')
+  console.log('Folder actions, components, reducers has been created under share directory')
+
+	cp(templatePath + 'index.html','src/share/index.html')
+	cp(templatePath + 'html.js','src/share/html.js')
+	cp(templatePath + 'routes.js','src/share/routes.js')
+	cp(templatePath + 'initialState.js','src/share/initialState.js')
+	cp('-f',templatePath + 'mainWithReact.js','src/server/main.js')
+	
+	cp('-f',templatePath + 'entry.js','src/client/entry.js')
+	cp('-f',templatePath + 'mainWithPage.js','src/client/main.js')
 
 }
 
@@ -123,18 +151,7 @@ function initPage (){
 
 }
 
-function init (){
-	initMin()
-	
-	cp('-f',templatePath + 'expressApp.js','src/server/app.js')		
-	cp(templatePath + 'main.js','src/server/main.js')
-	console.log('Installing the latest version of express')
-	exec('npm i -S express')
-	console.log('Installing the latest version of compression')
-	exec('npm i -S compression')	
-	console.log()
-	console.log('Initiation completed, to start developing, type: npm run dev')
-}
+
 
 function initFull (){
 	init()

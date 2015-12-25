@@ -10,6 +10,9 @@ const _root = path.resolve()
 const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
+let {clientConfig,serverConfig}  = require('./webpack.config.js')
+
+
 let commonLoaders = [
   {test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss') } 
 ]
@@ -26,9 +29,8 @@ let commonPlugins = [
 /**
  * Client
  */
-let clientConfig  = require('./webpack.config.js').clientConfig
-clientConfig.devtool = 'cheap-module-eval-source-map'
 
+clientConfig.devtool = 'cheap-module-eval-source-map'
 //add hot middleware on port 8080
 clientConfig.entry.client.push('webpack-hot-middleware/client?path=http://localhost:8080/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true')
 clientConfig.output.filename = 'clientBundle.js'
@@ -68,7 +70,6 @@ require('http').createServer((req, res) => {
 /**
  * Server
  */
-let serverConfig  = require('./webpack.config.js').serverConfig
 serverConfig.devtool = 'cheap-module-eval-source-map'
 
 //allow hot module on server side

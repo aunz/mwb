@@ -1,4 +1,3 @@
-import path from 'path'
 import {MongoClient} from 'mongodb'
 
 export default MongoClient.connect(

@@ -3,6 +3,7 @@ src
 temp
 tmp
 db
+test/build
 
 # Created by https://www.gitignore.io/api/node
 

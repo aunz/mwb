@@ -61,9 +61,9 @@ App
 * `json` loader for json
 * `url` loader for png|jpg|jpeg|gif|mp3 with limit=10000 & name=[name]_[hash:6].[ext]
 * `raw` loader for txt
-* `style!css?modules!postcss` loaders for css with `autoprefixer` during development mode
+* `css?modules!postcss` loaders for css with `autoprefixer` during development mode
 
-When bundling for production, a single style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:true}` using `css?module&minimize&localIdentName=[local]_[hash:6]!postcss` 
+Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:true}` using `css?module&minimize&localIdentName=[local]_[hash:6]!postcss` 
 
 ###Included plugins
 * `extract-text-webpack-plugin`
@@ -101,7 +101,7 @@ When bundling for production, a single style sheet is **extracted** by `extract-
 
 //loaders.json to handle mid, docs, xlsx, pdf files etc
 [{
-  "test":/mid|docx|xlsx|pdf/,
+  "test":/\.(mid|docx|xlsx|pdf)$/,
   "loader": "file?name=[name]_[hash:6].[ext]"
 }]
 ```

@@ -7,7 +7,7 @@ let app = express()
 
 app.disable('x-powered-by')
 app.use(compression())
-app.use(express.static('./build/client'))  
+app.use(express.static('./build/public'))  
 
 
  

@@ -7,6 +7,8 @@ const path = require('path')
 const fs = require('fs')
 const webpack = require('webpack')
 
+let {clientConfig,serverConfig}  = require('./webpack.config.js')
+
 const _root = path.resolve()
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
@@ -27,7 +29,6 @@ let commonPlugins = [
 /**
  * Client
  */
-let clientConfig  = require('./webpack.config.js').clientConfig
 
 clientConfig.module.loaders.push(
   ...commonLoaders
@@ -56,7 +57,6 @@ webpack(clientConfig).run((err,stats) => {
 /**
  * Server
  */
-let serverConfig  = require('./webpack.config.js').serverConfig
 serverConfig.module.loaders.push(...commonLoaders)
 serverConfig.plugins.push(
   ...commonPlugins,
@@ -72,6 +72,6 @@ webpack(serverConfig).run((err, stats) => {
   	fs.statSync(styleFile) && fs.unlinkSync(styleFile)
   } catch(e) {/*do nothing*/}
 
-
+  //file loader may also result in duplicated files from shared React components
 })
 
