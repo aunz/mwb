@@ -10,7 +10,8 @@ const _root = path.resolve()
 const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
-let {clientConfig,serverConfig}  = require('./webpack.config.js')
+let clientConfig  = require('./webpack.config.js').clientConfig
+let serverConfig  = require('./webpack.config.js').serverConfig
 
 
 let commonLoaders = [

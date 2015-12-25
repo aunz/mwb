@@ -8,7 +8,9 @@ const path = require('path')
 const _root = path.resolve()
 const webpack = require('webpack')
 
-let {clientConfig,serverConfig}  = require('./webpack.config.js')
+let clientConfig  = require('./webpack.config.test.js').clientConfig
+let serverConfig  = require('./webpack.config.test.js').serverConfig
+
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
 let commonLoaders = [
@@ -47,6 +49,6 @@ function compileAndTest(config,arch) {
   webpack(config).watch({},(err,stats) => {  
     if (stats.hasErrors()) return console.log(arch+'\n',stats.toString({colors:true})) 
     if (child) child.kill()   
-    child = require('child_process').fork(path.join(config.output.path,config.output.filename)
+    child = require('child_process').fork(path.join(config.output.path,config.output.filename))
   })
 }

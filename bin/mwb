@@ -82,7 +82,7 @@ function initMin (){
 
 	let tmp = require(path.resolve('package.json'))
 	if (!tmp.scripts) tmp.scripts = {}		
-	tmp.scripts.dev = 'npm run clean && node node_modules/mwb/tool/devServerHot'
+	tmp.scripts.dev = 'npm run clean && node node_modules/mwb/tool/dev'
 	tmp.scripts.serve = 'node build/server/serverBundle'
 	tmp.scripts.bundle = 'npm run clean && node node_modules/mwb/tool/bundle'
 	tmp.scripts.clean = 'rm -rf build'

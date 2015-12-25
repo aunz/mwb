@@ -1,18 +1,26 @@
 'use strict'
 
-const {clientConfig,serverConfig} = require('./webpack.config.js')
+let clientConfig  = require('./webpack.config.js').clientConfig
+let serverConfig  = require('./webpack.config.js').serverConfig
 
 //override
 clientConfig.entry.client = ['./test/client/entry.js']
+//change the client to node env, using jsdom
 clientConfig.output = {
 	path: './test/build/client',
-	filename: 'clientBundle.test.js'
+	filename: 'clientBundle.test.js',
+	libraryTarget: 'commonjs2',
 }
+clientConfig.externals = [
+	/^[@a-z][a-z\/\.\-0-9]*$/i, //native modules will be excluded, e.g require('react/server')
+	/^.+assets\.json$/i, //these assets produced by assets-webpack-plugin
+]
 
-serverConfig.entry.client = ['./test/server/entry.js']
+serverConfig.entry.server = ['./test/server/entry.js']
 serverConfig.output = {
 	path: './test/build/server',
-	filename: 'serverBundle.test.js'
+	filename: 'serverBundle.test.js',
+	libraryTarget: 'commonjs2',
 }
 
 module.exports = {clientConfig,serverConfig}

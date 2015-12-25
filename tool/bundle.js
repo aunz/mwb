@@ -4,13 +4,16 @@
  * Dependencies 
  */
 const path = require('path')
-const fs = require('fs')
-const webpack = require('webpack')
-
-let {clientConfig,serverConfig}  = require('./webpack.config.js')
-
 const _root = path.resolve()
+
+const fs = require('fs')
+
+const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
+
+let clientConfig  = require('./webpack.config.js').clientConfig
+let serverConfig  = require('./webpack.config.js').serverConfig
+
 
 let commonLoaders = [
 	{test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&minimize&localIdentName=[local]_[hash:6]!postcss') }
