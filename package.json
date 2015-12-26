@@ -5,7 +5,7 @@
   "repository": "https://github.com/aunz/mwb",
   "main": "",
   "bin": {
-    "mwb": "./bin/mwb"
+    "mwb": "./bin/mwb.js"
   },
   "scripts": {
     "postinstall": "node bin/mwb postinstall",

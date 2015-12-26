@@ -10,14 +10,13 @@ import initialState from '../share/initialState.js'
 
 import html from '../share/html.js'
 
-
-//app.get
+import app from './app.js'
 
 
 // Get
 Object.keys(routes).forEach(k => {
 	app.get(k,(req,res,next)=>{
-		const store = createStore(reducers,{})
+		const store = createStore(reducers,initialState)
 		store.dispatch({
 			type: 'SET_PATH',
 			value: req.url
@@ -38,8 +37,7 @@ Object.keys(routes).forEach(k => {
 	})
 })
 
-//404
-// import NotFoundPage from '...'
+/*//404 import NotFoundPage from '...'
 app.use((req,res,next) => {
 	res.status(404)
 	const result = simpleTemplate(html,{
@@ -51,8 +49,7 @@ app.use((req,res,next) => {
 })
 
 
-//500
-// import ErrorPage from '...'
+//500 import ErrorPage from '...'
 app.use((err,req,res,next)=>{	
 	res.status(500)
 	const result = simpleTemplate(html,{
@@ -61,4 +58,4 @@ app.use((err,req,res,next)=>{
 		initialState: inspect({})
 	})			
 	res.send(result)
-})
+})*/

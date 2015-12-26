@@ -55,9 +55,16 @@ try {
 } catch (e) {/*do nothing if the alias.json is not present*/}
 
 let clientCompiler = webpack(clientConfig)
-clientCompiler.watch({},(err,stats) => {  
+
+let clientStarted = false
+clientCompiler.watch({},(err,stats) => {
   console.log('Client Bundles \n',stats.toString({chunkModules: false,colors:true}),'\n')
   // console.log('Client Bundles \n',stats.toString({colors:true}),'\n')
+  
+  if (clientStarted) return
+  // the build/webpack-assets.json is ready, so go on create the server bundle
+  createServer()
+  clientStarted = true
 })
 
 
@@ -74,7 +81,7 @@ require('http').createServer((req, res) => {
 serverConfig.devtool = 'cheap-module-eval-source-map'
 
 //allow hot module on server side
-serverConfig.entry.server.push(__dirname+'/signal.js?hmr')
+serverConfig.entry.server.push(__dirname+'/signal.js?hmr')  //hmr is the signal to re load
 serverConfig.module.loaders.push(
   ...commonLoaders
 )
@@ -84,22 +91,25 @@ serverConfig.plugins.push(
 )
 
 
-let child
-webpack(serverConfig).watch({},(err, stats) => {
-  console.log('Server Bundle \n',stats.toString({colors:true}),'\n')  
-  if (stats.hasErrors()) return
-  if (child) return child.send('hmr')
+function createServer() {
+  let child
 
-  createChild()
- 
+  webpack(serverConfig).watch({},(err, stats) => {
+    console.log('Server Bundle \n',stats.toString({colors:true}),'\n')  
+    if (stats.hasErrors()) return
+    if (child) return child.send('hmr')  
+    createChild()
+  })
+
   function createChild(){
-  	child = require('child_process').fork(path.join(serverConfig.output.path,serverConfig.output.filename))
-  	let start = Date.now()
-  	child.on('exit', (code, signal) => {
-  		console.error('Child server exited with code:',code,'and signal:',signal)
+    child = require('child_process').fork(path.join(serverConfig.output.path,serverConfig.output.filename))
+    let start = Date.now()
+    child.on('exit', (code, signal) => {
+      console.error('Child server exited with code:',code,'and signal:',signal)
       child = null
-  		// if (!code) return
-  		// if (Date.now() - start > 1000) createChild() //arbitrarily only after the server has started for more than 1 sec  		
-  	})  
-  }
-})
+      if (!code) return
+      if (Date.now() - start > 1000) createChild() //arbitrarily only after the server has started for more than 1 sec      
+    })  
+  }  
+}
+

@@ -35,13 +35,15 @@ function postinstall () {
 		return
 	}
 	
-		
+	copyTool()
+
 	if (!tmp.scripts) tmp.scripts = {}
 	if (tmp.scripts.mwb) return //has been installed already
 	
 	tmp.scripts.mwb = 'mwb'
-	tmp.private = true //your app shouldn't be published in npm public :)
-	tmp.license = 'UNLICENSED'
+	// tmp.private = true //your app shouldn't be published in npm public :)
+	// tmp.license = 'UNLICENSED'
+
 	JSON.stringify(tmp,null,2).to('../../package.json')
 	setTimeout(()=>{
 		require('./ascii_cat.js').cat1()
@@ -73,7 +75,7 @@ function initMin (){
 	//config
 	''.toEnd('src/alias.json')	
 	'[]'.toEnd('src/loaders.json')
-	'[]'.toEnd('src/plugins.json')
+	'[]'.toEnd('src/plugins.json')  
 
 	//add scripts to the existing package.json file
 	//make a copy
@@ -83,11 +85,11 @@ function initMin (){
 
 	let tmp = require(path.resolve('package.json'))
 	if (!tmp.scripts) tmp.scripts = {}		
-	tmp.scripts.dev = 'npm run clean && node node_modules/mwb/tool/dev'
+	tmp.scripts.dev = 'npm run clean && node tool/dev'
 	tmp.scripts.serve = 'node build/server/serverBundle'
-	tmp.scripts.bundle = 'npm run clean && node node_modules/mwb/tool/bundle'
+	tmp.scripts.bundle = 'npm run clean && node tool/bundle'
 	tmp.scripts.clean = 'rm -rf build'
-	tmp.scripts.test = 'rm -rf test/build && node node_modules/mwb/tool/test'
+	tmp.scripts.test = 'rm -rf test/build && node tool/test'
 	JSON.stringify(tmp,null,2).to('package.json')	
 	console.log(' * Boilerplate created, package.json file has been updated')
   console.log(' * The old package.json file has been renamed to',oldName,'\n')	
@@ -115,8 +117,8 @@ function initMongo() {
 	let tmp = require(path.resolve('package.json'))
 	//change the start script
 	tmp.scripts.start = process.platform === 'win32' 
-	  ? 'start /B mongod --dbpath db --bind_ip 127.0.0.1 && npm run clean && node node_modules/mwb/tool/devServerHot'  //to stop this, has to use ctrl + break, NOT ctrl + c due to the use of start /B
-	  : 'npm run clean && node node_modules/mwb/tool/devServerHot'	
+	  ? 'start /B mongod --dbpath db --bind_ip 127.0.0.1 && npm run clean && node tool/dev'  //to stop this, has to use ctrl + break, NOT ctrl + c due to the use of start /B
+	  : 'npm run clean && node tool/dev'	
 	let oldName = 'package.'+Date.now()+'.json'
 	cp('package.json',oldName)	
 	JSON.stringify(tmp,null,2).to('package.json')
@@ -167,4 +169,15 @@ function initFull (){
 	initMongo()
 	initReact()
 	initPage()
+}
+
+function copyTool() {
+	console.log(path.resolve())
+  if (test('-d','../../tool')) {
+  	//make a copy
+  	console.log('backing up the tool directory')
+  	cp('-rf','../../tool/*','../../tool_backup_'+Date.now())
+  	rm('-rf','../../tool')
+  }
+  cp('-rf','tool/*','../../tool')
 }
