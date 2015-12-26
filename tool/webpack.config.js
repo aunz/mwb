@@ -43,8 +43,8 @@ try {
 	commonPlugins.push(...extraPlugins)
 } catch (e) {/*do nothing if the json is not found*/}
 
-// copy favicon.ico
-// require('./copy.js')
+
+// require('./copyStatic.js') // copy static
 
 let clientConfig = {
 	entry: {

@@ -29,22 +29,30 @@ let commonPlugins = [
  * Client
  */
 
-clientConfig.devtool = 'cheap-module-eval-source-map'
-clientConfig.module.loaders.push(...commonLoaders)
-clientConfig.plugins.push(...commonPlugins)
+//clientConfig.module.loaders.push(...)
+//clientConfig.plugins.push(...)
 
 compileAndTest(clientConfig,'CLIENT')
 
 /**
  * Server
  */
-serverConfig.devtool = 'cheap-module-eval-source-map'
-serverConfig.module.loaders.push(...commonLoaders)
-serverConfig.plugins.push(...commonPlugins)
+
+//serverConfig.module.loaders.push(...)
+//serverConfig.plugins.push(...)
 
 compileAndTest(serverConfig,'SERVER')
 
+
+/**
+ * @arg {Object} config
+ * @arg {string} arch - 'CLIENT' | 'SERVER'
+ */
 function compileAndTest(config,arch) {
+  config.devtool = 'cheap-module-eval-source-map'
+  config.module.loaders.push(...commonLoaders)
+  config.plugins.push(...commonPlugins)
+
   let child
   webpack(config).watch({},(err,stats) => {  
     if (stats.hasErrors()) return console.log(arch+'\n',stats.toString({colors:true})) 

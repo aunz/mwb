@@ -8,7 +8,7 @@ import routes from '../share/routes.js'
 import reducers from '../share/reducers'
 import initialState from '../share/initialState.js'
 
-import html = from '../share/html.js'
+import html from '../share/html.js'
 
 
 //app.get
@@ -39,7 +39,7 @@ Object.keys(routes).forEach(k => {
 })
 
 //404
-import NotFoundPage from '...'
+// import NotFoundPage from '...'
 app.use((req,res,next) => {
 	res.status(404)
 	const result = simpleTemplate(html,{
@@ -52,7 +52,7 @@ app.use((req,res,next) => {
 
 
 //500
-import ErrorPage from '...'
+// import ErrorPage from '...'
 app.use((err,req,res,next)=>{	
 	res.status(500)
 	const result = simpleTemplate(html,{

@@ -37,9 +37,10 @@ App
      ├─ /share/
      ├─ /server/
      |     ├─ entry.js
-     |     ├─ app.js // the express server app
+     |     ├─ app.js 
      |     └─ main.js
-     ├─ favicon.ico
+     ├─ /static/
+     |     └─ favicon.ico
      ├─ alias.json
      ├─ loaders.json
      └─ plugins.json

@@ -5,16 +5,18 @@
   "repository": "https://github.com/aunz/mwb",
   "main": "",
   "bin": {
-    "mwb": "bin/mwb"
+    "mwb": "./bin/mwb"
   },
   "scripts": {
     "postinstall": "node bin/mwb postinstall",
-    "test": " ",
+    "test": "node -r babel-register test/entry.test.js",
     "test:single": " "
   },
   "author": "KN <aunz10@yahoo.com>",
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+    "npm": "^3.5.2"
+  },
   "dependencies": {
     "assets-webpack-plugin": "^3.2.0",
     "autoprefixer": "^6.1.2",

@@ -1,0 +1,1 @@
+require('shelljs').cp('-fr','./src/static/*','./build/public')

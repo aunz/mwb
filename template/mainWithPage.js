@@ -29,9 +29,9 @@ Object.keys(routes).forEach(k=>{
 
 
 //not found
-import NotFoundPage from '...'
+/*import NotFoundPage from '...'
 page('*',(ctx,next)=> {
 	render(<NotFoundPage />, mountNode)
-})
+})*/
 
 page.start()

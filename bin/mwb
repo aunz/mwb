@@ -48,15 +48,16 @@ function postinstall () {
 		console.log('To start with an express js server, type: npm run mwb init\n')
 		console.log('Without an express js server, type: npm run mwb initMin\n')
 		console.log('To add mongodb, type: npm run mwb initMongo\n')
+		console.log('To add a full stack including React, Redux and Page.js, type: npm run mwb initFull\n')
 		console.log()				
 	})
 }
 
 
 function initMin (){
-	console.log(' * Creating src folder\n')
-	mkdir('-p','src/client','src/share','src/server')	
-	mkdir('-p','test/client','test/server')	
+	console.log(' * Creating src & test folder\n')
+	mkdir('-p','src/client','src/share','src/server','src/static')	
+	mkdir('-p','test')	
 	
 	//server
 	cp(templatePath + 'entry.js','src/server/entry.js')
@@ -66,8 +67,8 @@ function initMin (){
 	''.toEnd('src/client/entry.js')	
 
 	//test
-  ''.toEnd('test/server/entry.js')
-  ''.toEnd('test/client/entry.js')
+  ''.toEnd('src/server/entry.test.js')
+  ''.toEnd('src/client/entry.test.js')
 
 	//config
 	''.toEnd('src/alias.json')	
@@ -131,17 +132,25 @@ function initReact (){
   console.log('Installing the latest version of React & react-dom & redux')
   exec('npm i -S react react-dom redux @aunz/simple-template')
 
-  mkdir('-p','share/actions/constants','share/Components','share/reducers')
+  mkdir('-p',
+    'src/share/actions/constants',
+    'src/share/Components',
+    'src/share/reducers')
   console.log('Folder actions, components, reducers has been created under share directory')
 
+  //server force recopy main.js
+	cp('-f',templatePath + 'mainWithReact.js','src/server/main.js')
+
+	//client
+	cp('-f',templatePath + 'entry.js','src/client/entry.js')
+	cp('-f',templatePath + 'mainWithPage.js','src/client/main.js')
+
+  //share
 	cp(templatePath + 'index.html','src/share/index.html')
 	cp(templatePath + 'html.js','src/share/html.js')
 	cp(templatePath + 'routes.js','src/share/routes.js')
-	cp(templatePath + 'initialState.js','src/share/initialState.js')
-	cp('-f',templatePath + 'mainWithReact.js','src/server/main.js')
-	
-	cp('-f',templatePath + 'entry.js','src/client/entry.js')
-	cp('-f',templatePath + 'mainWithPage.js','src/client/main.js')
+	cp(templatePath + 'initialState.js','src/share/initialState.js')	
+	cp('-f',templatePath + 'reducers.js','src/share/reducers/index.js')
 
 }
 

@@ -24,6 +24,7 @@ let commonPlugins = [
 		__DEV__ : false,
 		'process.env.NODE_ENV' : '"production"'
 	}),
+	new ExtractTextPlugin("styles_[contenthash:6].css",{allChunks:true}),
 	new webpack.optimize.DedupePlugin(),
 	new webpack.optimize.AggressiveMergingPlugin(),
 	new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, sourceMap: false}),	
@@ -38,8 +39,7 @@ clientConfig.module.loaders.push(
 )
 
 clientConfig.plugins.push(
-  ...commonPlugins,
-  new ExtractTextPlugin("styles_[contenthash:6].css",{allChunks:true})
+  ...commonPlugins  
 )
 
 webpack(clientConfig).run((err,stats) => {  
@@ -60,20 +60,21 @@ webpack(clientConfig).run((err,stats) => {
 /**
  * Server
  */
-serverConfig.module.loaders.push(...commonLoaders)
+serverConfig.module.loaders.push(
+  ...commonLoaders
+)
 serverConfig.plugins.push(
-  ...commonPlugins,
-  new ExtractTextPlugin("styles.css",{allChunks:true})
+  ...commonPlugins  
 )
 
 
 webpack(serverConfig).run((err, stats) => {
   console.log('Server Bundle \n',stats.toString({colors:true}),'\n') 
   // then delele the styles.css in the server folder
-  try {
-  const styleFile = _root+'/build/server/styles.css'
-  	fs.statSync(styleFile) && fs.unlinkSync(styleFile)
-  } catch(e) {/*do nothing*/}
+  // try {
+  // const styleFile = _root+'/build/server/styles.css'
+  // 	fs.statSync(styleFile) && fs.unlinkSync(styleFile)
+  // } catch(e) {/*do nothing*/}
 
   //file loader may also result in duplicated files from shared React components
 })

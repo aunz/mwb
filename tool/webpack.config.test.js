@@ -4,10 +4,10 @@ let clientConfig  = require('./webpack.config.js').clientConfig
 let serverConfig  = require('./webpack.config.js').serverConfig
 
 //override
-clientConfig.entry.client = ['./test/client/entry.js']
+clientConfig.entry.client = ['./src/client/entry.test.js']
 //change the client to node env, using jsdom
 clientConfig.output = {
-	path: './test/build/client',
+	path: './test/client',
 	filename: 'clientBundle.test.js',
 	libraryTarget: 'commonjs2',
 }
@@ -16,9 +16,9 @@ clientConfig.externals = [
 	/^.+assets\.json$/i, //these assets produced by assets-webpack-plugin
 ]
 
-serverConfig.entry.server = ['./test/server/entry.js']
+serverConfig.entry.server = ['./src/server/entry.test.js']
 serverConfig.output = {
-	path: './test/build/server',
+	path: './test/server',
 	filename: 'serverBundle.test.js',
 	libraryTarget: 'commonjs2',
 }
