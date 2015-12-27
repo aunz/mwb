@@ -85,11 +85,9 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:t
 
 ### Misc
 * All codes wrapped inside `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
-* source map is set to `devtool = eval` for development
+* source map is set to `cheap-module-eval-source-map` for development
 * source map is **NOT** included in production mode
 * `clientBundle_[hash:6].js` & `styles_[contenthash:6].css` in production mode for caching
-
-```
 
 
 ### Mongodb
