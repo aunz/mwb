@@ -15,14 +15,14 @@ App
      |    ├─ app.js 
      |    └─ main.js
      └─ /share/
-     			├─ /actions/     			
-          ├─ /Components/
-     			├─ /constants
-     			├─ /reducers/
-     			├─ html.js
-     			├─ index.html
-     			├─ initialState.js
-     			└─ routes.js
+          ├─ /actions/
+          └─ /Components/
+               ├─ /constants
+               ├─ /reducers/
+               ├─ html.js
+               ├─ index.html
+               ├─ initialState.js
+               └─ routes.js
 
 ```
 
