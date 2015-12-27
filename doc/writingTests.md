@@ -10,8 +10,9 @@ App
  |    └─ /server/
  |         └─ entry.test.js
  └─ /test/
-      ├─ /client/
-      └─ /server/
+      └─ /build/
+      		 ├─ /client/
+           └─ /server/
 
 ```
 
