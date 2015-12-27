@@ -152,7 +152,12 @@ function initReact (){
 	cp(templatePath + 'html.js','src/share/html.js')
 	cp(templatePath + 'routes.js','src/share/routes.js')
 	cp(templatePath + 'initialState.js','src/share/initialState.js')	
-	cp(templatePath + 'reducers.js','src/share/reducers/index.js')
+
+	cp(templatePath + 'actions.js','src/share/actions/index.js')
+	cp(templatePath + 'actionCreators.js','src/share/actions/actionCreator.js')
+	
+	cp(templatePath + 'reducers.js','src/share/reducers/index.js')	
+	cp(templatePath + 'reducerCreators.js','src/share/reducers/reducerCreator.js')
 	''.toEnd('src/share/constants.js')
 
 }
