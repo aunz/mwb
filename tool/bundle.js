@@ -27,7 +27,7 @@ let commonPlugins = [
 	new ExtractTextPlugin("styles_[contenthash:6].css",{allChunks:true}),
 	new webpack.optimize.DedupePlugin(),
 	new webpack.optimize.AggressiveMergingPlugin(),
-	new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, sourceMap: false}),	
+	new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, sourceMap: false, comments: false, 'screw-ie8': true}),	
 ]
 
 /**
