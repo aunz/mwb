@@ -7,7 +7,7 @@ let serverConfig  = require('./webpack.config.js').serverConfig
 clientConfig.entry.client = ['./src/client/entry.test.js']
 //change the client to node env, using jsdom
 clientConfig.output = {
-	path: './test/client',
+	path: './test/build/client',
 	filename: 'clientBundle.test.js',
 	libraryTarget: 'commonjs2',
 }
@@ -18,7 +18,7 @@ clientConfig.externals = [
 
 serverConfig.entry.server = ['./src/server/entry.test.js']
 serverConfig.output = {
-	path: './test/server',
+	path: './test/build/server',
 	filename: 'serverBundle.test.js',
 	libraryTarget: 'commonjs2',
 }
