@@ -31,6 +31,7 @@ npm run bundle # bundling the app for production mode
 ```
 App
  ├─ /build/
+ ├─ /tool/
  └─ /src/ 
      ├─ /client/
      |    └─ entry.js
@@ -39,11 +40,9 @@ App
      |     ├─ entry.js
      |     ├─ app.js 
      |     └─ main.js
-     ├─ /static/
-     |     └─ favicon.ico
-     ├─ alias.json
-     ├─ loaders.json
-     └─ plugins.json
+     └─ /static/
+           └─ favicon.ico
+
 
 ```
 ---
@@ -53,7 +52,7 @@ App
 * serverBundle.js is run automatically and will be served at localhost:3000 (default using express js)
 * When you edit the files in the source folder, webpack re-compile required files
 * To enable hot module replacement, add `if (module.hot) {module.hot.accept()}` in your code
-
+* Default webpack.config.js is in the tool directory
 ---
 ###Details
 
@@ -88,23 +87,7 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:t
 * source map is set to `devtool = eval` for development
 * source map is **NOT** included in production mode
 * `clientBundle_[hash:6].js` & `styles_[contenthash:6].css` in production mode for caching
-* You can add customized alias, loaders and plugins 
-```js
-//Examples:
 
-//alias.json, to load react stuff
-{
-  "react": "react/dist/react.min.js",
-  "react-dom": "react-dom/dist/react-dom.min.js"
-}
-//these alias will also be automatically included in the module.noParse to speed up build time during development. But they are not included in production mode, because webpack in combination with uglifyJS plugin can achieve better minification with source codes https://github.com/webpack/webpack/issues/615 
-
-
-//loaders.json to handle mid, docs, xlsx, pdf files etc
-[{
-  "test":/\.(mid|docx|xlsx|pdf)$/,
-  "loader": "file?name=[name]_[hash:6].[ext]"
-}]
 ```
 
 
@@ -117,3 +100,7 @@ This add the latest mongodb native driver to the app.
 This also add a file named `mongo.js` into the src/server folder.
 The mongo.js file contains and export the default connection. 
 In an imported file, use async & await to retrive the connection and db. 
+
+
+### [Writing tests](./doc/writingTests.md)
+

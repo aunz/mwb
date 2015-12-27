@@ -27,24 +27,12 @@ let commonLoaders = [{
   loader: 'json'
 }]
 
-try {
-	const extraLoaders = require(_root+'/src/loaders.json')	
-	commonLoaders.push(...extraLoaders)
-} catch (e) {/*do nothing if the json is not found*/}
-
-
 let commonPlugins = [
 	new webpack.optimize.OccurrenceOrderPlugin(),
 	new webpack.NoErrorsPlugin(),
 ]
 
-try {
-	const extraPlugins = require(_root+'/src/plugins.json')	
-	commonPlugins.push(...extraPlugins)
-} catch (e) {/*do nothing if the json is not found*/}
-
-
-// require('./copyStatic.js') // copy static
+require('./copyStatic.js') // copy static
 
 let clientConfig = {
 	entry: {

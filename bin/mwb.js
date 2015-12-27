@@ -72,11 +72,6 @@ function initMin (){
   ''.toEnd('src/server/entry.test.js')
   ''.toEnd('src/client/entry.test.js')
 
-	//config
-	''.toEnd('src/alias.json')	
-	'[]'.toEnd('src/loaders.json')
-	'[]'.toEnd('src/plugins.json')  
-
 	//add scripts to the existing package.json file
 	//make a copy
 	console.log(' * Updating package.json file\n')

@@ -43,17 +43,6 @@ clientConfig.plugins.push(
   ...commonPlugins
 )
 
-/* Adding alias and noParse during development only
- * For production, these settings in commbination with UglifyJsPlugin make build 10x slower
- */
-try {
-  const alias = require(_root+'/src/alias.json')
-  clientConfig.resolve.alias = alias
-  Object.keys(alias).forEach( k => {
-    clientConfig.module.noParse.push(path.resolve('.','node_modules',alias[k]))
-  })
-} catch (e) {/*do nothing if the alias.json is not present*/}
-
 let clientCompiler = webpack(clientConfig)
 
 let clientStarted = false
