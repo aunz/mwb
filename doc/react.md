@@ -32,4 +32,4 @@ The html.js will require the index.html via raw-loader, inject script and style 
 
 You can then import html.js as your template in the server.
 
-The main.js contains examples how to do [univserval routing](./universal_routes) for client and server
+The main.js contains examples how to do [univserval routing](./universal_routes.md) for client and server

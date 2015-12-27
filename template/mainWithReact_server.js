@@ -1,16 +1,17 @@
+import app from './app.js'
+
 import React from 'react'
 import {renderToString} from 'react-dom/server'
-import {createStore} from 'redux'
-import {inspect} from 'util'
 import simpleTemplate from '@aunz/simple-template'
 
-import routes from '../share/routes.js'
+import {createStore} from 'redux'
 import reducers from '../share/reducers'
+
+import routes from '../share/routes.js'
 import initialState from '../share/initialState.js'
 
 import html from '../share/html.js'
 
-import app from './app.js'
 
 
 

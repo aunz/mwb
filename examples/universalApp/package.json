@@ -1,0 +1,16 @@
+{
+  "name": "universalApp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mwb": "mwb"
+  },
+  "keywords": [],
+  "author": "KN <aunz10@yahoo.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "mwb": "0.0.9"
+  }
+}
