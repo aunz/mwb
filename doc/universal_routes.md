@@ -16,9 +16,9 @@ import Post from './component/Post'
 import Author from './component/Author'
 
 // each route is a function with path as name, similar to page('path', cb) and app.get('path', cb).
-// each function take in a store param from redux store
+// @arg {Object} store (from redux)
 // @return Components
-// async function is possible as well to 
+// async function is possible as well 
 
 
 
@@ -73,7 +73,7 @@ import routes from './routes'
 import store from './store.js'  //the created redux store
 
 Object.keys(routes).forEach(p => {
-  const cb = routes[p]
+  const com = routes[p]
 	page(p,(ctx,next)=>{
 		let url = ctx.pathname
 		let params = ctx.params
@@ -86,7 +86,7 @@ Object.keys(routes).forEach(p => {
 		    qs
 		  }
 		})
-		Promise.resolve(cb(store))
+		Promise.resolve(com(store))
 		  .then(Component => {
 		    render(<Component store={store} />, mountNode)		  
 		  })
@@ -116,7 +116,7 @@ import reducers from './reducers'
 
 
 Object.keys(routes).forEach(p => {
-  const cb = routes[p]
+  const com = routes[p]
 	app.get(p,(req,res,next)=>{  //the app from express server
 		let url = req.url
 		let params = req.params
@@ -130,7 +130,7 @@ Object.keys(routes).forEach(p => {
 		    qs
 		  }
 		})
-		Promise.resolve(cb(store))
+		Promise.resolve(com(store))
 		  .then(Component => {
 		    const markup = renderToString(<Component store={store} />, mountNode)
 		    const html = `

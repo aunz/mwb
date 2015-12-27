@@ -101,5 +101,7 @@ The mongo.js file contains and export the default connection.
 In an imported file, use async & await to retrive the connection and db. 
 
 
+### [React & Redux](./doc/react.md)
+
 ### [Writing tests](./doc/writingTests.md)
 

@@ -1,10 +1,10 @@
 require('shelljs/global')
 
-let start = Date.now()
+/*let start = Date.now()
 
 cd(__dirname)
 
-rm('-fr','build')
+rm('-rf','build')
 mkdir('build')
 cd('build')
 
@@ -15,3 +15,8 @@ exec('npm run mwb initFull')
 console.log('Initiation took', Date.now() - start, 'ms')
 
 exec('npm run dev')
+*/
+
+
+cp('tool','t')
+console.log(1)

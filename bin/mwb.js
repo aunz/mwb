@@ -126,6 +126,7 @@ function initMongo() {
 }
 
 function initReact (){
+
   console.log('Installing the latest version of React & react-dom & redux')
   exec('npm i -S react react-dom redux @aunz/simple-template')
 
@@ -135,11 +136,15 @@ function initReact (){
     'src/share/reducers')
   console.log('Folder actions, components, reducers has been created under share directory')
 
-  //server force recopy main.js
+  //server
+  cp('src/server/main.js','src/server/main.'+Date.now()+'.js') //backup
 	cp('-f',templatePath + 'mainWithReact.js','src/server/main.js')
 
 	//client
+  cp('src/client/entry.js','src/client/entry.'+Date.now()+'.js') //backup
 	cp('-f',templatePath + 'entry.js','src/client/entry.js')
+
+  cp('src/client/main.js','src/client/main.'+Date.now()+'.js') //backup
 	cp('-f',templatePath + 'mainWithPage.js','src/client/main.js')
 
   //share
@@ -147,7 +152,7 @@ function initReact (){
 	cp(templatePath + 'html.js','src/share/html.js')
 	cp(templatePath + 'routes.js','src/share/routes.js')
 	cp(templatePath + 'initialState.js','src/share/initialState.js')	
-	cp('-f',templatePath + 'reducers.js','src/share/reducers/index.js')
+	cp(templatePath + 'reducers.js','src/share/reducers/index.js')
 
 }
 
