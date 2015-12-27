@@ -53,6 +53,7 @@ App
 * When you edit the files in the source folder, webpack re-compile required files
 * To enable hot module replacement, add `if (module.hot) {module.hot.accept()}` in your code
 * Default webpack.config.js is in the tool directory
+
 ---
 ###Details
 
