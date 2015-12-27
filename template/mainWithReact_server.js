@@ -13,7 +13,13 @@ import html from '../share/html.js'
 import app from './app.js'
 
 
-// Get
+
+/* 
+ ********************
+ * Universal routes *
+ ********************
+*/
+
 Object.keys(routes).forEach(k => {
 	app.get(k,(req,res,next)=>{
 		const store = createStore(reducers,initialState)

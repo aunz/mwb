@@ -138,14 +138,14 @@ function initReact (){
 
   //server
   cp('src/server/main.js','src/server/main.'+Date.now()+'.js') //backup
-	cp('-f',templatePath + 'mainWithReact.js','src/server/main.js')
+	cp('-f',templatePath + 'mainWithReact_server.js','src/server/main.js')
 
 	//client
   cp('src/client/entry.js','src/client/entry.'+Date.now()+'.js') //backup
 	cp('-f',templatePath + 'entry.js','src/client/entry.js')
 
   cp('src/client/main.js','src/client/main.'+Date.now()+'.js') //backup
-	cp('-f',templatePath + 'mainWithPage.js','src/client/main.js')
+	cp('-f',templatePath + 'mainWithReact_client.js','src/client/main.js')
 
   //share
 	cp(templatePath + 'index.html','src/share/index.html')

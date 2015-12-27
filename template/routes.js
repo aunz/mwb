@@ -1,3 +1,4 @@
+import React from 'react'
 // import from './Components/...'
 
 
@@ -11,8 +12,6 @@
 
 export default  {
 	['/'](store) {
-		return 
+
 	}
 }
-
-

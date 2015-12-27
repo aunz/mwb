@@ -10,6 +10,12 @@ import initialState from '../share/initialState.js'
 const mountNode = document.getElementById('root')
 const store = createStore(reducers,initialState)
 
+/* 
+ ********************
+ * Universal routes *
+ ********************
+*/
+
 Object.keys(routes).forEach(k=>{
 	page(k,(ctx) => {
 		store.dispatch({
