@@ -26,10 +26,10 @@ App
 
 ```
 
-The main.js contains examples how to do [univserval routing](./universal_routes) for client and server
-
 Write your inital html in the index.html, put variables insides {{}}, e.g. {{appTitle}}, {{name}}, {{data}}.
 
 The html.js will require the index.html via raw-loader, inject script and style link for client.
 
-You can then import html.js as your template in the server
+You can then import html.js as your template in the server.
+
+The main.js contains examples how to do [univserval routing](./universal_routes) for client and server

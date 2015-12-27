@@ -153,6 +153,7 @@ function initReact (){
 	cp(templatePath + 'routes.js','src/share/routes.js')
 	cp(templatePath + 'initialState.js','src/share/initialState.js')	
 	cp(templatePath + 'reducers.js','src/share/reducers/index.js')
+	''.toEnd('src/share/constants.js')
 
 }
 
