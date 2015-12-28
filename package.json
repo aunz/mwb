@@ -1,6 +1,6 @@
 {
   "name": "mwb",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Minimalistic webpack boilerplate",
   "repository": "https://github.com/aunz/mwb",
   "main": "",
@@ -13,7 +13,17 @@
     "test:single": " "
   },
   "keywords": [
-    "webpack", "mwb", "react", "redux", "page", "express", "mongo", "isomorphic", "universal", "boilerplate", "skeleton"
+    "webpack",
+    "mwb",
+    "react",
+    "redux",
+    "page",
+    "express",
+    "mongo",
+    "isomorphic",
+    "universal",
+    "boilerplate",
+    "skeleton"
   ],
   "author": "KN <aunz10@yahoo.com>",
   "license": "MIT",
