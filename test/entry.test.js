@@ -9,6 +9,7 @@ cd(__dirname)
 
 rm('-rf','build')
 mkdir('build')
+
 cd('build')
 
 test('should install ok',t => {

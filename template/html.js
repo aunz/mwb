@@ -3,5 +3,5 @@ import template from '@aunz/simple-template'
 
 export default template(require('raw!./index.html'),{
 	js: assets.client.js || '',
-	style: assets.client.style || ''
+	css: assets.client.css || ''
 })
