@@ -4,18 +4,22 @@ let clientConfig  = require('./webpack.config.js').clientConfig
 let serverConfig  = require('./webpack.config.js').serverConfig
 
 //override
+
+/* client */
 clientConfig.entry.client = ['./src/client/entry.test.js']
 //change the client to node env, using jsdom
 clientConfig.output = {
 	path: './test/build/client',
-	filename: 'clientBundle.test.js',
-	libraryTarget: 'commonjs2',
+	filename: 'clientBundle.test.js',	
 }
-clientConfig.externals = [
-	/^[@a-z][a-z\/\.\-0-9]*$/i, //native modules will be excluded, e.g require('react/server')
-	/^.+assets\.json$/i, //these assets produced by assets-webpack-plugin
-]
 
+clientConfig.node = {fs:'empty'}
+
+//remove the assetplugin for client
+clientConfig.plugins = clientConfig.plugins.filter(p => !(p instanceof require('assets-webpack-plugin')))
+
+
+/* server */
 serverConfig.entry.server = ['./src/server/entry.test.js']
 serverConfig.output = {
 	path: './test/build/server',

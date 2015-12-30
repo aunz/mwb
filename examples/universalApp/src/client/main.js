@@ -8,7 +8,7 @@ import routes from '../share/routes.js'
 import {setPath} from '../share/actions'
 import reducers from '../share/reducers'
 import initialState from '../share/initialState.js'
-import {NotFoundPage,ErrorPage} from '../share/Components'
+import {Home, NotFoundPage,ErrorPage} from '../share/Components'
 
 const mountNode = document.getElementById('root')
 const store = createStore(reducers,initialState)
@@ -48,8 +48,12 @@ page('*', (ctx,next)=> {
 
 
 window.addEventListener('error', e => {
+	event.preventDefault()
 	console.log('window catching error',e)
 	render(<ErrorPage error={e.error.toString()} />, mountNode)
 })
 
 page.start()
+
+// render(<Home store={store} />, mountNode)
+

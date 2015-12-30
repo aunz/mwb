@@ -9,7 +9,7 @@ export default  {
 	['/'](store) {
 		return Home
 	},
-	['/about'](store) {
+	['/about'](store) {		
 		return About
 	},
 	async ['/about/:async'](store) {

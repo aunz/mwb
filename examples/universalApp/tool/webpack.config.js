@@ -53,7 +53,10 @@ let clientConfig = {
 	postcss,
 	plugins: [
 		...commonPlugins,
-		new AssetsPlugin({path:'./build'}),
+		new AssetsPlugin({
+			update: true,
+			path: './build'
+		}),
 		new webpack.DefinePlugin({
 			__CLIENT__ : true,
 			__SERVER__ : false,

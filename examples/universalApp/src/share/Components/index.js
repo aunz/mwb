@@ -3,7 +3,7 @@ import styleA from './animation.css'
 import styleB from './fontello-embedded.css'
 
 //React class
-export class Home extends React.Component {
+export class Home extends React.Component {	
 	render() {
 		return <div>
 			<h1>Hello World</h1>
@@ -14,11 +14,11 @@ export class Home extends React.Component {
 			<li>This app is also rendered in the server by <b>react</b> and <b>express</b></li>
 			<li><b>Hot reloading</b> in <b>client</b> & <b>server</b> is enabled by webpack hot module replacement and hot middleware</li>
 			<br /><a href="/">Home</a> <Spin store={this.props.store}/><br />
-			<br /><a href="/about">About</a> This is a sync action<br />
+			<br /><a href="/about" >About</a> This is a sync action<br />
 			<br /><a href="/about/async">About</a> This is a async action, take 3 seconds to load<br />
 			<br /><a href="/post">Post</a> This is an async action, require database access<br />
 			<br /><a href="/404">404</a> This will throw a 404 page. If you refresh the page, it will also give you the correct status code 404  <br />
-			<br /><a href="/500">500</a> An error page example <br />
+			<br /><a href="/500">500</a> An error page example <br />			
 		</div>	
 	}
 }
@@ -47,7 +47,7 @@ class Spin extends React.Component {
 }
 
 //stateless function
-export function About(props) {
+export function About(props) {	
 	return <div>
 		About:
 		Eat fruits & veges only, save the planet!
