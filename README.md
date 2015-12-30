@@ -115,4 +115,4 @@ You can update simply by typing
 ```shell 
 npm i -D mwb
 ```
-The `tool` directory will be renamed to tool.<timestamp> so your modification will still be preserved. A new tool directory will be created with the updated settings.
+The `tool` directory will be renamed to tool.{timestamp} so your modification will still be preserved. A new tool directory will be created with the updated settings.
