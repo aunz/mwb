@@ -1,6 +1,6 @@
 {
   "name": "mwb",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Minimalistic webpack boilerplate",
   "repository": "https://github.com/aunz/mwb",
   "main": "",
