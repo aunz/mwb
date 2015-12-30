@@ -13,7 +13,7 @@ clientConfig.output = {
 	filename: 'clientBundle.test.js',	
 }
 
-clientConfig.node = {fs:'empty'}
+clientConfig.node = {fs: 'empty'}
 
 //remove the assetplugin for client
 clientConfig.plugins = clientConfig.plugins.filter(p => !(p instanceof require('assets-webpack-plugin')))

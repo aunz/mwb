@@ -28,8 +28,12 @@ You can use any test framework and/or assertion library, specify it in the entry
 ```js
 //entry.test.js
 import mocha from 'mocha'
-import test from 'tape' 
+import test from 'tape' //already shipped with mwb when you do: npm i mwb -D
 
 //import jsdom from 'jsdom' //to run client code insides node
 
 ```
+
+`client/entry.test.js` is meant to be run in the browser, `config.node = {fs: 'empty'}` is set in the `webpack.config.test.js`, so you can still use tape 
+
+`server/entry.test.js` is run in node. Use jsdom here.

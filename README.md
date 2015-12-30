@@ -15,14 +15,14 @@ mkdir myApp
 cd myApp
 
 npm init
-npm i --save-dev mwb
+npm i -D mwb
 
 npm run mwb init # generate the boilerplate with an express server
 npm run mwb initMin # generate the boilerplate without a server
 
 npm run dev # start live coding & editing in development mode
 
-npm run bundle # bundling the app for production mode
+npm run bundle # bundling the app for production
 ```
 ###Requires node >= 4.0.0
 
@@ -48,6 +48,7 @@ App
 ---
 ###How it works:
 * After initiation, an entry.js file is placed in the src/client and src/server folder
+* All default webpack config files are in the tool folder, you can override these
 * `npm run dev` uses webpack to compile and watch these files and output them into the build folder -> clientBundle.js and serverBundle.js
 * serverBundle.js is run automatically and will be served at localhost:3000 (default using express js)
 * When you edit the files in the source folder, webpack re-compile required files
@@ -70,7 +71,7 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:t
 * `extract-text-webpack-plugin`
 * `webpack.optimize.DedupePlugin` 
 * `webpack.optimize.AggressiveMergingPlugin`
-* `webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, sourceMap: false})`  
+* `webpack.optimize.UglifyJsPlugin({compress: {warnings: false, sourceMap: false, comments: false})` 
 * `webpack.DefinePlugin({__SERVER__:true})`for server
 * `webpack.DefinePlugin({__CLIENT__:true})` for client
 * `webpack.DefinePlugin({'process.env.NODE_ENV':'"development"'})` in development mode
@@ -105,3 +106,13 @@ In an imported file, use async & await to retrive the connection and db.
 
 ### [Writing tests](./doc/writingTests.md)
 
+### [Examples](./examples)
+
+
+### Update
+
+You can update simply by typing
+```shell 
+npm i -D mwb
+```
+The `tool` directory will be renamed to tool.<timestamp> so your modification will still be preserved. A new tool directory will be created with the updated settings.
