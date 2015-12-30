@@ -109,6 +109,7 @@ function initMongo() {
 	
 	mkdir('-p','db')
 
+	delete require.cache[require.resolve(path.resolve('package.json'))] //clear the cache, cos it's been required in initMin
 	let tmp = require(path.resolve('package.json'))
 	//change the start script
 	tmp.scripts.start = process.platform === 'win32' 
@@ -123,6 +124,7 @@ function initMongo() {
 	console.log('\nA folder named db has been created, and package.json has been udpated.')
 	console.log('The old package.json file has been renamed to',oldName,'\n')
 	console.log('The connection file mongo.js has been added to the src/server folder')
+	
 }
 
 function initReact (){
@@ -154,7 +156,7 @@ function initReact (){
 	cp(templatePath + 'initialState.js','src/share/initialState.js')	
 
 	cp(templatePath + 'actions.js','src/share/actions/index.js')
-	cp(templatePath + 'actionCreators.js','src/share/actions/actionCreator.js')
+	cp(templatePath + 'actionCreator.js','src/share/actions/actionCreator.js')
 	
 	cp(templatePath + 'reducers.js','src/share/reducers/index.js')	
 	cp(templatePath + 'reducerCreators.js','src/share/reducers/reducerCreator.js')
@@ -165,20 +167,18 @@ function initReact (){
 function initPage (){
 	console.log('Installing the latest version of Page from "visionmedia/page.js"')
   exec('npm i -S page')
-
 }
 
 
 
 function initFull (){
-	init()
+	init()	
 	initMongo()
-	initReact()
 	initPage()
+	initReact()	
 }
 
-function copyTool() {
-	console.log(path.resolve())
+function copyTool() {	
   if (test('-d','../../tool')) {
   	//make a copy
   	console.log('backing up the tool directory')

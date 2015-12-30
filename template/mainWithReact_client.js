@@ -16,28 +16,30 @@ const store = createStore(reducers,initialState)
  ********************
 */
 
-Object.keys(routes).forEach(k=>{
-	page(k,(ctx) => {
-		store.dispatch({
-			type: 'SET_PATH',
-			value: ctx.path
-		})
+/*Object.keys(routes).forEach(k=>{
+	page(k,({path,params,querystring},next) => {
+		
+		store.dispatch(setPath(path,params,parse(querystring)))
 
 		Promise.resolve(routes[k](store))
 		.then(Template => {
-			render(<Template store={store}/>, mountNode)
+			render(<Template store={store} />, mountNode)
 		})
 		.catch(e => {
-			next(e)
-		})		
+			if (!e) return next()
+			setTimeout(()=>{throw e})		  
+		})
+
 	})
 })
 
+page('*', (ctx,next)=> {	
+	render(<NotFoundPage req={ctx.path} />, mountNode)
+})
 
-//not found
-/*import NotFoundPage from '...'
-page('*',(ctx,next)=> {
-	render(<NotFoundPage />, mountNode)
-})*/
+window.addEventListener('error', e => {
+	event.preventDefault()
+	render(<ErrorPage error={e.error.toString()} />, mountNode)
+})
 
-page.start()
+page.start()*/

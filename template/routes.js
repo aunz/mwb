@@ -1,14 +1,8 @@
 import React from 'react'
-// import from './Components/...'
+// import {} from './Components'
+// import {} from './actions'
 
 
-/*if (__SERVER__) {
-	var 
-}*/
-
-/*if (__CLIENT__) {
-
-}*/
 
 export default  {
 	['/'](store) {
