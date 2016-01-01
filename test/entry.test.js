@@ -137,7 +137,7 @@ tape('Server should response with hello world', t => {
             ,'should have correct base directory structure and files')          
           dev.kill()
           t.end()
-          exit()
+          
         })
       }).end()
     }
@@ -165,4 +165,5 @@ tape('Rerun npm i ../../ -D', t => {
   t.deepEqual(ls('tool'),['bundle.js','copyStatic.js','dev.js','log-apply-result.js','signal.js','test.js','webpack.config.js','webpack.config.test.js'],'should have correct tool directory structure')  
 
   t.end()  
+  exit()
 })
