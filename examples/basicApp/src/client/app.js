@@ -3,3 +3,6 @@ function sayHello(name){
 }
 
 export default sayHello
+
+
+// require.include('../server/helloFromServer.js')
