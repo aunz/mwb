@@ -12,7 +12,6 @@ mkdir('build')
 
 cd('build')
 
-
 tape('should install ok',t => {
   //safe guard   
   if (test('-f','package.json')) {throw new Error('No no')}
