@@ -10,12 +10,12 @@ let start = Date.now()
 
 cd(__dirname)
 
-rm('-rf','build')
-mkdir('build')
+// rm('-rf','build')
+// mkdir('build')
 
 cd('build')
 
-tape('should install ok',t => {
+/*tape('should install ok',t => {
   //safe guard   
   if (test('-f','package.json')) {throw new Error('No no')}
 
@@ -35,6 +35,10 @@ tape('should install ok',t => {
   console.log('Initiation took', Date.now() - start, 'ms')  
   t.equal(cat(ls('package.*.json')[0]),i,'The previous package.json should have been copied')
 
+  t.end()
+})*/
+
+/*tape('Modifying package.json', t => {
   let p = require(require('path').resolve('package.json')) //can't just use require('package.json')
   
   t.ok(p.scripts.test &&
@@ -46,26 +50,31 @@ tape('should install ok',t => {
        p.devDependencies.mwb
        ,'Should have all the scrips')
 
-  
-  t.ok(p.dependencies.express == exec('npm v express version',{silent:true}).output.trim() &&
-       p.dependencies.compression == exec('npm v compression version',{silent:true}).output.trim() &&
-       p.dependencies.mongodb == exec('npm v mongodb version',{silent:true}).output.trim() &&
-       p.dependencies.react == exec('npm v react version',{silent:true}).output.trim() &&
-       p.dependencies['react-dom'] == exec('npm v react-dom version',{silent:true}).output.trim() &&
-       p.dependencies.redux == exec('npm v redux version',{silent:true}).output.trim() &&
-       p.dependencies.page == exec('npm v page version',{silent:true}).output.trim()       
+  t.ok(clv(p.dependencies,'express') &&
+       clv(p.dependencies,'compression') &&
+       clv(p.dependencies,'mongodb') &&
+       clv(p.dependencies,'react') &&
+       clv(p.dependencies,'react-dom') &&
+       clv(p.dependencies,'redux') &&
+       clv(p.dependencies,'page')
        ,'Should have all the latest devDeps') 
 
   t.end()
-})
+
+  //function to Check Latest Version
+  function clv(dep,pack) {
+    return dep[pack].substr(1) == exec(`npm v ${pack} version`,{silent:true}).output.trim()
+  }
+})*/
 
 tape('Server should response with hello world', t => {
 	// t.plan(1)	
 	// //mocking stuff
   'export default (s,a)=>s'.to('src/share/reducers/index.js')
   "import React from 'react';export default {['/'](store) {return p => <div>Hello world</div>}}".to('src/share/routes.js')
-	let dev = exec('npm run dev',{async:true, silent:true})
+	let dev = exec('npm run dev',{async:true, silent:false})
 	dev.stdout.on('data', data => {
+    // console.log(data)
   	if (data.indexOf('Express app listening at') !== -1) {
   		require('http').request('http://localhost:3000', res => {
         console.log(res.statusCode)
@@ -74,8 +83,8 @@ tape('Server should response with hello world', t => {
     			body += chunk
   			})
   			res.on('end', () => {
-
-  				t.ok(body.indexOf('Hello world') > -1,'server responsed with "Hello World"')
+          t.ok(body.indexOf('Hello world') > -1,'server responsed with "Hello World"')
+  				t.ok(body.indexOf(`<script src="/clientBundle.js"></script>`) > -1,'and a script tag')
   				dev.kill()
   				t.end()
   				// exit()
@@ -141,7 +150,7 @@ tape('Rerun npm i ../../ -D', t => {
 
   cd('..')
 
-  t.doesNotThrow(() => { exec('npm i -D ../../',{silent:true}) },'rerun npm i -D ../../')  
+  t.doesNotThrow(() => { exec('npm i -D ../../',{silent:false}) },'rerun npm i -D ../../')  
   
   cd(ls('tool_backup_*')[0])
   let newCat = cat(ls(''))
