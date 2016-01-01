@@ -161,6 +161,7 @@ tape('Rerun npm i ../../ -D', t => {
   t.ok(newCat.indexOf(randomContent) > -1, 'should have some dummy content')
   t.equal(newCat, oldCat, 'and same as the old tool directory')
 
+  // may have problem with permission create directory tool
   cd('..')
   t.deepEqual(ls('tool'),['bundle.js','copyStatic.js','dev.js','log-apply-result.js','signal.js','test.js','webpack.config.js','webpack.config.test.js'],'should have correct tool directory structure')  
 
