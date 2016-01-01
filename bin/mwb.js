@@ -159,7 +159,7 @@ function initReact (){
 	cp(templatePath + 'actionCreator.js','src/share/actions/actionCreator.js')
 	
 	cp(templatePath + 'reducers.js','src/share/reducers/index.js')	
-	cp(templatePath + 'reducerCreators.js','src/share/reducers/reducerCreator.js')
+	cp(templatePath + 'reducerCreator.js','src/share/reducers/reducerCreator.js')
 	''.toEnd('src/share/constants.js')
 
 }

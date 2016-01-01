@@ -3,6 +3,9 @@
 import tape from 'tape' //can't use import test from 'tape' as test is made global by shelljs/global
 import 'shelljs/global'
 
+var a = exec('npm v express version',{silent: true})
+
+
 let start = Date.now()
 
 cd(__dirname)
@@ -43,15 +46,15 @@ tape('should install ok',t => {
        p.devDependencies.mwb
        ,'Should have all the scrips')
 
-  let k = Object.keys(p.dependencies)
-  t.ok(k.indexOf('express') > -1 &&
-       k.indexOf('compression') > -1 &&
-       k.indexOf('mongodb') > -1 &&
-       k.indexOf('react') > -1 &&
-       k.indexOf('react-dom') > -1 &&
-       k.indexOf('redux') > -1 &&
-       k.indexOf('page') > -1
-       ,'Should have all the devDep') 
+  
+  t.ok(p.dependencies.express == exec('npm v express version',{silent:true}).output.trim() &&
+       p.dependencies.compression == exec('npm v compression version',{silent:true}).output.trim() &&
+       p.dependencies.mongodb == exec('npm v mongodb version',{silent:true}).output.trim() &&
+       p.dependencies.react == exec('npm v react version',{silent:true}).output.trim() &&
+       p.dependencies['react-dom'] == exec('npm v react-dom version',{silent:true}).output.trim() &&
+       p.dependencies.redux == exec('npm v redux version',{silent:true}).output.trim() &&
+       p.dependencies.page == exec('npm v page version',{silent:true}).output.trim()       
+       ,'Should have all the latest devDeps') 
 
   t.end()
 })
@@ -84,50 +87,49 @@ tape('Server should response with hello world', t => {
 
 tape('Directory structure', t => {
   let dir = ls('')
-  t.ok(dir.indexOf('build') > -1 
-       && dir.indexOf('db') > -1
-       && dir.indexOf('node_modules') > -1
-       && dir.indexOf('src') > -1
-       && dir.indexOf('test') > -1
-       && dir.indexOf('tool') > -1,
-       'should have correct base directory structure')
+  t.ok(dir.indexOf('build') > -1 &&
+    dir.indexOf('db') > -1 &&
+    dir.indexOf('node_modules') > -1 &&
+    dir.indexOf('src') > -1 &&
+    dir.indexOf('test') > -1 &&
+    dir.indexOf('tool') > -1,
+    'should have correct base directory structure')
 
   dir = ls('src')
-  t.ok(dir.indexOf('client') > -1 
-       && dir.indexOf('server') > -1
-       && dir.indexOf('share') > -1
-       && dir.indexOf('static') > -1,       
-        'should have correct src directory structure')
+  t.ok(dir.indexOf('client') > -1 &&
+    dir.indexOf('server') > -1 &&
+    dir.indexOf('share') > -1 &&
+    dir.indexOf('static') > -1,       
+    'should have correct src directory structure')
 
   dir = ls('src/client')
-  t.ok(dir.indexOf('entry.js') > -1 
-     && dir.indexOf('entry.test.js') > -1
-     && dir.indexOf('main.js') > -1     
-     ,'should have correct src/client directory structure')
+  t.ok(dir.indexOf('entry.js') > -1 &&
+    dir.indexOf('entry.test.js') > -1 &&
+    dir.indexOf('main.js') > -1     
+    ,'should have correct src/client directory structure')
 
   dir = ls('src/server')
-  t.ok(dir.indexOf('entry.js') > -1 
-     && dir.indexOf('entry.test.js') > -1
-     && dir.indexOf('main.js') > -1     
-     && dir.indexOf('app.js') > -1     
-     && dir.indexOf('mongo.js') > -1     
-     ,'should have correct src/server directory structure')
+  t.ok(dir.indexOf('entry.js') > -1 &&
+    dir.indexOf('entry.test.js') > -1 &&
+    dir.indexOf('main.js') > -1 &&
+    dir.indexOf('app.js') > -1 && 
+    dir.indexOf('mongo.js') > -1     
+    ,'should have correct src/server directory structure')
 
   dir = ls('src/share')  
-  t.ok(dir.indexOf('actions') > -1 
-     && dir.indexOf('Components') > -1
-     && dir.indexOf('reducers') > -1     
-     && dir.indexOf('html.js') > -1     
-     && dir.indexOf('index.html') > -1     
-     && dir.indexOf('initialState.js') > -1     
-     && dir.indexOf('routes.js') > -1     
-     ,'should have correct src/share directory structure')
+  t.ok(dir.indexOf('actions') > -1 &&
+    dir.indexOf('Components') > -1 &&
+    dir.indexOf('reducers') > -1 &&
+    dir.indexOf('html.js') > -1 && 
+    dir.indexOf('index.html') > -1 &&
+    dir.indexOf('initialState.js') > -1 &&
+    dir.indexOf('routes.js') > -1
+    ,'should have correct src/share directory structure')
 
   dir = ls('tool')
   t.deepEqual(dir,['bundle.js','copyStatic.js','dev.js','log-apply-result.js','signal.js','test.js','webpack.config.js','webpack.config.test.js'],'should have correct tool directory structure')
 
-  t.end()
-  
+  t.end()  
 })
 
 tape('Rerun npm i ../../ -D', t => {

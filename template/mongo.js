@@ -12,7 +12,7 @@ export default MongoClient.connect(
  * e.g.
  * import connection from './mongo.js'
  * ;(async function(){
- *   let db = await connection
+ *   const db = await connection
  *   db.collection('someCollection').find().toArray(...) 
  * })()
  * 
