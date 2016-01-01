@@ -3,19 +3,16 @@
 import tape from 'tape' //can't use import test from 'tape' as test is made global by shelljs/global
 import 'shelljs/global'
 
-var a = exec('npm v express version',{silent: true})
-
-
 let start = Date.now()
 
 cd(__dirname)
 
-// rm('-rf','build')
-// mkdir('build')
+rm('-rf','build')
+mkdir('build')
 
 cd('build')
 
-/*tape('should install ok',t => {
+tape('should install ok',t => {
   //safe guard   
   if (test('-f','package.json')) {throw new Error('No no')}
 
@@ -36,9 +33,9 @@ cd('build')
   t.equal(cat(ls('package.*.json')[0]),i,'The previous package.json should have been copied')
 
   t.end()
-})*/
+})
 
-/*tape('Modifying package.json', t => {
+tape('Modifying package.json', t => {
   let p = require(require('path').resolve('package.json')) //can't just use require('package.json')
   
   t.ok(p.scripts.test &&
@@ -65,39 +62,11 @@ cd('build')
   function clv(dep,pack) {
     return dep[pack].substr(1) == exec(`npm v ${pack} version`,{silent:true}).output.trim()
   }
-})*/
-
-tape('Server should response with hello world', t => {
-	// t.plan(1)	
-	// //mocking stuff
-  'export default (s,a)=>s'.to('src/share/reducers/index.js')
-  "import React from 'react';export default {['/'](store) {return p => <div>Hello world</div>}}".to('src/share/routes.js')
-	let dev = exec('npm run dev',{async:true, silent:false})
-	dev.stdout.on('data', data => {
-    // console.log(data)
-  	if (data.indexOf('Express app listening at') !== -1) {
-  		require('http').request('http://localhost:3000', res => {
-        console.log(res.statusCode)
-  			let body = ''
-  			res.on('data', chunk => {
-    			body += chunk
-  			})
-  			res.on('end', () => {
-          t.ok(body.indexOf('Hello world') > -1,'server responsed with "Hello World"')
-  				t.ok(body.indexOf(`<script src="/clientBundle.js"></script>`) > -1,'and a script tag')
-  				dev.kill()
-  				t.end()
-  				// exit()
-  			})
-  		}).end()
-  	}
-  })
 })
 
 tape('Directory structure', t => {
   let dir = ls('')
-  t.ok(dir.indexOf('build') > -1 &&
-    dir.indexOf('db') > -1 &&
+  t.ok(dir.indexOf('db') > -1 &&
     dir.indexOf('node_modules') > -1 &&
     dir.indexOf('src') > -1 &&
     dir.indexOf('test') > -1 &&
@@ -138,8 +107,43 @@ tape('Directory structure', t => {
   dir = ls('tool')
   t.deepEqual(dir,['bundle.js','copyStatic.js','dev.js','log-apply-result.js','signal.js','test.js','webpack.config.js','webpack.config.test.js'],'should have correct tool directory structure')
 
-  t.end()  
+  t.end()
 })
+
+
+
+
+
+tape('Server should response with hello world', t => {
+  // t.plan(1)  
+  // //mocking stuff
+  'export default (s,a)=>s'.to('src/share/reducers/index.js')
+  "import React from 'react';export default {['/'](store) {return p => <div>Hello world</div>}}".to('src/share/routes.js')
+  let dev = exec('npm run dev',{async:true, silent:true})
+  dev.stdout.on('data', data => {    
+    if (data.indexOf('Express app listening at') !== -1) {
+      require('http').request('http://localhost:3000', res => {
+        console.log(res.statusCode)
+        let body = ''
+        res.on('data', chunk => {
+          body += chunk
+        })
+        res.on('end', () => {
+          t.ok(body.indexOf('Hello world') > -1,'server responsed with "Hello World"')
+          t.ok(body.indexOf(`<script src="/clientBundle.js"></script>`) > -1,'and a script tag')          
+          t.ok(test('-f','build/public/clientBundle.js') &&
+            test('-f','build/server/serverBundle.js') &&
+            test('-f','build/webpack-assets.json')
+            ,'should have correct base directory structure and files')          
+          dev.kill()
+          t.end()
+          exit()
+        })
+      }).end()
+    }
+  })
+})
+
 
 tape('Rerun npm i ../../ -D', t => {
   let randomContent = 'Some dummy random content' + Math.random() 
@@ -150,7 +154,7 @@ tape('Rerun npm i ../../ -D', t => {
 
   cd('..')
 
-  t.doesNotThrow(() => { exec('npm i -D ../../',{silent:false}) },'rerun npm i -D ../../')  
+  t.doesNotThrow(() => { exec('npm i -D ../../',{silent:true}) },'rerun npm i -D ../../')
   
   cd(ls('tool_backup_*')[0])
   let newCat = cat(ls(''))
@@ -160,6 +164,5 @@ tape('Rerun npm i ../../ -D', t => {
   cd('..')
   t.deepEqual(ls('tool'),['bundle.js','copyStatic.js','dev.js','log-apply-result.js','signal.js','test.js','webpack.config.js','webpack.config.test.js'],'should have correct tool directory structure')  
 
-  t.end()
-  exit() //shelljs
+  t.end()  
 })
