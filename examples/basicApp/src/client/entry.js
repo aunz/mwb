@@ -1,5 +1,3 @@
-'use strict'
-
 import sayHello from './app.js'
 
 sayHello('Kitty')

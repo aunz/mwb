@@ -1,5 +1,3 @@
-'use strict'
-
 /*
   Edit this file while the express server is running
   The express server will not stop and re start
