@@ -24,6 +24,7 @@ npm run dev # start live coding & editing in development mode
 
 npm run bundle # bundling the app for production
 ```
+
 ##Tested only in node 5+, npm 3+
 
 ----------
