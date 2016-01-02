@@ -5,7 +5,7 @@ const _root = path.resolve()
 
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
-const postcss = () => [require('autoprefixer')]
+const postcss = () => [require('postcss-calc'),require('autoprefixer')]
 
 let commonLoaders = [{
   test: /\.jsx?$/,
