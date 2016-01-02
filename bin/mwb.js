@@ -133,7 +133,7 @@ function initReact (){
   exec('npm i -S react react-dom redux @aunz/simple-template')
 
   mkdir('-p',
-    'src/share/actions/constants',
+    'src/share/actions',
     'src/share/Components',
     'src/share/reducers')
   console.log('Folder actions, components, reducers has been created under share directory')
