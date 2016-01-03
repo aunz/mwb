@@ -1,30 +1,29 @@
-'use strict'
+'use strict' // eslint-disable-line
 
 
 /**
- * Dependencies 
+ * Dependencies
  */
 const path = require('path')
-const _root = path.resolve()
+// const _root = path.resolve()
 
 const webpack = require('webpack')
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-let clientConfig  = require('./webpack.config.js').clientConfig
-let serverConfig  = require('./webpack.config.js').serverConfig
+const clientConfig = require('./webpack.config.js').clientConfig
+const serverConfig = require('./webpack.config.js').serverConfig
 
-
-let commonLoaders = [
-  {test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss') } 
+const commonLoaders = [
+  { test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss') },
 ]
 
-let commonPlugins = [
+const commonPlugins = [
   new webpack.HotModuleReplacementPlugin(),
   new webpack.DefinePlugin({
-    __DEV__ : true,
-    'process.env.NODE_ENV':'"development"'
+    __DEV__: true,
+    'process.env.NODE_ENV': '"development"',
   }),
-  new ExtractTextPlugin("styles.css",{allChunks:true}) //has to use this for universal server client rendering
+  new ExtractTextPlugin('styles.css', { allChunks: true }), // has to use this for universal server client rendering
 ]
 
 /**
@@ -32,24 +31,24 @@ let commonPlugins = [
  */
 
 clientConfig.devtool = 'cheap-module-eval-source-map'
-//add hot middleware on port 8080
+// add hot middleware on port 8080
 clientConfig.entry.client.push('webpack-hot-middleware/client?path=http://localhost:8080/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true')
 clientConfig.output.filename = 'clientBundle.js'
 clientConfig.module.loaders.push(
-  ...commonLoaders 
+  ...commonLoaders
 )
 
 clientConfig.plugins.push(
   ...commonPlugins
 )
 
-let clientCompiler = webpack(clientConfig)
+const clientCompiler = webpack(clientConfig)
 
 let clientStarted = false
-clientCompiler.watch({},(err,stats) => {
-  console.log('Client Bundles \n',stats.toString({chunkModules: false,colors:true}),'\n')
+clientCompiler.watch({}, (err, stats) => {
+  console.log('Client Bundles \n', stats.toString({ chunkModules: false, colors: true }), '\n')
   // console.log('Client Bundles \n',stats.toString({colors:true}),'\n')
-  
+
   if (clientStarted) return
   // the build/webpack-assets.json is ready, so go on create the server bundle
   createServer()
@@ -57,10 +56,10 @@ clientCompiler.watch({},(err,stats) => {
 })
 
 
-//use inbuilt http module 
+// use inbuilt http module
 require('http').createServer((req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*")
-  require('webpack-hot-middleware')(clientCompiler,{log:false})(req,res)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  require('webpack-hot-middleware')(clientCompiler, { log: false })(req, res)
 }).listen(8080)
 
 
@@ -69,8 +68,8 @@ require('http').createServer((req, res) => {
  */
 serverConfig.devtool = 'cheap-module-eval-source-map'
 
-//allow hot module on server side
-serverConfig.entry.server.push(__dirname+'/signal.js?hmr')  //hmr is the signal to re load
+// allow hot module on server side
+serverConfig.entry.server.push(__dirname + '/signal.js?hmr')  // hmr is the signal to re load
 serverConfig.module.loaders.push(
   ...commonLoaders
 )
@@ -83,22 +82,21 @@ serverConfig.plugins.push(
 function createServer() {
   let child
 
-  webpack(serverConfig).watch({},(err, stats) => {
-    console.log('Server Bundle \n',stats.toString({colors:true}),'\n')  
-    if (stats.hasErrors()) return
-    if (child) return child.send('hmr')  
+  webpack(serverConfig).watch({}, (err, stats) => {
+    console.log('Server Bundle \n', stats.toString({ colors: true }), '\n')
+    if (stats.hasErrors()) return 1
+    if (child) return child.send('hmr')
     createChild()
   })
 
-  function createChild(){
-    child = require('child_process').fork(path.join(serverConfig.output.path,serverConfig.output.filename))
-    let start = Date.now()
+  function createChild() {
+    child = require('child_process').fork(path.join(serverConfig.output.path, serverConfig.output.filename))
+    const start = Date.now()
     child.on('exit', (code, signal) => {
-      console.error('Child server exited with code:',code,'and signal:',signal)
+      console.error('Child server exited with code:', code, 'and signal:', signal)
       child = null
       if (!code) return
-      if (Date.now() - start > 1000) createChild() //arbitrarily only after the server has started for more than 1 sec      
-    })  
-  }  
+      if (Date.now() - start > 1000) createChild() // arbitrarily only after the server has started for more than 1 sec
+    })
+  }
 }
-

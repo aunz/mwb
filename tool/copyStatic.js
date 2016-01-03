@@ -1,1 +1,1 @@
-require('shelljs').cp('-rf','./src/static/*','./build/public')
+require('shelljs').cp('-rf', './src/static/*', './build/public')
