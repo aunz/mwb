@@ -3,9 +3,8 @@ import React from 'react'
 // import {} from './actions'
 
 
+export default {
+  ['/'](store) {
 
-export default  {
-	['/'](store) {
-
-	}
+  },
 }

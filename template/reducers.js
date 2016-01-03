@@ -1,8 +1,9 @@
-import {combineReducers} from 'redux'
+import { combineReducers } from 'redux'
 import reducerCreator from './reducerCreator.js'
 import * as types from '../constants.js'
 
-/*const req = reducerCreator({
+/*
+const req = reducerCreator({
 	path: '/',
 	params: {},
 	query: {}
@@ -18,6 +19,5 @@ import * as types from '../constants.js'
 
 
 export default combineReducers({
-	
-})
 
+})

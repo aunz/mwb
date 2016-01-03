@@ -5,5 +5,6 @@ module.exports = {
     'semi': 0,
     'no-console': 0,
     'no-use-before-define': [2, 'nofunc'],
+    'func-names': 0,
   },
 }
