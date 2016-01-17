@@ -1,11 +1,11 @@
 'use strict' // eslint-disable-line
 
-const path = require('path')
+// const path = require('path')
 // const _root = path.resolve()
 
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
-const postcss = () => [require('autoprefixer'), require('postcss-calc')]
+const postcss = () => [require('postcss-calc'), require('postcss-nested'), require('autoprefixer')]
 
 const commonLoaders = [{
   test: /\.jsx?$/,

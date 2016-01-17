@@ -52,7 +52,7 @@ webpack(clientConfig).run((err, stats) => {
     const fileName = require(path.resolve('build/webpack-assets.json')).client.css
     const filePath = path.resolve('build/public', fileName)
     const css = fs.readFileSync(filePath)
-    require('cssnano').process(css).then((result) => {
+    require('cssnano').process(css, { discardComments: { removeAll: true } }).then((result) => {
       require('fs').writeFileSync(filePath, result.css)
     })
   } catch (e) { /* do nothing */ }
@@ -66,6 +66,7 @@ webpack(serverConfig).run((err, stats) => {
   console.log('Server Bundle \n', stats.toString({
     colors: true,
   }), '\n')
+  require('child_process').execSync('rm build/server/styles_??????.css')
   // then delele the styles.css in the server folder
   // try {
   // const styleFile = _root+'/build/server/styles.css'
