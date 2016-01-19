@@ -83,7 +83,8 @@ function initMin() {
   if (!tmp.scripts) tmp.scripts = {}
   tmp.scripts.dev = 'npm run clean && node tool/dev'
   tmp.scripts.serve = 'node build/server/serverBundle'
-  tmp.scripts.bundle = 'npm run clean && node tool/bundle && node tool/bz2'
+  tmp.scripts.build = 'npm run clean && node tool/build'
+  tmp.scripts.bundle = 'npm run build && npm shrinkwrap && tar -cvjf bundle.tar.bz2 npm-shrinkwrap.json build'
   tmp.scripts.clean = 'rm -rf build'
   tmp.scripts.test = 'rm -rf test/build && node tool/test'
   JSON.stringify(tmp, null, 2).to('package.json')
