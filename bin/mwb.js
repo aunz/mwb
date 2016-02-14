@@ -172,8 +172,8 @@ function copyTool() {
   if (test('-d', '../../tool')) {
     // make a copy
     console.log('backing up the tool directory')
-    cp('-rf', '../../tool/*', '../../tool_backup_' + Date.now())
+    cp('-rf', '../../tool', '../../tool_backup_' + Date.now())
     rm('-rf', '../../tool')
   }
-  cp('-rf', 'tool/*', '../../tool')
+  cp('-rf', 'tool', '../../tool')
 }
