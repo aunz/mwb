@@ -12,5 +12,6 @@ module.exports = {
     'func-names': 0,
     'comma-dangle': 0,
     'max-len': 0,
+    'prefer-template': 0,
   }
 }
