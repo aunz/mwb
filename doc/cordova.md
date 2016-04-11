@@ -6,7 +6,7 @@ npm run mwb initMin
 cordova create cordova
 ```
 
-the resulting directorty 
+the resulting directory 
 ```
 App
  ├─ /build/
@@ -35,16 +35,15 @@ All the assets (js, css, image etc) will be put under the `./cordova/www/build/`
 The default js file is `cordovaBundle.js`, the stylesheet file is `styles.css`. You may wish to update/change this in `cordova/www/index.html`
 
 
-The `app\src\client\entry.js` is used as a common entry point for web app (browser) and cordova app (hybrid)
+The `app/src/client/entry.js` is used as a common entry point for web app (browser) and cordova app (hybrid)
 
-To out put the cordova version, type
+To output the cordova version, type
 ```shell
 npm run dev -- cordovaOnly # or npm run devC
 npm run dev -- all # or npm run devA
 ```
 
-The `cordovaOnly` option will only build cordova (this is usually sufficient if you do not need a server)
-The `all` option will build client (browser, cordova) and server
+The `cordovaOnly` option will only build cordova (this is usually sufficient if you do not need a server). The `all` option will build client (browser, cordova) and server
 
 While in development mode, webpack will watch file changes in the `src` directory and recompile to the destination folder `cordova\www\build`.
 You can then run [taco](http://taco.tools/docs/run.html) to get livereload on your mobile devices
@@ -75,5 +74,5 @@ if (__CORDOVA__) {
 }
 ```
 
-Codes in __CORDOVA__ block will preserved in cordova build but dead-code-elimnated in brower version
+Codes in __CORDOVA__ block will be preserved in cordova build but dead-code-elimnated in the brower version
 
