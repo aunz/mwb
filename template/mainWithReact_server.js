@@ -1,10 +1,8 @@
 import app from './app.js'
-import { inspect } from 'util'
 // import db from 'mongo.js'
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import simpleTemplate from '@aunz/simple-template'
 
 import { createStore } from 'redux'
 import reducers from '../share/reducers'
@@ -13,6 +11,8 @@ import routes from '../share/routes.js'
 import initialState from '../share/initialState.js'
 
 import html from '../share/html.js'
+import simpleTemplate from '@aunz/simple-template'
+
 // import {} from '../share/Components'
 
 
@@ -32,8 +32,8 @@ Object.keys(routes).forEach(k => {
     Promise.resolve(routes[k](store)).then(Template => {
       const result = simpleTemplate(html, {
         title: store.getState().title || 'App',
-        markup: renderToString(<Template store={store}/>) || '',
-        initialState: inspect(store.getState()),
+        markup: renderToString(<Template store={store} />) || '',
+        initialState: JSON.stringify(store.getState()),
       })
       res.send(result)
     }).catch(e => {
@@ -53,7 +53,7 @@ Object.keys(routes).forEach(k => {
 			const result = simpleTemplate(html,{
 				title: store.getState().title || 'App',
 				markup: renderToString(<Template store={store} />) || '',
-				initialState: inspect(store.getState())
+				initialState: JSON.stringify(store.getState())
 			})
 			res.send(result)
 		})
@@ -70,7 +70,7 @@ app.use((req,res,next) => {
 	const result = simpleTemplate(html,{
 		title: 'App',
 		markup: renderToString(<NotFoundPage req={req.url} />) || '',
-		initialState: inspect(initialState)
+		initialState: JSON.stringify(initialState)
 	})
 	res.send(result)
 })
@@ -82,7 +82,7 @@ app.use((err, req, res, next) => {
 	const result = simpleTemplate(html,{
 		title: 'App',
 		markup: renderToString(<ErrorPage error={err.toString()} />) || '',
-		initialState: inspect(initialState)
+		initialState: JSON.stringify(initialState)
 	})
 	res.send(result)
 })

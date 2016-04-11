@@ -5,7 +5,14 @@
  * Dependencies
  */
 const path = require('path')
-// const _root = path.resolve()
+
+// get the last argument
+// possible values:
+// null - run client (browser) and server
+// all - run client (brower), server and cordova
+// cordovaOnly - run only cordova
+const argv = process.argv[2]
+
 
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
@@ -26,6 +33,7 @@ const commonPlugins = [
   new ExtractTextPlugin('styles.css', { allChunks: true }), // has to use this for universal server client rendering
 ]
 
+
 /**
  * Client
  */
@@ -45,7 +53,7 @@ clientConfig.plugins.push(
 const clientCompiler = webpack(clientConfig)
 
 let clientStarted = false
-clientCompiler.watch({}, (err, stats) => {
+;(argv !== 'cordovaOnly') && clientCompiler.watch({}, (err, stats) => { // eslint-disable-line no-unused-expressions
   console.log('Client Bundles \n', stats.toString({ chunkModules: false, colors: true }), '\n')
   // console.log('Client Bundles \n',stats.toString({colors:true}),'\n')
 
@@ -100,3 +108,24 @@ function createServer() {
     })
   }
 }
+
+/**
+ * Cordova
+ */
+const cordovaConfig = require('./webpack.config.js').cordovaConfig
+
+cordovaConfig.devtool = 'cheap-module-eval-source-map'
+cordovaConfig.module.loaders.push(
+  ...commonLoaders
+)
+
+cordovaConfig.plugins.push(
+  ...commonPlugins
+)
+
+// remove the new webpack.HotModuleReplacementPlugin(),
+cordovaConfig.plugins = cordovaConfig.plugins.filter(p => !(p instanceof webpack.HotModuleReplacementPlugin))
+
+;(argv === 'all' || argv === 'cordovaOnly') && webpack(cordovaConfig).watch({}, (err, stats) => { // eslint-disable-line no-unused-expressions
+  console.log('Cordova Bundles \n', stats.toString({ chunkModules: false, colors: true }), '\n')
+})

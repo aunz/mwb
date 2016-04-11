@@ -1,4 +1,4 @@
-import React from 'react' 
+import React from 'react'
 import { render } from 'react-dom'
 import { createStore } from 'redux'
 import page from 'page'
@@ -16,31 +16,29 @@ const store = createStore(reducers, initialState)
  ********************
 */
 
-/* Object.keys(routes).forEach(k=>{
-	page(k,({path,params,querystring},next) => {
+/*
+Object.keys(routes).forEach(k => {
+  page(k, ({ path, params, querystring }, next) => {
+    // store.dispatch(setPath(path, params, parse(querystring)))
 
-		store.dispatch(setPath(path,params,parse(querystring)))
-
-		Promise.resolve(routes[k](store))
-		.then(Template => {
-			render(<Template store={store} />, mountNode)
-		})
-		.catch(e => {
-			if (!e) return next()
-			setTimeout(()=>{throw e})
-		})
-
-	})
+    Promise.resolve(routes[k](store))
+    .then(Template => {
+      render(<Template store={store} />, mountNode)
+    })
+    .catch(e => {
+      if (!e) return next()
+      return setTimeout(() => {throw e})
+    })
+  })
 })
 
-page('*', (ctx,next)=> {
-	render(<NotFoundPage req={ctx.path} />, mountNode)
+page('*', (ctx, next) => {
+  render(<NotFoundPage req={ctx.path} />, mountNode)
 })
 
 window.addEventListener('error', e => {
-	event.preventDefault()
-	render(<ErrorPage error={e.error.toString()} />, mountNode)
+  event.preventDefault()
+  render(<ErrorPage error={e.error.toString()} />, mountNode)
 })
 
-page.start()
-*/
+page.start()*/

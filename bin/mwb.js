@@ -82,10 +82,15 @@ function initMin() {
   const tmp = require(path.resolve('package.json'))
   if (!tmp.scripts) tmp.scripts = {}
   tmp.scripts.dev = 'npm run clean && node tool/dev'
+  tmp.scripts.devA = 'npm run clean && npm run cleanCordova && node tool/dev all'
+  tmp.scripts.devC = 'npm run cleanCordova && node tool/dev cordovaOnly'
   tmp.scripts.serve = 'node build/server/serverBundle'
   tmp.scripts.build = 'npm run clean && node tool/build'
+  tmp.scripts.buildA = 'npm run clean && npm run cleanCordova && node tool/build all'
+  tmp.scripts.buildC = 'npm run cleanCordova && node tool/build cordovaOnly'
   tmp.scripts.bundle = 'npm run build && npm shrinkwrap && tar -cvjf bundle.tar.bz2 npm-shrinkwrap.json build'
   tmp.scripts.clean = 'rm -rf build'
+  tmp.scripts.cleanCordova = 'rm -rf cordova/www/build'
   tmp.scripts.test = 'rm -rf test/build && node tool/test'
   JSON.stringify(tmp, null, 2).to('package.json')
   console.log(' * Boilerplate created, package.json file has been updated')

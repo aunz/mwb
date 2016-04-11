@@ -109,6 +109,7 @@ In an imported file, use async & await to retrive the connection and db.
 
 ### [Examples](./examples)
 
+### [Cordova integration](./doc/cordova.md)
 
 ### Update
 

@@ -5,7 +5,10 @@
  */
 
 const path = require('path')
-  // const _root = path.resolve()
+
+// get the last argument, see the dev.js
+const argv = process.argv[2]
+
 const fs = require('fs')
 
 const webpack = require('webpack')
@@ -18,6 +21,7 @@ const commonLoaders = [{
   test: /\.css$/,
   loader: ExtractTextPlugin.extract('css?module&minimize&localIdentName=[local]_[hash:6]!postcss'),
 }]
+
 const commonPlugins = [
   new webpack.DefinePlugin({
     __DEV__: false,
@@ -38,12 +42,14 @@ const commonPlugins = [
   }),
 ]
 
+
 /**
  * Client
  */
+
 clientConfig.module.loaders.push(...commonLoaders)
 clientConfig.plugins.push(...commonPlugins)
-webpack(clientConfig).run((err, stats) => {
+;(argv !== 'cordovaOnly') && webpack(clientConfig).run((err, stats) => { // eslint-disable-line no-unused-expressions
   console.log('Client Bundles \n', stats.toString({
     colors: true,
   }), '\n')
@@ -57,20 +63,50 @@ webpack(clientConfig).run((err, stats) => {
     })
   } catch (e) { /* do nothing */ }
 })
-  /**
-   * Server
-   */
+
+/**
+ * Server
+ */
+
 serverConfig.module.loaders.push(...commonLoaders)
 serverConfig.plugins.push(...commonPlugins)
-webpack(serverConfig).run((err, stats) => {
+;(argv !== 'cordovaOnly') && webpack(serverConfig).run((err, stats) => { // eslint-disable-line no-unused-expressions
   console.log('Server Bundle \n', stats.toString({
     colors: true,
   }), '\n')
-  require('child_process').execSync('rm build/server/styles_??????.css')
+  require('child_process').exec('rm build/server/styles_??????.css', () => {})
   // then delele the styles.css in the server folder
   // try {
   // const styleFile = _root+'/build/server/styles.css'
   //  fs.statSync(styleFile) && fs.unlinkSync(styleFile)
   // } catch(e) {/*do nothing*/}
   // file loader may also result in duplicated files from shared React components
+})
+
+/**
+ * Cordova
+ */
+
+const cordovaConfig = require('./webpack.config.js').cordovaConfig
+
+cordovaConfig.module.loaders.push(...commonLoaders)
+cordovaConfig.plugins.push(...commonPlugins)
+
+// remove the ExtractTextPlugin
+cordovaConfig.plugins = cordovaConfig.plugins.filter(p => !(p instanceof ExtractTextPlugin))
+// re-add the ExtractTextPlugin with new option
+cordovaConfig.plugins.push(new ExtractTextPlugin('styles.css', { allChunks: true }))
+
+;(argv === 'all' || argv === 'cordovaOnly') && webpack(cordovaConfig).run((err, stats) => {  // eslint-disable-line no-unused-expressions
+  console.log('Cordova Bundles \n', stats.toString({
+    colors: true,
+  }), '\n')
+    // cssnano, temparory work around
+  try {
+    const filePath = path.resolve(cordovaConfig.output.path, 'styles.css')
+    const css = fs.readFileSync(filePath)
+    require('cssnano').process(css, { discardComments: { removeAll: true } }).then((result) => {
+      require('fs').writeFileSync(filePath, result.css)
+    })
+  } catch (e) { /* do nothing */ }
 })

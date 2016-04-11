@@ -32,8 +32,6 @@ const commonPlugins = [
   new webpack.NoErrorsPlugin(),
 ]
 
-require('./copyStatic.js') // copy static
-
 const clientConfig = {
   entry: {
     client: ['./src/client/entry.js'],
@@ -93,4 +91,42 @@ const serverConfig = {
   },
 }
 
-module.exports = { clientConfig, serverConfig }
+
+/**
+ * Cordova
+ */
+
+const cordovaConfig = {
+  entry: {
+    client: ['./src/client/entry.js'],
+  },
+  output: {
+    path: './cordova/www/build',
+    // filename: 'clientBundle.js', //during development
+    filename: 'cordovaBundle.js',
+  },
+  module: {
+    loaders: [...commonLoaders],
+    noParse: [],
+  },
+  resolve: {
+    alias: {},
+  },
+  postcss,
+  plugins: [...commonPlugins,
+    new webpack.DefinePlugin({
+      __CLIENT__: true,
+      __SERVER__: false,
+      __CORDOVA__: true,
+    }),
+  ],
+}
+
+// copy static assets
+require('shelljs').mkdir('-p', clientConfig.output.path)
+require('shelljs').cp('-rf', './src/static/', clientConfig.output.path)
+
+require('shelljs').mkdir('-p', cordovaConfig.output.path)
+require('shelljs').cp('-rf', './src/static/', cordovaConfig.output.path)
+
+module.exports = { clientConfig, serverConfig, cordovaConfig }
