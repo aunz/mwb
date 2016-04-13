@@ -65,7 +65,7 @@ let clientStarted = false
 
 
 // use inbuilt http module
-require('http').createServer((req, res) => {
+;(argv !== 'cordovaOnly') && require('http').createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   require('webpack-hot-middleware')(clientCompiler, { log: false })(req, res)
 }).listen(8080)
@@ -115,14 +115,11 @@ function createServer() {
 const cordovaConfig = require('./webpack.config.js').cordovaConfig
 
 cordovaConfig.devtool = 'cheap-module-eval-source-map'
-cordovaConfig.module.loaders.push(
-  ...commonLoaders
-)
+cordovaConfig.module.loaders.push(...commonLoaders)
+// remove webpack.HotModuleReplacementPlugin
+cordovaConfig.module.loaders = cordovaConfig.module.loaders.filter(m => !(m instanceof webpack.HotModuleReplacementPlugin))
 
-cordovaConfig.plugins.push(
-  ...commonPlugins
-)
-
+cordovaConfig.plugins.push(...commonPlugins)
 // remove the new webpack.HotModuleReplacementPlugin(),
 cordovaConfig.plugins = cordovaConfig.plugins.filter(p => !(p instanceof webpack.HotModuleReplacementPlugin))
 

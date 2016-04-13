@@ -49,7 +49,7 @@
     "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
     "postcss-loader": "^0.8.1",
-    "postcss-nested": "^1.0.0",
+    "postcss-nesting": "^2.3.1",
     "raw-loader": "^0.5.1",
     "shelljs": "^0.6.0",
     "tape": "^4.4.0",
