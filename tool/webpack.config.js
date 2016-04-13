@@ -5,7 +5,7 @@
 
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
-const postcss = () => [require('postcss-calc'), require('postcss-nested'), require('autoprefixer')]
+const postcss = () => [require('postcss-calc'), require('postcss-nesting'), require('autoprefixer')]
 
 const commonLoaders = [{
   test: /\.jsx?$/,
