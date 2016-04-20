@@ -60,11 +60,10 @@ App
 ###Details
 
 ####Included loaders:
-* [`babel loader`](https://github.com/babel/babel-loader) with presets (react, es2015, stage-0), plugins (transform-runtime) and cacheDirectory (true)
+* [`babel loader`](https://github.com/babel/babel-loader) with presets (es2015, stage-0, react), plugins (transform-runtime) and cacheDirectory (true). In server, the presets are (node5, stage-0, react); using node5 presets to take advantage of the native support for es6 of node5+
 * `json` loader for json
-* `url` loader for png|jpg|jpeg|gif|mp3 with limit=10000 & name=[name]_[hash:6].[ext]
-* `raw` loader for txt
-* `css?modules!postcss` loaders for css with `autoprefixer` during development mode
+* `css?modules!postcss` loaders for css with `autoprefixer`
+* `url` loader for everything else with limit=10000 & name=[name]_[hash:6].[ext]
 
 Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:true}` using `css?module&minimize&localIdentName=[local]_[hash:6]!postcss` 
 
@@ -73,10 +72,11 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:t
 * `webpack.optimize.DedupePlugin` 
 * `webpack.optimize.AggressiveMergingPlugin`
 * `webpack.optimize.UglifyJsPlugin({compress: {warnings: false, sourceMap: false, comments: false})` 
-* `webpack.DefinePlugin({__SERVER__:true})`for server
-* `webpack.DefinePlugin({__CLIENT__:true})` for client
-* `webpack.DefinePlugin({'process.env.NODE_ENV':'"development"'})` in development mode
-* `webpack.DefinePlugin({'process.env.NODE_ENV':'"production"'})` in production mode to aid dead code elimination during minification
+* `webpack.DefinePlugin({ __SERVER__: true })`for server
+* `webpack.DefinePlugin({ __CLIENT__: true })` for client
+* `webpack.DefinePlugin({ __CORDOVA__: true })` for cordova app
+* `webpack.DefinePlugin({ 'process.env.NODE_ENV' : '"development"' })` in development mode
+* `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code elimination during minification
 
 ### Express server
 * Listen to 3000 by default or `process.env.PORT`

@@ -68,11 +68,11 @@ Use `__CORDOVA__` in your js files for codes to be run specifically for cordova
 console.log('Hello world,')
 
 if (__CORDOVA__) {
-  console.log('from Cordova hybrid app')
+  console.log('from cordova hybrid app')
 } else {
   console.log('from normal web app')
 }
 ```
 
-Codes in __CORDOVA__ block will be preserved in cordova build but dead-code-elimnated in the brower version
+Codes in `__CORDOVA__` block will be preserved in cordova build but dead-code-eliminated in the browser version
 

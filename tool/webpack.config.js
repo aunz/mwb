@@ -5,27 +5,8 @@
 
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
+// const HtmlWebpackPlugin = require('html-webpack-plugin')
 const postcss = () => [require('postcss-calc'), require('postcss-nesting'), require('autoprefixer')]
-
-const commonLoaders = [{
-  test: /\.jsx?$/,
-  exclude: /(node_modules)/,
-  loader: 'babel',
-  query: {
-    presets: ['react', 'es2015', 'stage-0'],
-    plugins: ['transform-runtime'], //
-    cacheDirectory: true, // cache into OS temp folder by default
-  },
-}, {
-  test: /\.(png|jpg|jpeg|gif|mp3)$/,
-  loader: 'url?limit=10000&name=[name]_[hash:6].[ext]',
-}, {
-  test: /\.txt$/,
-  loader: 'raw',
-}, {
-  test: /\.json$/,
-  loader: 'json',
-}]
 
 const commonPlugins = [
   new webpack.optimize.OccurrenceOrderPlugin(),
@@ -38,11 +19,12 @@ const clientConfig = {
   },
   output: {
     path: './build/public',
+    publicPath: '/',
     // filename: 'clientBundle.js', //during development
     filename: 'clientBundle_[hash:6].js',
   },
   module: {
-    loaders: [...commonLoaders],
+    loaders: [...commonLoadersWithPresets(['es2015', 'stage-0', 'react'])],
     noParse: [],
   },
   resolve: {
@@ -72,7 +54,7 @@ const serverConfig = {
     libraryTarget: 'commonjs2',
   },
   module: {
-    loaders: [...commonLoaders],
+    loaders: [...commonLoadersWithPresets(['node5', 'stage-0', 'react'])],
   },
   postcss,
   plugins: [...commonPlugins,
@@ -102,11 +84,11 @@ const cordovaConfig = {
   },
   output: {
     path: './cordova/www/build',
-    // filename: 'clientBundle.js', //during development
+    publicPath: '/',
     filename: 'cordovaBundle.js',
   },
   module: {
-    loaders: [...commonLoaders],
+    loaders: [...commonLoadersWithPresets(['es2015', 'stage-0', 'react'])],
     noParse: [],
   },
   resolve: {
@@ -119,6 +101,11 @@ const cordovaConfig = {
       __SERVER__: false,
       __CORDOVA__: true,
     }),
+    /*new HtmlWebpackPlugin({
+      title: 'My Awesome App',
+      template: './src/share/index.html',
+      // filename: './src/share/index.html'
+    }),*/
   ],
 }
 
@@ -130,3 +117,26 @@ require('shelljs').mkdir('-p', cordovaConfig.output.path)
 require('shelljs').cp('-rf', './src/static/', cordovaConfig.output.path)
 
 module.exports = { clientConfig, serverConfig, cordovaConfig }
+
+
+function commonLoadersWithPresets(presets) {
+  return [{
+    test: /\.jsx?$/,
+    exclude: /(node_modules)/,
+    loader: 'babel',
+    query: {
+      presets,
+      plugins: ['transform-runtime'], //
+      cacheDirectory: true, // cache into OS temp folder by default
+    }
+  }, {
+    test: /\.json$/,
+    loader: 'json',
+  }, {
+    test: /\.(?!(jsx?|json|s?css|less)$)([^.]+$)/, // match everything except js, jsx, json, css, scss, less. You can add more
+    loader: 'url?limit=10000&name=[name]_[hash:6].[ext]',
+  }, {
+    // test: /\.txt$/,
+    // loader: 'raw',
+  }]
+}

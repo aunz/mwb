@@ -56,7 +56,7 @@ clientConfig.plugins.push(...commonPlugins)
     // cssnano, temparory work around
   try {
     const fileName = require(path.resolve('build/webpack-assets.json')).client.css
-    const filePath = path.resolve('build/public', fileName)
+    const filePath = path.resolve('build/public', fileName.replace(/^\/+/, ''))
     const css = fs.readFileSync(filePath)
     require('cssnano').process(css, { discardComments: { removeAll: true } }).then((result) => {
       require('fs').writeFileSync(filePath, result.css)
