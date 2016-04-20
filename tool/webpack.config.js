@@ -135,8 +135,5 @@ function commonLoadersWithPresets(presets) {
   }, {
     test: /\.(?!(jsx?|json|s?css|less)$)([^.]+$)/, // match everything except js, jsx, json, css, scss, less. You can add more
     loader: 'url?limit=10000&name=[name]_[hash:6].[ext]',
-  }, {
-    // test: /\.txt$/,
-    // loader: 'raw',
   }]
 }
