@@ -92,8 +92,11 @@ function createServer() {
 
   webpack(serverConfig).watch({}, (err, stats) => {
     console.log('Server Bundle \n', stats.toString({ colors: true }), '\n')
-    if (stats.hasErrors()) return 1
-    if (child) return child.send('hmr')
+    if (stats.hasErrors()) return
+    if (child) {
+      child.send('hmr')
+      return
+    }
     createChild()
   })
 
