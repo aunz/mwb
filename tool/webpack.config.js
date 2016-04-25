@@ -39,7 +39,11 @@ const clientConfig = {
       __CLIENT__: true,
       __SERVER__: false,
     }),
-    // new HtmlWebpackPlugin(),
+    /* new HtmlWebpackPlugin({
+      title: 'My Awesome App',
+      template: './src/share/index.html',
+      // filename: './src/share/index.html'
+    }),*/
   ],
 }
 
@@ -54,7 +58,7 @@ const serverConfig = {
     libraryTarget: 'commonjs2',
   },
   module: {
-    loaders: [...commonLoadersWithPresets(['node5', 'stage-0', 'react'])],
+    loaders: [...commonLoadersWithPresets(['es2015', 'stage-0', 'react'])], // can use node5 instead of es2015 when uglify-js can handle es6
   },
   postcss,
   plugins: [...commonPlugins,
