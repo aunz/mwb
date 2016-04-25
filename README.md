@@ -15,7 +15,7 @@ mkdir myApp
 cd myApp
 
 npm init
-npm i -D mwb
+npm i -D mwb # install (i) mwb as devDependency (-D)
 
 npm run mwb init # generate the boilerplate with an express server
 npm run mwb initMin # generate the boilerplate without a server
