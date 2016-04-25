@@ -6,7 +6,7 @@
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
 // const HtmlWebpackPlugin = require('html-webpack-plugin')
-const postcss = () => [require('postcss-calc'), require('postcss-nesting'), require('autoprefixer'), require('postcss-css-variables')]
+const postcss = () => [require('postcss-calc'), require('postcss-nesting'), require('postcss-css-variables'), require('autoprefixer')]
 
 const commonPlugins = [
   new webpack.optimize.OccurrenceOrderPlugin(),
