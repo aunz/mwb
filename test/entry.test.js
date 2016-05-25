@@ -1,42 +1,52 @@
+import child_process from 'child_process'
+import fs from 'fs'
+
 import tape from 'tape' // can't use import test from 'tape' as test is made global by shelljs/global
 import 'shelljs/global'
 
 const start = Date.now()
 
-/* global cd, rm, mkdir, test, exec, cat, ls, exit */
+ // global cd, rm, mkdir, test, exec, cat, ls, exit
 
-cd(__dirname)
+process.chdir(__dirname)
 
-rm('-rf', 'build')
-mkdir('build')
+child_process.execSync('rm -R build')
+fs.mkdirSync('build')
 
-cd('build')
+process.chdir('build')
 
 tape('should install ok', t => {
   // safe guard
-  if (test('-f', 'package.json')) {throw new Error('No no')}
+  try {
+    fs.statSync('package.json') // this file shouldn't exist
+    console.error('oops, package.json shouldn\'t be here')
+    process.exit()
+  } catch (e) {} // eslint-disable-line no-empty, do nothing, continue
 
   // npm init
-  t.doesNotThrow(() => { exec('npm init -f', { silent: true }) }, 'npm init -f')
-  // copy the initial package.json into memory
+  t.doesNotThrow(() => { child_process.execSync('npm init -f', { stdio: 'ignore' }) }, 'npm init -f')
 
   // install mwb
-  t.doesNotThrow(() => { exec('npm i -D ../../ ', { silent: true }) }, 'npm i -D ../../ ')
+  t.doesNotThrow(() => { child_process.execSync('npm i -D ../../ --cache-min 999999999 ', { stdio: 'ignore' }) }, 'npm i -D ../../ ')
 
-  const i = cat('package.json')
-  t.deepEqual(ls('tool'), ['build.js', 'copyStatic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  // copy the initial package.json into memory
+  const i = fs.readFileSync('package.json').toString()
+  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'copyStatic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
 
   // install full
-  t.doesNotThrow(() => { exec('npm run mwb initFull', { silent: true }) })
+  t.doesNotThrow(() => { child_process.execSync('npm run mwb initFull') })
   console.log('Initiation took', Date.now() - start, 'ms')
-  t.equal(cat(ls('package.*.json')[0]), i, 'The previous package.json should have been copied')
+
+  // obtain the first package.*.json file
+  const p = fs.readdirSync('.').filter(f => /^package\..+\.json$/.test(f))[0]
+  t.equal(fs.readFileSync(p).toString(), i, 'The previous package.json should have been copied')
 
   t.end()
 })
 
 tape('Modifying package.json', t => {
-  const p = require(require('path').resolve('package.json')) // can't just use require('package.json')
+  const p = require(require('path').resolve('package.json')) // eslint-disable-line global-require, can't just use require('package.json')
 
   t.ok(p.scripts.test &&
        p.scripts.mwb &&
@@ -61,12 +71,12 @@ tape('Modifying package.json', t => {
 
   // function to Check Latest Version
   function clv(dep, pack) {
-    return dep[pack].substr(1) === exec(`npm v ${pack} version`, { silent: true }).output.trim()
+    return dep[pack].substr(1) === child_process.execSync(`npm v ${pack} version`).toString().replace('\n', '')
   }
 })
 
 tape('Directory structure', t => {
-  let dir = ls('')
+  let dir = fs.readdirSync('.')
   t.ok(dir.indexOf('db') > -1 &&
     dir.indexOf('node_modules') > -1 &&
     dir.indexOf('src') > -1 &&
@@ -74,20 +84,20 @@ tape('Directory structure', t => {
     dir.indexOf('tool') > -1
     , 'should have correct base directory structure')
 
-  dir = ls('src')
+  dir = fs.readdirSync('src')
   t.ok(dir.indexOf('client') > -1 &&
     dir.indexOf('server') > -1 &&
     dir.indexOf('share') > -1 &&
     dir.indexOf('static') > -1
     , 'should have correct src directory structure')
 
-  dir = ls('src/client')
+  dir = fs.readdirSync('src/client')
   t.ok(dir.indexOf('entry.js') > -1 &&
     dir.indexOf('entry.test.js') > -1 &&
     dir.indexOf('main.js') > -1
     , 'should have correct src/client directory structure')
 
-  dir = ls('src/server')
+  dir = fs.readdirSync('src/server')
   t.ok(dir.indexOf('entry.js') > -1 &&
     dir.indexOf('entry.test.js') > -1 &&
     dir.indexOf('main.js') > -1 &&
@@ -95,7 +105,7 @@ tape('Directory structure', t => {
     dir.indexOf('mongo.js') > -1
     , 'should have correct src/server directory structure')
 
-  dir = ls('src/share')
+  dir = fs.readdirSync('src/share')
   t.ok(dir.indexOf('actions') > -1 &&
     dir.indexOf('Components') > -1 &&
     dir.indexOf('reducers') > -1 &&
@@ -105,7 +115,7 @@ tape('Directory structure', t => {
     dir.indexOf('routes.js') > -1
     , 'should have correct src/share directory structure')
 
-  dir = ls('tool')
+  dir = fs.readdirSync('tool')
   t.deepEqual(dir, ['build.js', 'copyStatic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
@@ -113,25 +123,25 @@ tape('Directory structure', t => {
 
 
 tape('Server should response with hello world', t => {
-  // t.plan(1)
+  t.plan(3)
   // mocking stuff
-  'export default (s,a)=>s'.to('src/share/reducers/index.js')
-  "import React from 'react';export default {['/'](store) {return p => <div>Hello world</div>}}".to('src/share/routes.js')
-  const dev = exec('npm run dev', { async: true, silent: true })
+  fs.writeFileSync('src/share/reducers/index.js', 'export default (state, action) => state')
+  fs.writeFileSync('src/share/routes.js', "import React from 'react'\nexport default {['/'](store) {return () => <div>Hello world</div>}}")
+  const dev = child_process.spawn('npm run dev', { cwd: process.cwd(), shell: true })
   dev.stdout.on('data', data => {
-    if (data.indexOf('Express app listening at') !== -1) {
-      require('http').request('http://localhost:3000', res => {
+    if (/Express app listening at/.test(data)) {
+      require('http').request('http://localhost:3000', res => { // eslint-disable-line global-require
         console.log(res.statusCode)
         let body = ''
         res.on('data', chunk => {
           body += chunk
         })
         res.on('end', () => {
-          t.ok(body.indexOf('Hello world') > -1, 'server responsed with "Hello World"')
-          t.ok(body.indexOf(`<script src="/clientBundle.js"></script>`) > -1, 'and a script tag')
-          t.ok(test('-f', 'build/public/clientBundle.js') &&
-            test('-f', 'build/server/serverBundle.js') &&
-            test('-f', 'build/webpack-assets.json')
+          t.ok(/Hello world/.test(body), 'server responsed with "Hello World"')
+          t.ok(/<script src="\/clientBundle.js"><\/script>/.test(body), 'and a script tag')
+          t.ok(fs.statSync('build/public/clientBundle.js') &&
+            fs.statSync('build/server/serverBundle.js') &&
+            fs.statSync('build/webpack-assets.json')
             , 'should have correct base directory structure and files')
           dev.kill()
           t.end()
@@ -144,24 +154,23 @@ tape('Server should response with hello world', t => {
 
 tape('Rerun npm i ../../ -D', t => {
   const randomContent = 'Some dummy random content' + Math.random()
-  randomContent.to('tool/dummyfile.txt')
+  fs.writeFileSync('tool/dummyfile.txt', randomContent)
 
-  cd('tool')
-  const oldCat = cat(ls(''))
+  const oldCat = child_process.execSync('cat tool/*').toString()
 
-  cd('..')
+  t.doesNotThrow(() => { child_process.execSync('npm i -D ../../ --cache-min 999999999', { stdio: 'ignore' }) }, 'rerun npm i -D ../../')
 
-  t.doesNotThrow(() => { exec('npm i -D ../../', { silent: true }) }, 'rerun npm i -D ../../')
-
-  cd(ls('tool_backup_*')[0])
-  const newCat = cat(ls(''))
-  t.ok(newCat.indexOf(randomContent) > -1, 'should have some dummy content')
+  process.chdir(fs.readdirSync('.').filter(d => /^tool_backup_/.test(d)).sort().reverse()[0]) // eslint-disable-line newline-per-chained-call
+  const newCat = child_process.execSync('cat *').toString()
+  console.log('the dirr', process.cwd(), oldCat.length, newCat.length)
+  // console.log()
+  t.ok(new RegExp(randomContent).test(newCat), 'should have some dummy content')
   t.equal(newCat, oldCat, 'and same as the old tool directory')
 
   // may have problem with permission create directory tool
-  cd('..')
-  t.deepEqual(ls('tool'), ['build.js', 'copyStatic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  process.chdir('..')
+  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'copyStatic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
-  exit()
+  process.exit()
 })
