@@ -7,6 +7,6 @@ let initialState = {
 }
 
 /* global __CLIENT__ */
-if (__CLIENT__ && window && window.__INITIAL_STATE__) initialState = window.__INITIAL_STATE__
+if (__CLIENT__ && window && window.__INITIAL_STATE__) initialState = window.__INITIAL_STATE__ // eslint-disable-line no-underscore-dangle
 
 export default initialState
