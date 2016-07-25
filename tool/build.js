@@ -27,7 +27,8 @@ const commonPlugins = [
     __DEV__: false,
     'process.env.NODE_ENV': '"production"',
   }),
-  new ExtractTextPlugin('styles_[contenthash:6].css', {
+  new ExtractTextPlugin({
+    filename: 'styles_[contenthash:6].css',
     allChunks: true,
   }),
   new webpack.optimize.DedupePlugin(),
@@ -95,7 +96,7 @@ cordovaConfig.plugins.push(...commonPlugins)
 // remove the ExtractTextPlugin
 cordovaConfig.plugins = cordovaConfig.plugins.filter(p => !(p instanceof ExtractTextPlugin))
 // re-add the ExtractTextPlugin with new option
-cordovaConfig.plugins.push(new ExtractTextPlugin('styles.css', { allChunks: true }))
+cordovaConfig.plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }))
 
 ;(argv === 'all' || argv === 'cordovaOnly') && webpack(cordovaConfig).run((err, stats) => {  // eslint-disable-line no-unused-expressions
   console.log('Cordova Bundles \n', stats.toString({

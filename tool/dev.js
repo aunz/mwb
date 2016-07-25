@@ -30,7 +30,7 @@ const commonPlugins = [
     __DEV__: true,
     'process.env.NODE_ENV': '"development"',
   }),
-  new ExtractTextPlugin('styles.css', { allChunks: true }), // has to use this for universal server client rendering
+  new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }), // has to use this for universal server client rendering
 ]
 
 
