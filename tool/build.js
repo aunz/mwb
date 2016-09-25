@@ -1,21 +1,15 @@
-'use strict' //eslint-disable-line
-
-/**
- * Dependencies
- */
-
 const path = require('path')
-
-// get the last argument, see the dev.js
-const argv = process.argv[2]
-
 const fs = require('fs')
 
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const cssnano = require('cssnano')
 
-const clientConfig = require('./webpack.config.js').clientConfig
-const serverConfig = require('./webpack.config.js').serverConfig
+const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config')
+
+// get the last argument, see the dev.js
+const argv = process.argv[2]
+
 
 const commonLoaders = [{
   test: /\.css$/,
@@ -56,11 +50,11 @@ clientConfig.plugins.push(...commonPlugins)
   }), '\n')
     // cssnano, temparory work around
   try {
-    const fileName = require(path.resolve('build/webpack-assets.json')).client.css
+    const fileName = require(path.resolve('build/webpack-assets.json')).client.css // eslint-disable-line
     const filePath = path.resolve('build/public', fileName.replace(/^\/+/, ''))
     const css = fs.readFileSync(filePath)
-    require('cssnano').process(css, { discardComments: { removeAll: true } }).then((result) => {
-      require('fs').writeFileSync(filePath, result.css)
+    cssnano.process(css, { discardComments: { removeAll: true } }).then((result) => {
+      fs.writeFileSync(filePath, result.css)
     })
   } catch (e) { /* do nothing */ }
 })
@@ -75,7 +69,7 @@ serverConfig.plugins.push(...commonPlugins)
   console.log('Server Bundle \n', stats.toString({
     colors: true,
   }), '\n')
-  require('child_process').exec('rm build/server/styles_??????.css', () => {})
+  require('child_process').exec('rm build/server/styles_??????.css', () => {}) // eslint-disable-line
   // then delele the styles.css in the server folder
   // try {
   // const styleFile = _root+'/build/server/styles.css'
@@ -87,8 +81,6 @@ serverConfig.plugins.push(...commonPlugins)
 /**
  * Cordova
  */
-
-const cordovaConfig = require('./webpack.config.js').cordovaConfig
 
 cordovaConfig.module.loaders.push(...commonLoaders)
 cordovaConfig.plugins.push(...commonPlugins)
@@ -106,8 +98,10 @@ cordovaConfig.plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allCh
   try {
     const filePath = path.resolve(cordovaConfig.output.path, 'styles.css')
     const css = fs.readFileSync(filePath)
-    require('cssnano').process(css, { discardComments: { removeAll: true } }).then((result) => {
-      require('fs').writeFileSync(filePath, result.css)
-    })
+    cssnano
+      .process(css, { discardComments: { removeAll: true } })
+      .then(result => {
+        fs.writeFileSync(filePath, result.css)
+      })
   } catch (e) { /* do nothing */ }
 })

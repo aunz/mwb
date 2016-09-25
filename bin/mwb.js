@@ -34,7 +34,7 @@ function postinstall() {
   // path.resolve('') -> the node_modules/mwb because this script run within mwb
   let tmp
   try {
-    tmp = require(path.resolve('../../package.json'))
+    tmp = require(path.resolve('../../package.json')) // eslint-disable-line
   } catch (err) {
     console.error(err)
     return
@@ -47,7 +47,7 @@ function postinstall() {
     // tmp.license = 'UNLICENSED'
   JSON.stringify(tmp, null, 2).to('../../package.json')
   setTimeout(() => {
-    require('./ascii_cat.js').cat1()
+    require('./ascii_cat.js').cat1() // eslint-disable-line
     console.log('To start with an express js server, type: npm run mwb init\n')
     console.log('Without an express js server, type: npm run mwb initMin\n')
     console.log('To add mongodb, type: npm run mwb initMongo\n')

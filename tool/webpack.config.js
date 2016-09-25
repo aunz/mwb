@@ -1,16 +1,21 @@
-'use strict' // eslint-disable-line
-
-// const path = require('path')
-// const _root = path.resolve()
-
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
-// const HtmlWebpackPlugin = require('html-webpack-plugin')
-const postcss = () => [require('postcss-calc'), require('postcss-nesting'), require('postcss-css-variables'), require('autoprefixer')]
+const shelljs = require('shelljs')
+
+// import HtmlWebpackPlugin from 'html-webpack-plugin'
+const postcss = [
+  require('postcss-calc'), // eslint-disable-line
+  require('postcss-nesting'), // eslint-disable-line global-require
+  require('postcss-css-variables'), // eslint-disable-line global-require
+  require('autoprefixer'), // eslint-disable-line global-require
+]
 
 const commonPlugins = [
   new webpack.optimize.OccurrenceOrderPlugin(),
   new webpack.NoErrorsPlugin(),
+  new webpack.LoaderOptionsPlugin({
+    options: { postcss }
+  }),
 ]
 
 const clientConfig = {
@@ -24,13 +29,12 @@ const clientConfig = {
     filename: 'clientBundle_[hash:6].js',
   },
   module: {
-    loaders: [...commonLoadersWithPresets(['es2015', 'stage-0', 'react'])],
+    loaders: [...commonLoadersWithPresets(['latest', 'stage-0', 'react'])],
     noParse: [],
   },
   resolve: {
     alias: {},
   },
-  postcss,
   plugins: [...commonPlugins,
     new AssetsPlugin({
       path: './build',
@@ -58,9 +62,8 @@ const serverConfig = {
     libraryTarget: 'commonjs2',
   },
   module: {
-    loaders: [...commonLoadersWithPresets(['es2015', 'stage-0', 'react'])], // can use node5 instead of es2015 when uglify-js can handle es6
+    loaders: [...commonLoadersWithPresets(['latest', 'stage-0', 'react'])], // can use node5 instead of es2015 when uglify-js can handle es6
   },
-  postcss,
   plugins: [...commonPlugins,
     new webpack.DefinePlugin({
       __CLIENT__: false,
@@ -92,20 +95,19 @@ const cordovaConfig = {
     filename: 'cordovaBundle.js',
   },
   module: {
-    loaders: [...commonLoadersWithPresets(['es2015', 'stage-0', 'react'])],
+    loaders: [...commonLoadersWithPresets(['latest', 'stage-0', 'react'])],
     noParse: [],
   },
   resolve: {
     alias: {},
   },
-  postcss,
   plugins: [...commonPlugins,
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __SERVER__: false,
       __CORDOVA__: true,
     }),
-    /*new HtmlWebpackPlugin({
+    /* new HtmlWebpackPlugin({
       title: 'My Awesome App',
       template: './src/share/index.html',
       // filename: './src/share/index.html'
@@ -114,7 +116,7 @@ const cordovaConfig = {
 }
 
 // copy static assets
-const shelljs = require('shelljs')
+
 shelljs.mkdir('-p', clientConfig.output.path)
 shelljs.cp('-rf', './src/static/', clientConfig.output.path)
 

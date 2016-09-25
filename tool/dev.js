@@ -1,10 +1,12 @@
-'use strict' // eslint-disable-line
-
-
-/**
- * Dependencies
- */
 const path = require('path')
+const http = require('http')
+const child_process = require('child_process')
+
+const webpack = require('webpack')
+const webpackHotMiddleware = require('webpack-hot-middleware')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+
+const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config')
 
 // get the last argument
 // possible values:
@@ -12,13 +14,6 @@ const path = require('path')
 // all - run client (brower), server and cordova
 // cordovaOnly - run only cordova
 const argv = process.argv[2]
-
-
-const webpack = require('webpack')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-
-const clientConfig = require('./webpack.config.js').clientConfig
-const serverConfig = require('./webpack.config.js').serverConfig
 
 const commonLoaders = [
   { test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss') },
@@ -65,9 +60,9 @@ let clientStarted = false
 
 
 // use inbuilt http module
-;(argv !== 'cordovaOnly') && require('http').createServer((req, res) => {
+;(argv !== 'cordovaOnly') && http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  require('webpack-hot-middleware')(clientCompiler, { log: false })(req, res)
+  webpackHotMiddleware(clientCompiler, { log: false })(req, res)
 }).listen(8080)
 
 
@@ -76,8 +71,8 @@ let clientStarted = false
  */
 serverConfig.devtool = 'cheap-module-eval-source-map'
 
-// allow hot module on server side
-serverConfig.entry.server.push(__dirname + '/signal.js?hmr')  // hmr is the signal to re load
+// allow hot module on server side, hmr is the signal to reload
+serverConfig.entry.server.push(__dirname + '/signal.js?hmr')  // eslint-disable-line
 serverConfig.module.loaders.push(
   ...commonLoaders
 )
@@ -101,7 +96,7 @@ function createServer() {
   })
 
   function createChild() {
-    child = require('child_process').fork(path.join(serverConfig.output.path, serverConfig.output.filename))
+    child = child_process.fork(path.join(serverConfig.output.path, serverConfig.output.filename))
     const start = Date.now()
     child.on('exit', (code, signal) => {
       console.error('Child server exited with code:', code, 'and signal:', signal)
@@ -115,7 +110,6 @@ function createServer() {
 /**
  * Cordova
  */
-const cordovaConfig = require('./webpack.config.js').cordovaConfig
 
 cordovaConfig.devtool = 'cheap-module-eval-source-map'
 cordovaConfig.module.loaders.push(...commonLoaders)

@@ -1,3 +1,4 @@
+import path from 'path'
 import child_process from 'child_process'
 import fs from 'fs'
 
@@ -5,8 +6,6 @@ import tape from 'tape' // can't use import test from 'tape' as test is made glo
 import 'shelljs/global'
 
 const start = Date.now()
-
- // global cd, rm, mkdir, test, exec, cat, ls, exit
 
 process.chdir(__dirname)
 
@@ -35,7 +34,7 @@ tape('should install ok', t => {
 
 
   // install full
-  t.doesNotThrow(() => { child_process.execSync('npm run mwb initFull') })
+  t.doesNotThrow(() => { child_process.execSync('npm run mwb initFull', { stdio: 'ignore' }) })
   console.log('Initiation took', Date.now() - start, 'ms')
 
   // obtain the first package.*.json file
@@ -46,17 +45,19 @@ tape('should install ok', t => {
 })
 
 tape('Modifying package.json', t => {
-  const p = require(require('path').resolve('package.json')) // eslint-disable-line global-require, can't just use require('package.json')
+  // can't just use require('package.json')
+  const p = require(path.resolve('package.json')) // eslint-disable-line
 
-  t.ok(p.scripts.test &&
-       p.scripts.mwb &&
-       p.scripts.serve &&
-       p.scripts.build &&
-       p.scripts.bundle &&
-       p.scripts.clean &&
-       p.scripts.start &&
-       p.devDependencies.mwb
-       , 'Should have all the scrips')
+  t.ok(
+    p.scripts.test &&
+    p.scripts.mwb &&
+    p.scripts.serve &&
+    p.scripts.build &&
+    p.scripts.bundle &&
+    p.scripts.clean &&
+    p.scripts.start &&
+    p.devDependencies.mwb,
+    'Should have all the scrips')
 
   t.ok(clv(p.dependencies, 'express') &&
        clv(p.dependencies, 'compression') &&
@@ -162,12 +163,12 @@ tape('Rerun npm i ../../ -D', t => {
 
   process.chdir(fs.readdirSync('.').filter(d => /^tool_backup_/.test(d)).sort().reverse()[0]) // eslint-disable-line newline-per-chained-call
   const newCat = child_process.execSync('cat *').toString()
-  console.log('the dirr', process.cwd(), oldCat.length, newCat.length)
+  console.log('the dir', process.cwd(), oldCat.length, newCat.length)
   // console.log()
   t.ok(new RegExp(randomContent).test(newCat), 'should have some dummy content')
   t.equal(newCat, oldCat, 'and same as the old tool directory')
 
-  // may have problem with permission create directory tool
+  // may have problem with permission create directory tool in mwb.js
   process.chdir('..')
   t.deepEqual(fs.readdirSync('tool'), ['build.js', 'copyStatic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 

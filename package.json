@@ -28,46 +28,46 @@
   "author": "KN <aunz10@yahoo.com>",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^3.1.1",
-    "eslint-config-airbnb": "^9.0.1",
-    "eslint-plugin-import": "^1.11.1",
-    "eslint-plugin-jsx-a11y": "^2.0.1",
-    "eslint-plugin-react": "^5.2.2"
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.6.0",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.3.0"
   },
   "dependencies": {
     "assets-webpack-plugin": "^3.4.0",
-    "autoprefixer": "^6.3.7",
-    "babel-cli": "^6.11.4",
-    "babel-core": "^6.11.4",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-runtime": "^6.9.0",
-    "babel-preset-es2015": "^6.9.0",
+    "autoprefixer": "^6.4.1",
+    "babel-cli": "^6.14.0",
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-latest": "^6.14.0",
     "babel-preset-node5": "^11.1.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
-    "css-loader": "^0.23.1",
-    "cssnano": "^3.7.3",
-    "eslint": "^2.0.0",
+    "css-loader": "^0.25.0",
+    "cssnano": "^3.7.5",
     "extract-text-webpack-plugin": "^2.0.0-beta.3",
     "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.22.0",
     "json-loader": "^0.5.4",
-    "postcss-css-variables": "^0.5.1",
+    "postcss-css-variables": "^0.6.0",
     "postcss-loader": "^0.9.1",
     "postcss-nesting": "^2.3.1",
     "raw-loader": "^0.5.1",
-    "shelljs": "^0.7.2",
+    "shelljs": "^0.7.4",
     "tape": "^4.6.0",
     "url-loader": "^0.5.7",
-    "webpack": "^2.1.0-beta.20",
-    "webpack-hot-middleware": "^2.12.1"
+    "webpack": "^2.1.0-beta.25",
+    "webpack-hot-middleware": "^2.12.2"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "babel": {
     "presets": [
-      "es2015",
+      "latest",
       "stage-0",
       "react"
     ],

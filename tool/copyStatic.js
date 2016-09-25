@@ -1,3 +1,5 @@
+const { mkdir, cp } = require('shelljs')
+
 const dir = './build/public'
-require('shelljs').mkdir('-p', dir)
-require('shelljs').cp('-rf', './src/static/*', dir)
+mkdir('-p', dir)
+cp('-rf', './src/static/*', dir)

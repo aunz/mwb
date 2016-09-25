@@ -1,7 +1,6 @@
-'use strict' //esline-disable-line
+const AssetsPlugin = require('assets-webpack-plugin')
 
-const clientConfig = require('./webpack.config.js').clientConfig
-const serverConfig = require('./webpack.config.js').serverConfig
+const { clientConfig, serverConfig, } = require('./webpack.config')
 
 // override
 
@@ -16,7 +15,7 @@ clientConfig.output = {
 clientConfig.node = { fs: 'empty' }
 
 // remove the assetplugin for client
-clientConfig.plugins = clientConfig.plugins.filter(p => !(p instanceof require('assets-webpack-plugin')))
+clientConfig.plugins = clientConfig.plugins.filter(p => !(p instanceof AssetsPlugin))
 
 
 /* server */
@@ -27,4 +26,4 @@ serverConfig.output = {
   libraryTarget: 'commonjs2',
 }
 
-module.exports = { clientConfig, serverConfig }
+module.exports =  { clientConfig, serverConfig }

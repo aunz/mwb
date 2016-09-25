@@ -1,17 +1,10 @@
-'use strict' // eslint-disable-line
-
-/**
- * Dependencies
- */
-
 const path = require('path')
-// const _root = path.resolve()
+const child_process = require('child_process')
+
 const webpack = require('webpack')
-
-const clientConfig = require('./webpack.config.test.js').clientConfig
-const serverConfig = require('./webpack.config.test.js').serverConfig
-
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+
+const { clientConfig, serverConfig, } = require('./webpack.config')
 
 const commonLoaders = [
   { test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss') },
@@ -23,7 +16,7 @@ const commonPlugins = [
     __TEST__: true,
     'process.env.NODE_ENV': '"development"',
   }),
-  new ExtractTextPlugin('styles.css', { allChunks: true }), // has to use this for universal server client rendering
+  new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }), // has to use this for universal server client rendering
 ]
 
 /**
@@ -51,14 +44,17 @@ compileAndTest(serverConfig, 'SERVER')
  */
 
 function compileAndTest(config, arch) {
-  config.devtool = 'cheap-module-eval-source-map'
+  config.devtool = 'cheap-module-eval-source-map' // eslint-disable-line no-param-reassign
   config.module.loaders.push(...commonLoaders)
   config.plugins.push(...commonPlugins)
 
   let child
   webpack(config).watch({}, (err, stats) => {
-    if (stats.hasErrors()) return console.log(arch + '\n', stats.toString({ colors: true }))
+    if (stats.hasErrors()) {
+      console.log(arch + '\n', stats.toString({ colors: true }))
+      return
+    }
     if (child) child.kill()
-    child = require('child_process').fork(path.join(config.output.path, config.output.filename))
+    child = child_process.fork(path.join(config.output.path, config.output.filename))
   })
 }
