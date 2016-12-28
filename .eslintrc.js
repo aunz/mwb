@@ -26,5 +26,6 @@ module.exports = {
     'no-unused-expressions': 0,
     'dot-notation': 0,
     'arrow-parens': 0,
+    'global-require': 0,
   }
 }

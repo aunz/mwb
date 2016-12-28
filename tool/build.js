@@ -10,22 +10,36 @@ const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config'
 // get the last argument, see the dev.js
 const argv = process.argv[2]
 
-
-const commonLoaders = [{
-  test: /\.css$/,
-  loader: ExtractTextPlugin.extract('css?module&minimize&localIdentName=[local]_[hash:6]!postcss'),
-}]
+const commonLoaders = [
+  {
+    test: /\.css$/i,
+    loader: ExtractTextPlugin.extract({
+      loader: [
+        {
+          loader: 'css-loader',
+          query: {
+            module: true,
+            minimize: true,
+            localIdentName: '[local]_[hash:7]',
+          }
+        }, {
+          loader: 'postcss-loader'
+        }
+      ]
+    })
+  }
+]
 
 const commonPlugins = [
   new webpack.DefinePlugin({
     __DEV__: false,
+    __TEST__: false,
     'process.env.NODE_ENV': '"production"',
   }),
   new ExtractTextPlugin({
-    filename: 'styles_[contenthash:6].css',
+    filename: 'styles_[contenthash:7].css',
     allChunks: true,
   }),
-  new webpack.optimize.DedupePlugin(),
   new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.optimize.UglifyJsPlugin({
     compress: {
@@ -42,47 +56,89 @@ const commonPlugins = [
  * Client
  */
 
-clientConfig.module.loaders.push(...commonLoaders)
+clientConfig.module.rules.push(...commonLoaders)
 clientConfig.plugins.push(...commonPlugins)
-;(argv !== 'cordovaOnly') && webpack(clientConfig).run((err, stats) => { // eslint-disable-line no-unused-expressions
-  console.log('Client Bundles \n', stats.toString({
-    colors: true,
-  }), '\n')
-    // cssnano, temparory work around
-  try {
-    const fileName = require(path.resolve('build/webpack-assets.json')).client.css // eslint-disable-line
-    const filePath = path.resolve('build/public', fileName.replace(/^\/+/, ''))
-    const css = fs.readFileSync(filePath)
-    cssnano.process(css, { discardComments: { removeAll: true } }).then((result) => {
-      fs.writeFileSync(filePath, result.css)
-    })
-  } catch (e) { /* do nothing */ }
+const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
+  name: 'vendor',
+  minChunks: ({ resource }) => /node_modules/.test(resource),
 })
+clientConfig.plugins.push(commonsChunk, new require('webpack-md5-hash'))
+
+/*
+  There are 3+ ways to dynamically create vendor chunk for long term caching using CommonsChunkPlugin
+  After creating a commonChunk
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',    
+      minChunks: ({ resource }) => /node_modules/.test(resource),
+    })
+  
+  1) Add new require('webpack-md5-hash')
+    The hash will be based on content, the manifest webpackJsonp function will be in the entry chunk, in this case the vendor chunk
+    There will output 2 files: vendor.xx.js and client.xx.js
+    vendor.xx.js is be the entry chunk and will be loaded first
+  2) Add another commonChunk
+    new webpack.optimize.CommonsChunkPlugin('manifest') <-- can be any name, such as 'meta'
+    this will create a manifest.[xxx].js or meta.[xxx].js which contains the webpackJsonp functions
+    There will create 3 files: manifest.xx.js, vendor.xx.js and client.xx.js
+    When the client code changes, the xx in client.xx.js and the xx in manifest.xx.js will change
+    the xx in vendor.xx.js will be the same
+    no need extra plugin, but will results in 3 http requests
+  3) Add new require('chunk-manifest-webpack-plugin') after adding new webpack.optimize.CommonsChunkPlugin('manifest')
+    This plugin extract the manifest into a json file
+    Then will need inline-manifest-webpack-plugin to insert the json into the intial html along with html-webpack-plugin
+    This will result in 2 files: vendor.xx.js and client.xx.js
+
+  ** I have decided to go for option 1 as it seems simplest, clients only need to make 2 http request, but need to be dependent on the md5 plugins
+*/
+
+
+if (argv !== 'cordovaOnly') {
+  webpack(clientConfig).run((err, stats) => {
+    console.log('Client Bundles \n', stats.toString({
+      colors: true,
+    }), '\n')
+    // cssnano, temparory work around
+    const assets = require(path.resolve('build/webpack-assets.json'))
+    for (let entry in assets) {
+      const filename = assesets[entry].css
+      if (!filename) continue
+      const filePath = path.resolve('build/public', filename.replace(/^\/+/, ''))
+      fs.readFile(filePath, (e, css) => {
+        cssnano.process(css, { discardComments: { removeAll: true } })
+          .then((result) => {
+            fs.writeFile(filePath, result.css, () => {})
+          })      
+      })
+    }
+  })
+}
 
 /**
  * Server
  */
 
-serverConfig.module.loaders.push(...commonLoaders)
+serverConfig.module.rules.push(...commonLoaders)
 serverConfig.plugins.push(...commonPlugins)
-;(argv !== 'cordovaOnly') && webpack(serverConfig).run((err, stats) => { // eslint-disable-line no-unused-expressions
-  console.log('Server Bundle \n', stats.toString({
-    colors: true,
-  }), '\n')
-  require('child_process').exec('rm build/server/styles_??????.css', () => {}) // eslint-disable-line
-  // then delele the styles.css in the server folder
-  // try {
-  // const styleFile = _root+'/build/server/styles.css'
-  //  fs.statSync(styleFile) && fs.unlinkSync(styleFile)
-  // } catch(e) {/*do nothing*/}
-  // file loader may also result in duplicated files from shared React components
-})
+if (argv !== 'cordovaOnly') {
+  webpack(serverConfig).run((err, stats) => {
+    console.log('Server Bundle \n', stats.toString({
+      colors: true,
+    }), '\n')
+    require('child_process').exec('rm build/server/styles_???????.css', () => {})
+    // then delele the styles.css in the server folder
+    // try {
+    // const styleFile = _root+'/build/server/styles.css'
+    //  fs.statSync(styleFile) && fs.unlinkSync(styleFile)
+    // } catch(e) {/*do nothing*/}
+    // file loader may also result in duplicated files from shared React components
+  })  
+} 
 
 /**
  * Cordova
  */
 
-cordovaConfig.module.loaders.push(...commonLoaders)
+cordovaConfig.module.rules.push(...commonLoaders)
 cordovaConfig.plugins.push(...commonPlugins)
 
 // remove the ExtractTextPlugin
@@ -90,18 +146,19 @@ cordovaConfig.plugins = cordovaConfig.plugins.filter(p => !(p instanceof Extract
 // re-add the ExtractTextPlugin with new option
 cordovaConfig.plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }))
 
-;(argv === 'all' || argv === 'cordovaOnly') && webpack(cordovaConfig).run((err, stats) => {  // eslint-disable-line no-unused-expressions
-  console.log('Cordova Bundles \n', stats.toString({
-    colors: true,
-  }), '\n')
-    // cssnano, temparory work around
-  try {
+if (argv === 'all' || argv === 'cordovaOnly') {
+  webpack(cordovaConfig).run((err, stats) => {  // eslint-disable-line no-unused-expressions
+    console.log('Cordova Bundles \n', stats.toString({
+      colors: true,
+    }), '\n')
+    
     const filePath = path.resolve(cordovaConfig.output.path, 'styles.css')
-    const css = fs.readFileSync(filePath)
-    cssnano
-      .process(css, { discardComments: { removeAll: true } })
-      .then(result => {
-        fs.writeFileSync(filePath, result.css)
-      })
-  } catch (e) { /* do nothing */ }
-})
+    fs.readFile(filePath, (e, css) => {
+      cssnano.process(css, { discardComments: { removeAll: true } })
+        .then((result) => {
+          fs.writeFile(filePath, result.css, () => {})
+        })      
+    })
+  })
+}
+

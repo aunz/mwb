@@ -16,7 +16,7 @@ if (module.hot) {
         return;
       }
       return module.hot.apply({
-        ignoreUnaccepted: true,
+        ignoreUnaccepted: false,
         onUnaccepted: function(data) {
           console.warn("Ignored an update to unaccepted module " + data.chain.join(" -> "));
         },
@@ -30,6 +30,7 @@ if (module.hot) {
         console.warn("[HMR] Cannot apply update.");
         console.warn("[HMR] " + err.stack || err.message);
         console.warn("[HMR] You need to restart the application!");
+        process.exit(1)
       } else {
         console.warn("[HMR] Update failed: " + err.stack || err.message);
       }

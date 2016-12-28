@@ -1,0 +1,1 @@
+* change preset in server from latest to latest-minimal once uglifyjs can support es6

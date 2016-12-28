@@ -123,7 +123,7 @@ tape('Directory structure', t => {
 })
 
 
-tape('Server should response with hello world', t => {
+tape('Server should response with hello world', { timeout: 60000 }, t => { // longer time out becos the serve may take a while to launch
   t.plan(3)
   // mocking stuff
   fs.writeFileSync('src/share/reducers/index.js', 'export default (state, action) => state')
@@ -139,9 +139,9 @@ tape('Server should response with hello world', t => {
         })
         res.on('end', () => {
           t.ok(/Hello world/.test(body), 'server responsed with "Hello World"')
-          t.ok(/<script src="\/clientBundle.js"><\/script>/.test(body), 'and a script tag')
-          t.ok(fs.statSync('build/public/clientBundle.js') &&
-            fs.statSync('build/server/serverBundle.js') &&
+          t.ok(/<script src="\/client.js"><\/script>/.test(body), 'and a script tag')
+          t.ok(fs.statSync('build/public/client.js') &&
+            fs.statSync('build/server/server.js') &&
             fs.statSync('build/webpack-assets.json')
             , 'should have correct base directory structure and files')
           dev.kill()
@@ -152,8 +152,9 @@ tape('Server should response with hello world', t => {
   })
 })
 
-
+/*
 tape('Rerun npm i ../../ -D', t => {
+  t.plan(4)
   const randomContent = 'Some dummy random content' + Math.random()
   fs.writeFileSync('tool/dummyfile.txt', randomContent)
 
@@ -173,5 +174,9 @@ tape('Rerun npm i ../../ -D', t => {
   t.deepEqual(fs.readdirSync('tool'), ['build.js', 'copyStatic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
-  process.exit()
-})
+  // process.exit()
+})*/
+
+/*tape('Run build', t => {
+  child_process.execSync('npm ')
+})*/

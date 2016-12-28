@@ -60,16 +60,14 @@ App
 ###Details
 
 ####Included loaders:
-* [`babel loader`](https://github.com/babel/babel-loader) with presets (es2015, stage-0, react), plugins (transform-runtime) and cacheDirectory (true). In server, the presets are (node5, stage-0, react); using node5 presets to take advantage of the native support for es6 of node5+
-* `json` loader for json
+* [`babel-loader`](https://github.com/babel/babel-loader) with presets (latest, stage-0, react), plugins (transform-runtime) and cacheDirectory (true).
 * `css?modules!postcss` loaders for css with `autoprefixer`
-* `url` loader for everything else with limit=10000 & name=[name]_[hash:6].[ext]
+* `url-loader` for everything else with limit=10000 & name=[name]_[hash:6].[ext]
 
 Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:true}` using `css?module&minimize&localIdentName=[local]_[hash:6]!postcss` 
 
 ###Included plugins
 * `extract-text-webpack-plugin`
-* `webpack.optimize.DedupePlugin` 
 * `webpack.optimize.AggressiveMergingPlugin`
 * `webpack.optimize.UglifyJsPlugin({compress: {warnings: false, sourceMap: false, comments: false})` 
 * `webpack.DefinePlugin({ __SERVER__: true })`for server
@@ -89,7 +87,7 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:t
 * All codes wrapped inside `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
 * source map is set to `cheap-module-eval-source-map` for development
 * source map is **NOT** included in production mode
-* `clientBundle_[hash:6].js` & `styles_[contenthash:6].css` in production mode for caching
+* `client_[chunkhash:7].js` & `styles_[contenthash:7].css` in production mode for caching
 
 
 ### Mongodb

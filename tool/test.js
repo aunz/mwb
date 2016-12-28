@@ -4,10 +4,15 @@ const child_process = require('child_process')
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const { clientConfig, serverConfig, } = require('./webpack.config')
+const { clientConfig, serverConfig, } = require('./webpack.config.test')
 
 const commonLoaders = [
-  { test: /\.css$/, loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss') },
+  {
+    test: /\.css$/,
+    use: [{
+      loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss')
+    }]
+  },
 ]
 
 const commonPlugins = [
@@ -23,7 +28,7 @@ const commonPlugins = [
  * Client
  */
 
-// clientConfig.module.loaders.push(...)
+// clientConfig.module.rules.push(...)
 // clientConfig.plugins.push(...)
 
 compileAndTest(clientConfig, 'CLIENT')
@@ -32,7 +37,7 @@ compileAndTest(clientConfig, 'CLIENT')
  * Server
  */
 
-// serverConfig.module.loaders.push(...)
+// serverConfig.module.rules.push(...)
 // serverConfig.plugins.push(...)
 
 compileAndTest(serverConfig, 'SERVER')
@@ -45,7 +50,7 @@ compileAndTest(serverConfig, 'SERVER')
 
 function compileAndTest(config, arch) {
   config.devtool = 'cheap-module-eval-source-map' // eslint-disable-line no-param-reassign
-  config.module.loaders.push(...commonLoaders)
+  config.module.rules.push(...commonLoaders)
   config.plugins.push(...commonPlugins)
 
   let child

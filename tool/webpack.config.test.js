@@ -9,7 +9,7 @@ clientConfig.entry.client = ['./src/client/entry.test.js']
 // change the client to node env, using jsdom
 clientConfig.output = {
   path: './test/build/client',
-  filename: 'clientBundle.test.js',
+  filename: 'client.test.js',
 }
 
 clientConfig.node = { fs: 'empty' }
@@ -22,7 +22,7 @@ clientConfig.plugins = clientConfig.plugins.filter(p => !(p instanceof AssetsPlu
 serverConfig.entry.server = ['./src/server/entry.test.js']
 serverConfig.output = {
   path: './test/build/server',
-  filename: 'serverBundle.test.js',
+  filename: 'server.test.js',
   libraryTarget: 'commonjs2',
 }
 
