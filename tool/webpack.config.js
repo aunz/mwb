@@ -134,12 +134,12 @@ const cordovaConfig = {
 // copy static assets
 
 shelljs.mkdir('-p', clientConfig.output.path)
-shelljs.cp('-rf', './src/static/', clientConfig.output.path)
+shelljs.cp('-rf', './src/public/', clientConfig.output.path)
 
 const argv = process.argv[2]
 if (argv === 'all' || argv === 'cordovaOnly') {
   shelljs.mkdir('-p', cordovaConfig.output.path)
-  shelljs.cp('-rf', './src/static/', cordovaConfig.output.path)
+  shelljs.cp('-rf', './src/public/', cordovaConfig.output.path)
 }
 
 module.exports = { clientConfig, serverConfig, cordovaConfig }

@@ -30,7 +30,7 @@ tape('should install ok', t => {
 
   // copy the initial package.json into memory
   const i = fs.readFileSync('package.json').toString()
-  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'copyPublic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
 
   // install full
@@ -117,7 +117,7 @@ tape('Directory structure', t => {
     , 'should have correct src/share directory structure')
 
   dir = fs.readdirSync('tool')
-  t.deepEqual(dir, ['build.js', 'copyPublic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  t.deepEqual(dir, ['build.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
 })
@@ -171,7 +171,7 @@ tape('Rerun npm i ../../ -D', t => {
 
   // may have problem with permission create directory tool in mwb.js
   process.chdir('..')
-  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'copyPublic.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
   // process.exit()
