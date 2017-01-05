@@ -146,7 +146,7 @@ module.exports = { clientConfig, serverConfig, cordovaConfig }
 
 
 function commonLoadersWithPresets({ target = 'client' } = {}) {
-  return [{
+  const loader = [{
     test: /\.jsx?$/,
     exclude: /(node_modules)/,
     use: [{
@@ -164,7 +164,7 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
           'react'
         ],
         plugins: [
-          ['transform-runtime', { polyfill: false /* target === 'client' */, useBuiltIns: true }] // helpers: true so babel still use _extends when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map etc. If polyfill is needed in clients, uncomment the target === 'client'
+          ['transform-runtime', { polyfill: false, useBuiltIns: true }] // helpers: true so babel still use _extends when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map etc in server, but still polyfill in browsers
         ],
         cacheDirectory: true, // cache into OS temp folder by default
       }
@@ -179,8 +179,13 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
         emitFile: target === 'client',
       }
     }],
-  }, target === 'server' ? {
-    test: /\.css$/i,
-    use: [{ loader: 'null-loader' }] // emit nothing in server, but if using css module = true, this loader has to be removed
-  } : {}]
+  }]
+  if (target !== 'client') {
+    loader.push({
+      test: /^((?!\.module).)*css$/i,
+      use: [{ loader: 'null-loader' }]
+    })
+  }
+
+  return loader
 }

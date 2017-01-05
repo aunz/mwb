@@ -64,7 +64,7 @@ App
 * `css!postcss` loaders for css with `autoprefixer`
 * `url-loader` for everything else with limit=10000 & name=[name]_[hash:7].[ext]
 
-Style sheet is **extracted** by `extract-text-webpack-plugin` using `css?minimize&localIdentName=[local]_[hash:7]!postcss` 
+Style sheet is **extracted** by `extract-text-webpack-plugin` using `css?minimize&localIdentName=[local]_[hash:7]!postcss` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client. `css?module` is applied to files with name xxx.module.css, don't mix global also local css, i.e. in global.css don't do @import './local.module.css'; and vice versa, in local.module.css don't do @import './global.css'. On server, `null-loader` is applied to global.css but `css?module` to local.module.css, the extracted styles.css will be deleted on server when built for production
 
 ###Included plugins
 * `extract-text-webpack-plugin`

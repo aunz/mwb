@@ -15,18 +15,19 @@ const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config'
 // cordovaOnly - run only cordova
 const argv = process.argv[2]
 
-const cssLoader = {
-  test: /\.css$/i,
+// use css module when file name is xxx.module.css
+// dont mix global and local css, e.g. in global.css don't @import local.css or vice versa
+const cssLoader = [{
+  test: /^((?!\.module).)*css$/i,
   loader: ExtractTextPlugin.extract({
-    loader: [
-      {
-        loader: 'css-loader'
-      }, {
-        loader: 'postcss-loader'
-      }
-    ]
+    loader: ['css-loader', 'postcss-loader']
   })
-}
+}, {
+  test: /\.module\.css$/i,
+  loader: ExtractTextPlugin.extract({
+    loader: ['css-loader?module&localIdentName=[local]_[hash:7]', 'postcss-loader']
+  })
+}]
 
 const commonPlugins = [
   new webpack.HotModuleReplacementPlugin(),
@@ -35,7 +36,7 @@ const commonPlugins = [
     __TEST__: false,
     'process.env.NODE_ENV': '"development"',
   }),
-  new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }), // has to use this for universal server client rendering
+  new ExtractTextPlugin({ filename: 'styles.css' }), // has to use this for universal server client rendering
 ]
 
 /**
@@ -46,7 +47,7 @@ clientConfig.devtool = 'cheap-module-eval-source-map'
 // add hot middleware on port 8080
 clientConfig.entry.client.push('webpack-hot-middleware/client?path=http://localhost:8080/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true')
 clientConfig.output.filename = '[name].js'
-clientConfig.module.rules.push(cssLoader)
+clientConfig.module.rules.push(...cssLoader)
 // clientConfig.module.noParse = /someModuleDist|anotherModuleDist/
 clientConfig.plugins.push(...commonPlugins)
 clientConfig.performance = { hints: false }
@@ -83,6 +84,7 @@ serverConfig.devtool = 'cheap-module-eval-source-map'
 
 // allow hot module on server side, hmr is the signal to reload
 serverConfig.entry.server.push(__dirname + '/signal.js?hmr')  // eslint-disable-line
+serverConfig.module.rules.push(cssLoader[1]) // to handle css module
 serverConfig.plugins.push(...commonPlugins)
 serverConfig.performance = { hints: false }
 
@@ -117,7 +119,7 @@ function createServer() {
  */
 
 cordovaConfig.devtool = 'cheap-module-eval-source-map'
-cordovaConfig.module.rules.push(cssLoader)
+cordovaConfig.module.rules.push(...cssLoader)
 // cordovaConfig.module.noParse = /^[@a-z][a-z\/\.\-0-9]*$/i
 
 cordovaConfig.plugins.push(...commonPlugins)

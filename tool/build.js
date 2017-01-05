@@ -10,24 +10,17 @@ const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config'
 // get the last argument, see the dev.js
 const argv = process.argv[2]
 
-const cssLoader = {
-  test: /\.css$/i,
+const cssLoader = [{
+  test: /^((?!\.module).)*css$/i,
   loader: ExtractTextPlugin.extract({
-    fallbackLoader: 'style-loader', // when using allChunks: false
-    loader: [
-      {
-        loader: 'css-loader',
-        query: {
-          module: false,
-          minimize: true,
-          localIdentName: '[local]_[hash:7]',
-        }
-      }, {
-        loader: 'postcss-loader'
-      }
-    ]
+    loader: ['css-loader?minimize', 'postcss-loader']
   })
-}
+}, {
+  test: /\.module\.css$/i,
+  loader: ExtractTextPlugin.extract({
+    loader: ['css-loader?module&minimize&localIdentName=[local]_[hash:7]', 'postcss-loader']
+  })
+}]
 
 const commonPlugins = [
   new webpack.DefinePlugin({
@@ -37,7 +30,7 @@ const commonPlugins = [
   }),
   new ExtractTextPlugin({
     filename: 'styles_[contenthash:7].css',
-    allChunks: false, // so when using System.import(), css will be inlined into <style />
+    allChunks: false, // default, so when using System.import(), css will be inlined into <style />
   }),
   new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.optimize.UglifyJsPlugin({
@@ -55,7 +48,7 @@ const commonPlugins = [
  * Client
  */
 
-clientConfig.module.rules.push(cssLoader)
+clientConfig.module.rules.push(...cssLoader)
 clientConfig.plugins.push(...commonPlugins)
 const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
   name: 'vendor',
@@ -117,18 +110,21 @@ if (argv !== 'cordovaOnly') {
  * Server
  */
 
+serverConfig.module.rules.push(cssLoader[1]) // handle the css module
 serverConfig.plugins.push(...commonPlugins)
 // remove the ExtractTextPlugin
 serverConfig.plugins = serverConfig.plugins.filter(p => !(p instanceof ExtractTextPlugin))
+// re-add the ExtractTextPlugin with new option
+serverConfig.plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allChunks: true })) // set allChunks to true to move all css into styles.css which will be deleted in the following build step
+
 if (argv !== 'cordovaOnly') {
   webpack(serverConfig).run((err, stats) => {
     console.log('Server Bundle \n', stats.toString({
       colors: true,
     }), '\n')
-    require('child_process').exec('rm build/server/styles_???????.css', () => {})
-    // then delele the styles.css in the server folder
+    require('child_process').exec('rm build/server/styles.css', () => {}) // delele the styles.css in the server folder
     // try {
-    // const styleFile = _root+'/build/server/styles.css'
+    // const styleFile = _root + '/build/server/styles.css'
     //  fs.statSync(styleFile) && fs.unlinkSync(styleFile)
     // } catch(e) {/*do nothing*/}
     // file loader may also result in duplicated files from shared React components
@@ -139,7 +135,7 @@ if (argv !== 'cordovaOnly') {
  * Cordova
  */
 
-cordovaConfig.module.rules.push(cssLoader)
+cordovaConfig.module.rules.push(...cssLoader)
 cordovaConfig.plugins.push(...commonPlugins)
 
 // remove the ExtractTextPlugin
