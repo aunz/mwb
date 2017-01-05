@@ -16,13 +16,13 @@ App
      |    └─ main.js
      └─ /share/
           ├─ /actions/
-          └─ /Components/
-               ├─ /constants
-               ├─ /reducers/
-               ├─ html.js
-               ├─ index.html
-               ├─ initialState.js
-               └─ routes.js
+          ├─ /components/
+          ├─ /constants/
+          ├─ /reducers/
+          ├─ html.js
+          ├─ index.html
+          ├─ initialState.js
+          └─ routes.js
 
 ```
 

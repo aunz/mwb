@@ -135,7 +135,7 @@ function initMongo() {
 function initReact() {
   console.log('Installing the latest version of React & react-dom & redux')
   exec('npm i -S react react-dom redux @aunz/simple-template')
-  mkdir('-p', 'src/share/actions', 'src/share/Components', 'src/share/reducers')
+  mkdir('-p', 'src/share/actions', 'src/share/components', 'src/share/reducers')
   console.log('Folder actions, components, reducers has been created under share directory')
 
   // server

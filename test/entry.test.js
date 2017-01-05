@@ -108,7 +108,7 @@ tape('Directory structure', t => {
 
   dir = fs.readdirSync('src/share')
   t.ok(dir.indexOf('actions') > -1 &&
-    dir.indexOf('Components') > -1 &&
+    dir.indexOf('components') > -1 &&
     dir.indexOf('reducers') > -1 &&
     dir.indexOf('html.js') > -1 &&
     dir.indexOf('index.html') > -1 &&

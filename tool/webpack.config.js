@@ -35,7 +35,7 @@ const clientConfig = {
   },
   resolve: {
     alias: {
-      '~': path.resolve('./src')
+      '~': path.resolve('./src'), // use ~ to refer to the src folder. e.g. if you are in myApp/src/client/utils/fruit.js, you want to import banana which is in myApp/src/share/banana.js, you can write import banana from '~/share/banana' (this is better than using a relative path: import banana from '../../share/banana')
     },
   },
   plugins: [
@@ -64,7 +64,7 @@ const serverConfig = {
   output: {
     path: './build/server',
     filename: 'server.js',
-    libraryTarget: 'commonjs2',
+    libraryTarget: 'commonjs2', // src: const express = require('express') -> webpack builds: const express = require('express'); otherwise webpack builds: const express = express, which is wrong
   },
   module: {
     rules: [...commonLoadersWithPresets({ target: 'server' })],
@@ -164,7 +164,7 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
           'react'
         ],
         plugins: [
-          ['transform-runtime', { polyfill: false /* target === 'client' */, useBuiltIns: true }] // helpers: true so babel still use _extends when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map etc in server, but still polyfill in browsers
+          ['transform-runtime', { polyfill: false /* target === 'client' */, useBuiltIns: true }] // helpers: true so babel still use _extends when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map etc. If polyfill is needed in clients, uncomment the target === 'client'
         ],
         cacheDirectory: true, // cache into OS temp folder by default
       }
@@ -181,6 +181,6 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
     }],
   }, target === 'server' ? {
     test: /\.css$/i,
-    use: [{ loader: 'null-loader' }]
+    use: [{ loader: 'null-loader' }] // emit nothing in server, but if using css module = true, this loader has to be removed
   } : {}]
 }
