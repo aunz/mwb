@@ -1,3 +1,4 @@
+const path = require('path')
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
 const shelljs = require('shelljs')
@@ -5,8 +6,7 @@ const shelljs = require('shelljs')
 // const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const postcss = [
-  // require('postcss-import'), // use version 8.1.0, higher version causes problem in windows due to the use of JSPM
-  require('postcss-calc'),
+  require('postcss-import'),
   require('postcss-nesting'),
   require('postcss-css-variables'),
   require('autoprefixer'),
@@ -33,9 +33,11 @@ const clientConfig = {
     rules: [...commonLoadersWithPresets()],
     // noParse: //,
   },
-  // resolve: {
-  //   alias: {},
-  // },
+  resolve: {
+    alias: {
+      '~': path.resolve('./src')
+    },
+  },
   plugins: [
     ...commonPlugins,
     new AssetsPlugin({
@@ -65,7 +67,12 @@ const serverConfig = {
     libraryTarget: 'commonjs2',
   },
   module: {
-    rules: [...commonLoadersWithPresets({ target: 'server '})], 
+    rules: [...commonLoadersWithPresets({ target: 'server' })],
+  },
+  resolve: {
+    alias: {
+      '~': path.resolve('./src')
+    },
   },
   plugins: [
     ...commonPlugins,
@@ -76,14 +83,14 @@ const serverConfig = {
     }),
   ],
   externals: [
-    /^[@a-z][a-z\/\.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
+    /^[@a-z][a-z/.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
     /^.+assets\.json$/i, // these assets produced by assets-webpack-plugin
   ],
   node: {
     console: true,
     __filename: true,
     __dirname: true,
-  },
+  }
 }
 
 
@@ -93,20 +100,22 @@ const serverConfig = {
 
 const cordovaConfig = {
   entry: {
-    client: ['./src/client/entry.js'],
+    cordovaClient: ['./src/client/entry.js'],
   },
   output: {
     path: './cordova/www/build',
     publicPath: '/',
-    filename: 'cordovaBundle.js',
+    filename: '[name].js',
   },
   module: {
     rules: [...commonLoadersWithPresets()],
     // noParse: [],
   },
-  // resolve: {
-  //   alias: {},
-  // },
+  resolve: {
+    alias: {
+      '~': path.resolve('./src')
+    },
+  },
   plugins: [
     ...commonPlugins,
     new webpack.DefinePlugin({
@@ -119,7 +128,7 @@ const cordovaConfig = {
       template: './src/share/index.html',
       // filename: './src/share/index.html'
     }),*/
-  ],
+  ]
 }
 
 // copy static assets
@@ -155,7 +164,7 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
           'react'
         ],
         plugins: [
-          ['transform-runtime', { polyfill: target === 'client', useBuiltIns: true }] // helpers: true so babel still use _extends when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map etc in server, but still polyfill in browsers
+          ['transform-runtime', { polyfill: false /* target === 'client' */, useBuiltIns: true }] // helpers: true so babel still use _extends when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map etc in server, but still polyfill in browsers
         ],
         cacheDirectory: true, // cache into OS temp folder by default
       }
@@ -167,7 +176,11 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
       query: {
         limit: 10000,
         name: '[name]_[hash:7].[ext]',
+        emitFile: target === 'client',
       }
     }],
-  }]
+  }, target === 'server' ? {
+    test: /\.css$/i,
+    use: [{ loader: 'null-loader' }]
+  } : {}]
 }

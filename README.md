@@ -41,7 +41,7 @@ App
      |     ├─ entry.js
      |     ├─ app.js 
      |     └─ main.js
-     └─ /static/
+     └─ /public/
            └─ favicon.ico
 
 

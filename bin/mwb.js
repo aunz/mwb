@@ -60,7 +60,7 @@ function postinstall() {
 
 function initMin() {
   console.log(' * Creating src & test folder\n')
-  mkdir('-p', 'src/client', 'src/share', 'src/server', 'src/static')
+  mkdir('-p', 'src/client', 'src/share', 'src/server', 'src/public')
   mkdir('-p', 'test')
 
   // server
