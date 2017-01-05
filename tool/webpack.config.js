@@ -83,7 +83,7 @@ const serverConfig = {
     }),
   ],
   externals: [
-    /^[@a-z][a-z/.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
+    /^[@a-z][a-z/\.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
     /^.+assets\.json$/i, // these assets produced by assets-webpack-plugin
   ],
   node: {

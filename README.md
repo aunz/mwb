@@ -60,11 +60,11 @@ App
 ###Details
 
 ####Included loaders:
-* [`babel-loader`](https://github.com/babel/babel-loader) with presets (latest, stage-0, react), plugins (transform-runtime) and cacheDirectory (true).
-* `css?modules!postcss` loaders for css with `autoprefixer`
-* `url-loader` for everything else with limit=10000 & name=[name]_[hash:6].[ext]
+* [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, stage-0, react), plugins (transform-runtime) and cacheDirectory (true).
+* `css!postcss` loaders for css with `autoprefixer`
+* `url-loader` for everything else with limit=10000 & name=[name]_[hash:7].[ext]
 
-Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:true}` using `css?module&minimize&localIdentName=[local]_[hash:6]!postcss` 
+Style sheet is **extracted** by `extract-text-webpack-plugin` using `css?minimize&localIdentName=[local]_[hash:7]!postcss` 
 
 ###Included plugins
 * `extract-text-webpack-plugin`
@@ -80,14 +80,14 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` with `{allChunks:t
 * Listen to 3000 by default or `process.env.PORT`
 * Use `compression` middleware, then `static('./build/public')` middleware
 * Server code is hot replaced in development mode, but NOT in production mode
-* All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z\/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
+* All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
 
 
 ### Misc
 * All codes wrapped inside `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
 * source map is set to `cheap-module-eval-source-map` for development
 * source map is **NOT** included in production mode
-* `client_[chunkhash:7].js` & `styles_[contenthash:7].css` in production mode for caching
+* `client_[chunkhash:7].js` `vendor_[chunkhash:7].js` & `styles_[contenthash:7].css` in production mode for caching
 
 
 ### Mongodb
