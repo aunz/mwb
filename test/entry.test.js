@@ -152,7 +152,7 @@ tape('Server should response with hello world', { timeout: 60000 }, t => { // lo
   })
 })
 
-/*
+
 tape('Rerun npm i ../../ -D', t => {
   t.plan(4)
   const randomContent = 'Some dummy random content' + Math.random()
@@ -165,7 +165,7 @@ tape('Rerun npm i ../../ -D', t => {
   process.chdir(fs.readdirSync('.').filter(d => /^tool_backup_/.test(d)).sort().reverse()[0]) // eslint-disable-line newline-per-chained-call
   const newCat = child_process.execSync('cat *').toString()
   console.log('the dir', process.cwd(), oldCat.length, newCat.length)
-  // console.log()
+
   t.ok(new RegExp(randomContent).test(newCat), 'should have some dummy content')
   t.equal(newCat, oldCat, 'and same as the old tool directory')
 
@@ -174,9 +174,5 @@ tape('Rerun npm i ../../ -D', t => {
   t.deepEqual(fs.readdirSync('tool'), ['build.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
-  // process.exit()
-})*/
-
-/*tape('Run build', t => {
-  child_process.execSync('npm ')
-})*/
+  process.exit()
+})
