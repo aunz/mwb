@@ -70,9 +70,10 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` using `css?minimiz
 * `extract-text-webpack-plugin`
 * `webpack.optimize.AggressiveMergingPlugin`
 * `webpack.optimize.UglifyJsPlugin({compress: {warnings: false, sourceMap: false, comments: false})` 
-* `webpack.DefinePlugin({ __SERVER__: true })`for server
-* `webpack.DefinePlugin({ __CLIENT__: true })` for client
-* `webpack.DefinePlugin({ __CORDOVA__: true })` for cordova app
+* `webpack.DefinePlugin({ 'process.env.APP_ENV' : '"node"' })`for server
+* `webpack.DefinePlugin({ 'process.env.APP_ENV' : '"web"' })` for clients (browser and cordova)
+* `webpack.DefinePlugin({ 'process.env.CORDOVA' : true })` for cordova app
+* `webpack.DefinePlugin({ 'process.env.TEST' : true })` for testing
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV' : '"development"' })` in development mode
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code elimination during minification
 

@@ -17,8 +17,7 @@ const commonLoaders = [
 
 const commonPlugins = [
   new webpack.DefinePlugin({
-    __DEV__: true,
-    __TEST__: true,
+    'process.env.TEST': true,
     'process.env.NODE_ENV': '"development"',
   }),
   new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }), // has to use this for universal server client rendering

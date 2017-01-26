@@ -25,15 +25,13 @@ const cssLoader = [{
 }, {
   test: /\.module\.css$/i,
   loader: ExtractTextPlugin.extract({
-    loader: ['css-loader?module&localIdentName=[local]_[hash:7]', 'postcss-loader']
+    loader: ['css-loader?module&localIdentName=[local]_[hash:base64:5]', 'postcss-loader']
   })
 }]
 
 const commonPlugins = [
   new webpack.HotModuleReplacementPlugin(),
   new webpack.DefinePlugin({
-    __DEV__: true,
-    __TEST__: false,
     'process.env.NODE_ENV': '"development"',
   }),
   new ExtractTextPlugin({ filename: 'styles.css' }), // has to use this for universal server client rendering

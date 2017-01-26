@@ -18,14 +18,12 @@ const cssLoader = [{
 }, {
   test: /\.module\.css$/i,
   loader: ExtractTextPlugin.extract({
-    loader: ['css-loader?module&minimize&localIdentName=[local]_[hash:7]', 'postcss-loader']
+    loader: ['css-loader?module&minimize&localIdentName=[local]_[base64:5]', 'postcss-loader']
   })
 }]
 
 const commonPlugins = [
   new webpack.DefinePlugin({
-    __DEV__: false,
-    __TEST__: false,
     'process.env.NODE_ENV': '"production"',
   }),
   new ExtractTextPlugin({
@@ -86,6 +84,7 @@ clientConfig.plugins.push(commonsChunk, new require('webpack-md5-hash')) // esli
 
 if (argv !== 'cordovaOnly') {
   webpack(clientConfig).run((err, stats) => {
+    if (err) throw err
     console.log('Client Bundles \n', stats.toString({
       colors: true,
     }), '\n')
@@ -119,6 +118,7 @@ serverConfig.plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allChu
 
 if (argv !== 'cordovaOnly') {
   webpack(serverConfig).run((err, stats) => {
+    if (err) throw err
     console.log('Server Bundle \n', stats.toString({
       colors: true,
     }), '\n')
@@ -145,6 +145,7 @@ cordovaConfig.plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allCh
 
 if (argv === 'all' || argv === 'cordovaOnly') {
   webpack(cordovaConfig).run((err, stats) => {  // eslint-disable-line no-unused-expressions
+    if (err) throw err
     console.log('Cordova Bundles \n', stats.toString({
       colors: true,
     }), '\n')

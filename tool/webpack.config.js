@@ -44,9 +44,7 @@ const clientConfig = {
       path: './build',
     }),
     new webpack.DefinePlugin({
-      __CLIENT__: true,
-      __SERVER__: false,
-      __CORDOVA__: false,
+      'process.env.APP_ENV': '"web"',      
     }),
     /* new HtmlWebpackPlugin({
       title: 'My Awesome App',
@@ -77,9 +75,7 @@ const serverConfig = {
   plugins: [
     ...commonPlugins,
     new webpack.DefinePlugin({
-      __CLIENT__: false,
-      __SERVER__: true,
-      __CORDOVA__: false,
+      'process.env.APP_ENV': '"node"',
     }),
   ],
   externals: [
@@ -119,9 +115,8 @@ const cordovaConfig = {
   plugins: [
     ...commonPlugins,
     new webpack.DefinePlugin({
-      __CLIENT__: true,
-      __SERVER__: false,
-      __CORDOVA__: true,
+      'process.env.APP_ENV': '"web"',
+      'process.env.CORDOVA': true,
     }),
     /* new HtmlWebpackPlugin({
       title: 'My Awesome App',
