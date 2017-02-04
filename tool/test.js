@@ -10,7 +10,7 @@ const commonLoaders = [
   {
     test: /\.css$/,
     use: [{
-      loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:6]!postcss')
+      loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:base64:5]!postcss')
     }]
   },
 ]

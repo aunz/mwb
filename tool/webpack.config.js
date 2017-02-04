@@ -13,7 +13,6 @@ const postcss = [
 ]
 
 const commonPlugins = [
-  new webpack.NoErrorsPlugin(),
   new webpack.LoaderOptionsPlugin({
     options: { postcss }
   }),
@@ -44,7 +43,7 @@ const clientConfig = {
       path: './build',
     }),
     new webpack.DefinePlugin({
-      'process.env.APP_ENV': '"web"',      
+      'process.env.APP_ENV': '"web"',
     }),
     /* new HtmlWebpackPlugin({
       title: 'My Awesome App',
@@ -129,7 +128,7 @@ const cordovaConfig = {
 // copy static assets
 
 shelljs.mkdir('-p', clientConfig.output.path)
-shelljs.cp('-rf', './src/public/', clientConfig.output.path)
+shelljs.cp('-rf', './src/public/.', clientConfig.output.path) // copy contents in the public folder into build, notice the dot ".""
 
 const argv = process.argv[2]
 if (argv === 'all' || argv === 'cordovaOnly') {
