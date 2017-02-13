@@ -43,7 +43,7 @@ const commonPlugins = [
 
 clientConfig.devtool = 'cheap-module-eval-source-map'
 // add hot middleware on port 8080
-clientConfig.entry.client.push('webpack-hot-middleware/client?path=http://localhost:8080/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true')
+clientConfig.entry.client.push('webpack-hot-middleware/client?path=http://' + getIp() + ':8080/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true') // getIP so that other devices can connect to the HMR
 clientConfig.output.filename = '[name].js'
 clientConfig.module.rules.push(...cssLoader)
 // clientConfig.module.noParse = /someModuleDist|anotherModuleDist/
@@ -129,4 +129,18 @@ if (argv === 'all' || argv === 'cordovaOnly') {
   webpack(cordovaConfig).watch({}, (err, stats) => { // eslint-disable-line no-unused-expressions
     console.log('Cordova Bundles \n', stats.toString({ chunkModules: false, colors: true }), '\n')
   })
+}
+
+function getIp() {
+  const interfaces = require('os').networkInterfaces()
+  const addresses = []
+  for (const k of interfaces) {
+    for (const k2 of interfaces[k]) {
+      const address = interfaces[k][k2]
+      if (address.family === 'IPv4' && !address.internal) {
+        addresses.push(address.address)
+      }
+    }
+  }
+  return addresses[1]
 }

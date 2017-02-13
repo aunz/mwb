@@ -26,4 +26,4 @@ serverConfig.output = {
   libraryTarget: 'commonjs2',
 }
 
-module.exports =  { clientConfig, serverConfig }
+module.exports = { clientConfig, serverConfig }

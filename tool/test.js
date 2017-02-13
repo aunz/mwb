@@ -6,21 +6,19 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const { clientConfig, serverConfig, } = require('./webpack.config.test')
 
-const commonLoaders = [
-  {
-    test: /\.css$/,
-    use: [{
-      loader: ExtractTextPlugin.extract('css?module&localIdentName=[local]_[hash:base64:5]!postcss')
-    }]
-  },
-]
+const commonLoaders = [{
+  test: /\.css$/,
+  use: [{
+    loader: ExtractTextPlugin.extract({ loader: ['css-loader', 'postcss-loader'] })
+  }]
+}]
 
 const commonPlugins = [
   new webpack.DefinePlugin({
     'process.env.TEST': true,
     'process.env.NODE_ENV': '"development"',
   }),
-  new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }), // has to use this for universal server client rendering
+  new ExtractTextPlugin({ filename: 'styles.css', allChunks: false })
 ]
 
 /**
