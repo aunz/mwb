@@ -62,7 +62,8 @@
     "url-loader": "^0.5.7",
     "webpack": "^2.2.0",
     "webpack-hot-middleware": "^2.15.0",
-    "webpack-md5-hash": "0.0.5"
+    "webpack-md5-hash": "0.0.5",
+    "worker-loader": "^0.7.1"
   },
   "engines": {
     "node": ">=6.0.0"
