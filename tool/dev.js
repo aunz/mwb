@@ -134,8 +134,8 @@ if (argv === 'all' || argv === 'cordovaOnly') {
 function getIp() {
   const interfaces = require('os').networkInterfaces()
   const addresses = []
-  for (const k of interfaces) {
-    for (const k2 of interfaces[k]) {
+  for (const k in interfaces) {
+    for (const k2 in interfaces[k]) {
       const address = interfaces[k][k2]
       if (address.family === 'IPv4' && !address.internal) {
         addresses.push(address.address)
