@@ -6,7 +6,7 @@ const shelljs = require('shelljs')
 // const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const postcss = [
-  require('postcss-import'),
+  require('postcss-import')({ path: ['src'] }), // so can import relative to the src folder
   require('postcss-nesting'),
   require('postcss-css-variables'),
   require('autoprefixer'),
@@ -18,12 +18,18 @@ const commonPlugins = [
   }),
 ]
 
+const resolve = {
+  alias: {
+    '~': path.resolve('./src') // use ~ to refer to the src folder. e.g. if you are in myApp/src/client/utils/fruit.js, you want to import banana which is in myApp/src/share/banana.js, you can write import banana from '~/share/banana' (this is better than using a relative path: import banana from '../../share/banana')
+  }
+}
+
 const clientConfig = {
   entry: {
     client: ['./src/client/entry.js'],
   },
   output: {
-    path: './build/public',
+    path: path.resolve('./build/public'),
     publicPath: '/',
     // filename: 'client.js', //during development
     filename: '[name]_[chunkhash:7].js',
@@ -32,11 +38,7 @@ const clientConfig = {
     rules: [...commonLoadersWithPresets()],
     // noParse: //,
   },
-  resolve: {
-    alias: {
-      '~': path.resolve('./src'), // use ~ to refer to the src folder. e.g. if you are in myApp/src/client/utils/fruit.js, you want to import banana which is in myApp/src/share/banana.js, you can write import banana from '~/share/banana' (this is better than using a relative path: import banana from '../../share/banana')
-    },
-  },
+  resolve,
   plugins: [
     ...commonPlugins,
     new AssetsPlugin({
@@ -59,18 +61,14 @@ const serverConfig = {
   },
   target: 'node',
   output: {
-    path: './build/server',
+    path: path.resolve('./build/server'),
     filename: 'server.js',
     libraryTarget: 'commonjs2', // src: const express = require('express') -> webpack builds: const express = require('express'); otherwise webpack builds: const express = express, which is wrong
   },
   module: {
     rules: [...commonLoadersWithPresets({ target: 'server' })],
   },
-  resolve: {
-    alias: {
-      '~': path.resolve('./src')
-    },
-  },
+  resolve,
   plugins: [
     ...commonPlugins,
     new webpack.DefinePlugin({
@@ -98,7 +96,7 @@ const cordovaConfig = {
     cordovaClient: ['./src/client/entry.js'],
   },
   output: {
-    path: './cordova/www/build',
+    path: path.resolve('./cordova/www/build'),
     publicPath: '/',
     filename: '[name].js',
   },
@@ -106,11 +104,7 @@ const cordovaConfig = {
     rules: [...commonLoadersWithPresets()],
     // noParse: [],
   },
-  resolve: {
-    alias: {
-      '~': path.resolve('./src')
-    },
-  },
+  resolve,
   plugins: [
     ...commonPlugins,
     new webpack.DefinePlugin({

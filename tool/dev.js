@@ -1,12 +1,11 @@
 const path = require('path')
-const http = require('http')
 const child_process = require('child_process')
 
 const webpack = require('webpack')
-const webpackHotMiddleware = require('webpack-hot-middleware')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config')
+const { cssLoader, injectWHM } = require('./common.js')
 
 // get the last argument
 // possible values:
@@ -17,17 +16,6 @@ const argv = process.argv[2]
 
 // use css module when file name is xxx.module.css
 // dont mix global and local css, e.g. in global.css don't @import local.css or vice versa
-const cssLoader = [{
-  test: /^((?!\.module).)*css$/i,
-  loader: ExtractTextPlugin.extract({
-    loader: ['css-loader', 'postcss-loader']
-  })
-}, {
-  test: /\.module\.css$/i,
-  loader: ExtractTextPlugin.extract({
-    loader: ['css-loader?module&localIdentName=[local]_[hash:base64:5]', 'postcss-loader']
-  })
-}]
 
 const commonPlugins = [
   new webpack.HotModuleReplacementPlugin(),
@@ -43,7 +31,6 @@ const commonPlugins = [
 
 clientConfig.devtool = 'cheap-module-eval-source-map'
 // add hot middleware on port 8080
-clientConfig.entry.client.push('webpack-hot-middleware/client?path=http://' + getIp() + ':8080/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true') // getIP so that other devices can connect to the HMR
 clientConfig.output.filename = '[name].js'
 clientConfig.module.rules.push(...cssLoader)
 // clientConfig.module.noParse = /someModuleDist|anotherModuleDist/
@@ -51,6 +38,7 @@ clientConfig.plugins.push(...commonPlugins)
 clientConfig.performance = { hints: false }
 
 const clientCompiler = webpack(clientConfig)
+injectWHM(clientConfig, clientCompiler)
 
 let clientStarted = false
 if (argv !== 'cordovaOnly') {
@@ -66,13 +54,13 @@ if (argv !== 'cordovaOnly') {
 }
 
 
-// use inbuilt http module
-if (argv !== 'cordovaOnly') {
-  http.createServer((req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    webpackHotMiddleware(clientCompiler, { log: false })(req, res)
-  }).listen(8080)
-}
+// // use inbuilt http module
+// if (argv !== 'cordovaOnly') {
+//   http.createServer((req, res) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*')
+//     webpackHotMiddleware(clientCompiler, { log: false })(req, res)
+//   }).listen(8080)
+// }
 
 
 /**
@@ -129,18 +117,4 @@ if (argv === 'all' || argv === 'cordovaOnly') {
   webpack(cordovaConfig).watch({}, (err, stats) => { // eslint-disable-line no-unused-expressions
     console.log('Cordova Bundles \n', stats.toString({ chunkModules: false, colors: true }), '\n')
   })
-}
-
-function getIp() {
-  const interfaces = require('os').networkInterfaces()
-  const addresses = []
-  for (const k in interfaces) {
-    for (const k2 in interfaces[k]) {
-      const address = interfaces[k][k2]
-      if (address.family === 'IPv4' && !address.internal) {
-        addresses.push(address.address)
-      }
-    }
-  }
-  return addresses[1]
 }

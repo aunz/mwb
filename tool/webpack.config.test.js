@@ -8,7 +8,7 @@ const { clientConfig, serverConfig, } = require('./webpack.config')
 clientConfig.entry.client = ['./src/client/entry.test.js']
 // change the client to node env, using jsdom
 clientConfig.output = {
-  path: './test/build/client',
+  path: './test/build/public',
   filename: 'client.test.js',
 }
 

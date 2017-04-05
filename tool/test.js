@@ -1,44 +1,39 @@
-const path = require('path')
-const child_process = require('child_process')
-
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const { clientConfig, serverConfig, } = require('./webpack.config.test')
+const { cssLoader, injectWHM } = require('./common')
 
-const commonLoaders = [{
-  test: /\.css$/,
-  use: [{
-    loader: ExtractTextPlugin.extract({ loader: ['css-loader', 'postcss-loader'] })
-  }]
-}]
+const { clientConfig, serverConfig, } = require('./webpack.config.test')
+const clientConfigNode = require('lodash/cloneDeep')(clientConfig)
 
 const commonPlugins = [
   new webpack.DefinePlugin({
     'process.env.TEST': true,
     'process.env.NODE_ENV': '"development"',
   }),
-  new ExtractTextPlugin({ filename: 'styles.css', allChunks: false })
+  new ExtractTextPlugin({ filename: 'styles.css', allChunks: false }), // has to use this for universal server client rendering
 ]
 
-/**
- * Client
- */
 
-// clientConfig.module.rules.push(...)
-// clientConfig.plugins.push(...)
+// Client run in browser
+clientConfig.devtool = 'cheap-module-eval-source-map' // eslint-disable-line no-param-reassign
+clientConfig.module.rules.push(...cssLoader)
+clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin())
+clientConfig.plugins.push(...commonPlugins)
 
-compileAndTest(clientConfig, 'CLIENT')
+const clientCompiler = webpack(clientConfig)
+injectWHM(clientConfig, clientCompiler, 9080)
+clientCompiler.watch({}, (err, stats) => {
+  console.log('Client Bundles in for browser \n', stats.toString({ chunkModules: false, colors: true }), '\n')
+})
 
-/**
- * Server
- */
+// Client run in node
+clientConfigNode.entry.client = ['./src/client/entry.node.test.js']
+clientConfigNode.output.filename = './src/client/client.node.js'
+compileAndTest(clientConfigNode, 'CLIENT')
 
-// serverConfig.module.rules.push(...)
-// serverConfig.plugins.push(...)
-
+// Server
 compileAndTest(serverConfig, 'SERVER')
-
 
 /**
  * @arg {Object} config
@@ -47,7 +42,7 @@ compileAndTest(serverConfig, 'SERVER')
 
 function compileAndTest(config, arch) {
   config.devtool = 'cheap-module-eval-source-map' // eslint-disable-line no-param-reassign
-  config.module.rules.push(...commonLoaders)
+  config.module.rules.push(...cssLoader)
   config.plugins.push(...commonPlugins)
 
   let child
@@ -57,6 +52,6 @@ function compileAndTest(config, arch) {
       return
     }
     if (child) child.kill()
-    child = child_process.fork(path.join(config.output.path, config.output.filename))
+    child = require('child_process').fork(require('path').join(config.output.path, config.output.filename))
   })
 }

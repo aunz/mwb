@@ -3,13 +3,12 @@ import child_process from 'child_process'
 import fs from 'fs'
 
 import tape from 'tape' // can't use import test from 'tape' as test is made global by shelljs/global
-import 'shelljs/global'
 
 const start = Date.now()
 
 process.chdir(__dirname)
 
-child_process.execSync('rm -R build')
+fs.existsSync('build') && child_process.execSync('rm -R build')
 fs.mkdirSync('build')
 
 process.chdir('build')
@@ -30,7 +29,7 @@ tape('should install ok', t => {
 
   // copy the initial package.json into memory
   const i = fs.readFileSync('package.json').toString()
-  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'common.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
 
   // install full
@@ -117,7 +116,7 @@ tape('Directory structure', t => {
     , 'should have correct src/share directory structure')
 
   dir = fs.readdirSync('tool')
-  t.deepEqual(dir, ['build.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  t.deepEqual(dir, ['build.js', 'common.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
 })
@@ -129,6 +128,9 @@ tape('Server should response with hello world', { timeout: 60000 }, t => { // lo
   fs.writeFileSync('src/share/reducers/index.js', 'export default (state, action) => state')
   fs.writeFileSync('src/share/routes.js', "import React from 'react'\nexport default {['/'](store) {return () => <div>Hello world</div>}}")
   const dev = child_process.spawn('npm run dev', { cwd: process.cwd(), shell: true })
+  dev.stderr.on('data', () => {
+    t.end(new Error('Server error'))
+  })
   dev.stdout.on('data', data => {
     if (/Express app listening at/.test(data)) {
       require('http').request('http://localhost:3000', res => { // eslint-disable-line global-require
@@ -171,7 +173,7 @@ tape('Rerun npm i ../../ -D', t => {
 
   // may have problem with permission create directory tool in mwb.js
   process.chdir('..')
-  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
+  t.deepEqual(fs.readdirSync('tool'), ['build.js', 'common.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
 
   t.end()
   process.exit()
