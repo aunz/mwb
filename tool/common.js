@@ -27,7 +27,7 @@ function getIp() {
   return addresses[1]
 }
 
-function injectWHM(config, compiler, port = 8080) {
+function injectWHM(config, compiler, port = 9090) {
   config.entry.client.push('webpack-hot-middleware/client?path=http://' + getIp() + ':' + port + '/__webpack_hmr&overlay=false&reload=true&noInfo=true&quiet=true')
   require('http').createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*')

@@ -24,6 +24,7 @@ const cssLoader = [{
 
 const commonPlugins = [
   new webpack.DefinePlugin({
+    'process.env.TEST': false,
     'process.env.NODE_ENV': '"production"',
   }),
   new ExtractTextPlugin({
@@ -52,7 +53,7 @@ const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
   name: 'vendor',
   minChunks: ({ resource }) => /node_modules/.test(resource), // could use /node_modules.*\.jsx?$/ to only process js
 })
-clientConfig.plugins.push(commonsChunk, new require('webpack-md5-hash')) // eslint-disable-line no-new-require, new-cap
+clientConfig.plugins.push(commonsChunk, new require('webpack-chunk-hash'))
 
 /*
   There are 3+ ways to dynamically create vendor chunk for long term caching using CommonsChunkPlugin
@@ -62,10 +63,10 @@ clientConfig.plugins.push(commonsChunk, new require('webpack-md5-hash')) // esli
       minChunks: ({ resource }) => /node_modules/.test(resource),
     })
 
-  1) Add new require('webpack-md5-hash')
+  1) Add new require('webpack-md5-hash') or require('webpack-chunk-hash')
     The hash will be based on content, the manifest webpackJsonp function will be in the entry chunk, in this case the vendor chunk
     There will output 2 files: vendor.xx.js and client.xx.js
-    vendor.xx.js is be the entry chunk and will be loaded first
+    vendor.xx.js is the entry chunk and will be loaded first
   2) Add another commonChunk
     new webpack.optimize.CommonsChunkPlugin('manifest') <-- can be any name, such as 'meta'
     this will create a manifest.[xxx].js or meta.[xxx].js which contains the webpackJsonp functions

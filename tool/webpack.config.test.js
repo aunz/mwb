@@ -1,3 +1,5 @@
+const path = require('path')
+
 const AssetsPlugin = require('assets-webpack-plugin')
 
 const { clientConfig, serverConfig, } = require('./webpack.config')
@@ -8,7 +10,7 @@ const { clientConfig, serverConfig, } = require('./webpack.config')
 clientConfig.entry.client = ['./src/client/entry.test.js']
 // change the client to node env, using jsdom
 clientConfig.output = {
-  path: './test/build/public',
+  path: path.resolve('./test/build/public'),
   filename: 'client.test.js',
 }
 
@@ -21,7 +23,7 @@ clientConfig.plugins = clientConfig.plugins.filter(p => !(p instanceof AssetsPlu
 /* server */
 serverConfig.entry.server = ['./src/server/entry.test.js']
 serverConfig.output = {
-  path: './test/build/server',
+  path: path.resolve('./test/build/server'),
   filename: 'server.test.js',
   libraryTarget: 'commonjs2',
 }

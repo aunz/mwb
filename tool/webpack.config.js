@@ -46,6 +46,7 @@ const clientConfig = {
     }),
     new webpack.DefinePlugin({
       'process.env.APP_ENV': '"web"',
+      'process.env.CORDOVA': false,
     }),
     /* new HtmlWebpackPlugin({
       title: 'My Awesome App',
@@ -73,17 +74,13 @@ const serverConfig = {
     ...commonPlugins,
     new webpack.DefinePlugin({
       'process.env.APP_ENV': '"node"',
+      'process.env.CORDOVA': false,
     }),
   ],
   externals: [
     /^[@a-z][a-z/\.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
     /^.+assets\.json$/i, // these assets produced by assets-webpack-plugin
-  ],
-  node: {
-    console: true,
-    __filename: true,
-    __dirname: true,
-  }
+  ]
 }
 
 
@@ -152,13 +149,18 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
           'react'
         ],
         plugins: [
-          ['transform-runtime', { polyfill: false, useBuiltIns: true }] // helpers: true so babel still use _extends when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map etc in server, but still polyfill in browsers
+          ['transform-runtime', { polyfill: false }] // helpers: true (default) so babel use modulised helpers when doding spread { ... object }, polyfill: false, so babel don't polyfill Set, Map, etc in server. 
         ],
         cacheDirectory: true, // cache into OS temp folder by default
       }
     }],
   }, {
-    test: /\.(?!(jsx?|json|s?css|less|html?)$)([^.]+$)/, // match everything except js, jsx, json, css, scss, less. You can add more
+    test: /\.sql$/,
+    exclude: /(node_modules)/,
+    use: ['raw-loader'],
+  }, {
+    test: /\.(?!(jsx?|json|s?css|less|html|sql?)$)([^.]+$)/, // match everything except js, jsx, json, css, scss, less. You can add more
+    exclude: /(node_modules)/,
     use: [{
       loader: 'url-loader',
       query: {

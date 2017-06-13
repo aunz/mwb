@@ -2,7 +2,7 @@ import path from 'path'
 import child_process from 'child_process'
 import fs from 'fs'
 
-import tape from 'tape' // can't use import test from 'tape' as test is made global by shelljs/global
+import test from 'tape' // can't use import test from 'tape' as test is made global by shelljs/global
 
 const start = Date.now()
 
@@ -13,13 +13,14 @@ fs.mkdirSync('build')
 
 process.chdir('build')
 
-tape('should install ok', t => {
+test('should install ok', t => {
   // safe guard
   try {
     fs.statSync('package.json') // this file shouldn't exist
-    console.error('oops, package.json shouldn\'t be here')
+    console.error('oops, package.json shouldn\'t be here ', e)
     process.exit()
-  } catch (e) {} // eslint-disable-line no-empty, do nothing, continue
+  } catch (e) {
+  } // eslint-disable-line no-empty, do nothing, continue
 
   // npm init
   t.doesNotThrow(() => { child_process.execSync('npm init -f', { stdio: 'ignore' }) }, 'npm init -f')
@@ -43,29 +44,30 @@ tape('should install ok', t => {
   t.end()
 })
 
-tape('Modifying package.json', t => {
+test('Modifying package.json', t => {
   // can't just use require('package.json')
   const p = require(path.resolve('package.json')) // eslint-disable-line
 
-  t.ok(
-    p.scripts.test &&
-    p.scripts.mwb &&
-    p.scripts.serve &&
-    p.scripts.build &&
-    p.scripts.bundle &&
-    p.scripts.clean &&
-    p.scripts.start &&
-    p.devDependencies.mwb,
-    'Should have all the scrips')
+  t.ok(p.scripts.test
+    && p.scripts.mwb
+    && p.scripts.serve
+    && p.scripts.build
+    && p.scripts.bundle
+    && p.scripts.clean
+    && p.scripts.start
+    && p.devDependencies.mwb,
+    'Should have all the scripts'
+  )
 
-  t.ok(clv(p.dependencies, 'express') &&
-       clv(p.dependencies, 'compression') &&
-       clv(p.dependencies, 'mongodb') &&
-       clv(p.dependencies, 'react') &&
-       clv(p.dependencies, 'react-dom') &&
-       clv(p.dependencies, 'redux') &&
-       clv(p.dependencies, 'page')
-       , 'Should have all the latest devDeps')
+  t.ok(clv(p.dependencies, 'express')
+    && clv(p.dependencies, 'compression')
+    && clv(p.dependencies, 'mongodb')
+    && clv(p.dependencies, 'react')
+    && clv(p.dependencies, 'react-dom')
+    && clv(p.dependencies, 'redux')
+    && clv(p.dependencies, 'page'),
+    'Should have all the latest devDeps'
+  )
 
   t.end()
 
@@ -75,45 +77,50 @@ tape('Modifying package.json', t => {
   }
 })
 
-tape('Directory structure', t => {
+test('Directory structure', t => {
   let dir = fs.readdirSync('.')
-  t.ok(dir.indexOf('db') > -1 &&
-    dir.indexOf('node_modules') > -1 &&
-    dir.indexOf('src') > -1 &&
-    dir.indexOf('test') > -1 &&
-    dir.indexOf('tool') > -1
-    , 'should have correct base directory structure')
+  t.ok(dir.indexOf('db') > -1
+    && dir.indexOf('node_modules') > -1
+    && && dir.indexOf('src') > -1
+    && dir.indexOf('test') > -1
+    && dir.indexOf('tool') > -1,
+    'should have correct base directory structure'
+  )
 
   dir = fs.readdirSync('src')
-  t.ok(dir.indexOf('client') > -1 &&
-    dir.indexOf('server') > -1 &&
-    dir.indexOf('share') > -1 &&
-    dir.indexOf('public') > -1
-    , 'should have correct src directory structure')
+  t.ok(dir.indexOf('client') > -1
+    && dir.indexOf('server') > -1
+    && dir.indexOf('share') > -1
+    && dir.indexOf('public') > -1,
+    'should have correct src directory structure'
+  )
 
   dir = fs.readdirSync('src/client')
-  t.ok(dir.indexOf('entry.js') > -1 &&
-    dir.indexOf('entry.test.js') > -1 &&
-    dir.indexOf('main.js') > -1
-    , 'should have correct src/client directory structure')
+  t.ok(dir.indexOf('entry.js') > -1
+    && dir.indexOf('entry.test.js') > -1
+    && dir.indexOf('main.js') > -1,
+    'should have correct src/client directory structure'
+  )
 
   dir = fs.readdirSync('src/server')
-  t.ok(dir.indexOf('entry.js') > -1 &&
-    dir.indexOf('entry.test.js') > -1 &&
-    dir.indexOf('main.js') > -1 &&
-    dir.indexOf('app.js') > -1 &&
-    dir.indexOf('mongo.js') > -1
-    , 'should have correct src/server directory structure')
+  t.ok(dir.indexOf('entry.js') > -1
+    && dir.indexOf('entry.test.js') > -1
+    && dir.indexOf('main.js') > -1
+    && dir.indexOf('app.js') > -1
+    && dir.indexOf('mongo.js') > -1, 
+    'should have correct src/server directory structure'
+  )
 
   dir = fs.readdirSync('src/share')
-  t.ok(dir.indexOf('actions') > -1 &&
-    dir.indexOf('components') > -1 &&
-    dir.indexOf('reducers') > -1 &&
-    dir.indexOf('html.js') > -1 &&
-    dir.indexOf('index.html') > -1 &&
-    dir.indexOf('initialState.js') > -1 &&
-    dir.indexOf('routes.js') > -1
-    , 'should have correct src/share directory structure')
+  t.ok(dir.indexOf('actions') > -1
+    && dir.indexOf('components') > -1
+    && dir.indexOf('reducers') > -1
+    && dir.indexOf('html.js') > -1
+    && dir.indexOf('index.html') > -1
+    && dir.indexOf('initialState.js') > -1
+    && dir.indexOf('routes.js') > -1,
+    'should have correct src/share directory structure'
+  )
 
   dir = fs.readdirSync('tool')
   t.deepEqual(dir, ['build.js', 'common.js', 'dev.js', 'log-apply-result.js', 'signal.js', 'test.js', 'webpack.config.js', 'webpack.config.test.js'], 'should have correct tool directory structure')
@@ -122,17 +129,17 @@ tape('Directory structure', t => {
 })
 
 
-tape('Server should response with hello world', { timeout: 60000 }, t => { // longer time out becos the serve may take a while to launch
+test('Server should response with hello world', { timeout: 100000 }, t => { // longer time out becos the serve may take a while to launch
   t.plan(3)
   // mocking stuff
   fs.writeFileSync('src/share/reducers/index.js', 'export default (state, action) => state')
   fs.writeFileSync('src/share/routes.js', "import React from 'react'\nexport default {['/'](store) {return () => <div>Hello world</div>}}")
   const dev = child_process.spawn('npm run dev', { cwd: process.cwd(), shell: true })
-  dev.stderr.on('data', () => {
-    t.end(new Error('Server error'))
+  dev.stderr.on('data', data => {
+    // t.end(new Error('Server error'))
   })
   dev.stdout.on('data', data => {
-    if (/Express app listening at/.test(data)) {
+    if (/Express app listening at/.test(data.toString())) {
       require('http').request('http://localhost:3000', res => { // eslint-disable-line global-require
         console.log(res.statusCode)
         let body = ''
@@ -140,13 +147,15 @@ tape('Server should response with hello world', { timeout: 60000 }, t => { // lo
           body += chunk
         })
         res.on('end', () => {
-          t.ok(/Hello world/.test(body), 'server responsed with "Hello World"')
+          t.ok(/Hello world/.test(body), 'server responded with "Hello World"')
           t.ok(/<script src="\/client.js"><\/script>/.test(body), 'and a script tag')
-          t.ok(fs.statSync('build/public/client.js') &&
-            fs.statSync('build/server/server.js') &&
-            fs.statSync('build/webpack-assets.json')
-            , 'should have correct base directory structure and files')
+          t.ok(fs.statSync('build/public/client.js')
+            && fs.statSync('build/server/server.js')
+            && fs.statSync('build/webpack-assets.json'),
+            'should have correct base directory structure and files'
+          )
           dev.kill()
+
           t.end()
         })
       }).end()
@@ -155,7 +164,7 @@ tape('Server should response with hello world', { timeout: 60000 }, t => { // lo
 })
 
 
-tape('Rerun npm i ../../ -D', t => {
+test('Rerun npm i ../../ -D', t => {
   t.plan(4)
   const randomContent = 'Some dummy random content' + Math.random()
   fs.writeFileSync('tool/dummyfile.txt', randomContent)
