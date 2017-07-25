@@ -1,15 +1,40 @@
 const WHM = require('webpack-hot-middleware')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const cssLoader = [{
+const fallback = 'style-loader'
+
+const cssModLoader = {
+  loader: 'css-loader',
+  options: {
+    modules: true,
+    localIdentName: '[local]_[hash:base64:5]'
+  }
+}
+
+const postcssLoader = {
+  loader: 'postcss-loader',
+  options: {
+    plugins: () => [
+      require('postcss-import')({ path: ['src'] }), // so can import relative to the src folder
+      // require('postcss-nesting')(),
+      require('postcss-nested')(),
+      require('postcss-css-variables')(),
+      require('autoprefixer')(),
+    ]
+  }
+}
+
+const ExtractTextLoader = [{
   test: /^((?!\.module).)*css$/i,
   loader: ExtractTextPlugin.extract({
-    use: ['css-loader', 'postcss-loader']
+    fallback,
+    use: ['css-loader', postcssLoader]
   })
 }, {
   test: /\.module\.css$/i,
   loader: ExtractTextPlugin.extract({
-    use: ['css-loader?module&localIdentName=[local]_[hash:7]', 'postcss-loader']
+    fallback,
+    use: [cssModLoader, postcssLoader]
   })
 }]
 
@@ -35,4 +60,4 @@ function injectWHM(config, compiler, port = 9090) {
   }).listen(port)
 }
 
-module.exports = { cssLoader, injectWHM }
+module.exports = { ExtractTextLoader, injectWHM }

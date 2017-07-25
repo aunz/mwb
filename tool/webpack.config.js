@@ -3,20 +3,9 @@ const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
 const shelljs = require('shelljs')
 
-// const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const postcss = [
-  require('postcss-import')({ path: ['src'] }), // so can import relative to the src folder
-  require('postcss-nesting'),
-  require('postcss-css-variables'),
-  require('autoprefixer'),
-]
-
-const commonPlugins = [
-  new webpack.LoaderOptionsPlugin({
-    options: { postcss }
-  }),
-]
+const commonPlugins = []
 
 const resolve = {
   alias: {
@@ -48,11 +37,11 @@ const clientConfig = {
       'process.env.APP_ENV': '"web"',
       'process.env.CORDOVA': false,
     }),
-    /* new HtmlWebpackPlugin({
+    new HtmlWebpackPlugin({
       title: 'My Awesome App',
       template: './src/share/index.html',
       // filename: './src/share/index.html'
-    }),*/
+    }),
   ],
 }
 
@@ -108,11 +97,11 @@ const cordovaConfig = {
       'process.env.APP_ENV': '"web"',
       'process.env.CORDOVA': true,
     }),
-    /* new HtmlWebpackPlugin({
+    new HtmlWebpackPlugin({
       title: 'My Awesome App',
       template: './src/share/index.html',
       // filename: './src/share/index.html'
-    }),*/
+    }),
   ]
 }
 
@@ -156,11 +145,11 @@ function commonLoadersWithPresets({ target = 'client' } = {}) {
     }],
   }, {
     test: /\.sql$/,
-    exclude: /(node_modules)/,
+    // exclude: /(node_modules)/,
     use: ['raw-loader'],
   }, {
-    test: /\.(?!(jsx?|json|s?css|less|html|sql?)$)([^.]+$)/, // match everything except js, jsx, json, css, scss, less. You can add more
-    exclude: /(node_modules)/,
+    test: /\.(?!(jsx?|json|s?css|less|html?|sql)$)([^.]+$)/, // match everything except js, jsx, json, css, scss, less. You can add more
+    // exclude: /(node_modules)/,
     use: [{
       loader: 'url-loader',
       query: {

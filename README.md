@@ -25,7 +25,7 @@ npm run dev # start live coding & editing in development mode
 npm run bundle # bundling the app for production
 ```
 
-##Tested only in node 6+, npm 3+
+##Tested in node 8+, npm 5+
 
 ----------
 ###Directory structure:

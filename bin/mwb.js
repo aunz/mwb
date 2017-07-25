@@ -23,6 +23,7 @@ if (!a || Object.keys(command).indexOf(a) < 0) {
  */
 const path = require('path')
 require('shelljs/global')
+
 const templatePath = path.resolve(__dirname, '../template') + '/'
 
 
@@ -43,8 +44,8 @@ function postinstall() {
   if (!tmp.scripts) tmp.scripts = {}
   if (tmp.scripts.mwb) return // has been installed already
   tmp.scripts.mwb = 'mwb'
-    // tmp.private = true //your app shouldn't be published in npm public :)
-    // tmp.license = 'UNLICENSED'
+  // tmp.private = true //your app shouldn't be published in npm public :)
+  // tmp.license = 'UNLICENSED'
   JSON.stringify(tmp, null, 2).to('../../package.json')
   setTimeout(() => {
     require('./ascii_cat.js').cat1() // eslint-disable-line

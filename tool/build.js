@@ -6,21 +6,10 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const cssnano = require('cssnano')
 
 const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config')
+const { ExtractTextLoader } = require('./common')
 
 // get the last argument, see the dev.js
 const argv = process.argv[2]
-
-const cssLoader = [{
-  test: /^((?!\.module).)*css$/i,
-  loader: ExtractTextPlugin.extract({
-    loader: ['css-loader?minimize', 'postcss-loader']
-  })
-}, {
-  test: /\.module\.css$/i,
-  loader: ExtractTextPlugin.extract({
-    loader: ['css-loader?module&minimize&localIdentName=[local]_[base64:5]', 'postcss-loader']
-  })
-}]
 
 const commonPlugins = [
   new webpack.DefinePlugin({
@@ -47,13 +36,14 @@ const commonPlugins = [
  * Client
  */
 
-clientConfig.module.rules.push(...cssLoader)
+clientConfig.module.rules.push(...ExtractTextLoader)
 clientConfig.plugins.push(...commonPlugins)
 const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
   name: 'vendor',
   minChunks: ({ resource }) => /node_modules/.test(resource), // could use /node_modules.*\.jsx?$/ to only process js
 })
-clientConfig.plugins.push(commonsChunk, new require('webpack-chunk-hash'))
+clientConfig.plugins.push(new webpack.HashedModuleIdsPlugin(), commonsChunk)
+// clientConfig.plugins.push(commonsChunk, new require('webpack-chunk-hash'))
 
 /*
   There are 3+ ways to dynamically create vendor chunk for long term caching using CommonsChunkPlugin
@@ -110,7 +100,7 @@ if (argv !== 'cordovaOnly') {
  * Server
  */
 
-serverConfig.module.rules.push(cssLoader[1]) // handle the css module
+serverConfig.module.rules.push(ExtractTextLoader[1]) // handle the css module
 serverConfig.plugins.push(...commonPlugins)
 // remove the ExtractTextPlugin
 serverConfig.plugins = serverConfig.plugins.filter(p => !(p instanceof ExtractTextPlugin))
@@ -136,7 +126,7 @@ if (argv !== 'cordovaOnly') {
  * Cordova
  */
 
-cordovaConfig.module.rules.push(...cssLoader)
+cordovaConfig.module.rules.push(...ExtractTextLoader)
 cordovaConfig.plugins.push(...commonPlugins)
 
 // remove the ExtractTextPlugin
@@ -145,7 +135,7 @@ cordovaConfig.plugins = cordovaConfig.plugins.filter(p => !(p instanceof Extract
 cordovaConfig.plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allChunks: true }))
 
 if (argv === 'all' || argv === 'cordovaOnly') {
-  webpack(cordovaConfig).run((err, stats) => {  // eslint-disable-line no-unused-expressions
+  webpack(cordovaConfig).run((err, stats) => { // eslint-disable-line no-unused-expressions
     if (err) throw err
     console.log('Cordova Bundles \n', stats.toString({
       colors: true,

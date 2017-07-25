@@ -5,7 +5,7 @@ const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config')
-const { cssLoader, injectWHM } = require('./common.js')
+const { ExtractTextLoader, injectWHM } = require('./common.js')
 
 // get the last argument
 // possible values:
@@ -32,7 +32,7 @@ const commonPlugins = [
 clientConfig.devtool = 'cheap-module-eval-source-map'
 // add hot middleware on port 8080
 clientConfig.output.filename = '[name].js'
-clientConfig.module.rules.push(...cssLoader)
+clientConfig.module.rules.push(...ExtractTextLoader)
 // clientConfig.module.noParse = /someModuleDist|anotherModuleDist/
 clientConfig.plugins.push(...commonPlugins)
 clientConfig.performance = { hints: false }
@@ -70,7 +70,7 @@ serverConfig.devtool = 'cheap-module-eval-source-map'
 
 // allow hot module on server side, hmr is the signal to reload
 serverConfig.entry.server.push(__dirname + '/signal.js?hmr')  // eslint-disable-line
-serverConfig.module.rules.push(cssLoader[1]) // to handle css module
+serverConfig.module.rules.push(ExtractTextLoader[1]) // to handle css module
 serverConfig.plugins.push(...commonPlugins)
 serverConfig.performance = { hints: false }
 
@@ -105,7 +105,7 @@ function createServer() {
  */
 
 cordovaConfig.devtool = 'cheap-module-eval-source-map'
-cordovaConfig.module.rules.push(...cssLoader)
+cordovaConfig.module.rules.push(...ExtractTextLoader)
 // cordovaConfig.module.noParse = /^[@a-z][a-z\/\.\-0-9]*$/i
 
 cordovaConfig.plugins.push(...commonPlugins)
