@@ -4,8 +4,16 @@ const child_process = require('child_process')
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const { clientConfig, serverConfig, cordovaConfig } = require('./webpack.config')
+const { clientConfig, serverConfig, cordovaConfig, copy } = require('./webpack.config')
 const { ExtractTextLoader, injectWHM } = require('./common.js')
+
+const { alterClient, alterServer, alterCordova } = (function () {
+  try {
+    return require('../mwb.config.js')
+  } catch (e) {
+    return {}
+  }
+}())
 
 // get the last argument
 // possible values:
@@ -37,31 +45,26 @@ clientConfig.module.rules.push(...ExtractTextLoader)
 clientConfig.plugins.push(...commonPlugins)
 clientConfig.performance = { hints: false }
 
+const alterClientCb = (alterClient && alterClient(clientConfig, 'dev'))
+
 const clientCompiler = webpack(clientConfig)
 injectWHM(clientConfig, clientCompiler)
+
 
 let clientStarted = false
 if (argv !== 'cordovaOnly') {
   clientCompiler.watch({}, (err, stats) => {
     console.log('Client Bundles \n', stats.toString({ chunkModules: false, colors: true }), '\n')
-    // console.log('Client Bundles \n',stats.toString({colors:true}),'\n')
+
+    alterClientCb && alterClientCb(err, stats)
 
     if (clientStarted) return
+
     // the build/webpack-assets.json is ready, so go on create the server bundle
     createServer()
     clientStarted = true
   })
 }
-
-
-// // use inbuilt http module
-// if (argv !== 'cordovaOnly') {
-//   http.createServer((req, res) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*')
-//     webpackHotMiddleware(clientCompiler, { log: false })(req, res)
-//   }).listen(8080)
-// }
-
 
 /**
  * Server
@@ -74,12 +77,16 @@ serverConfig.module.rules.push(ExtractTextLoader[1]) // to handle css module
 serverConfig.plugins.push(...commonPlugins)
 serverConfig.performance = { hints: false }
 
+const alterServerCb = alterServer && alterServer(serverConfig, 'env')
 
 function createServer() {
   let child
 
   webpack(serverConfig).watch({}, (err, stats) => {
     console.log('Server Bundle \n', stats.toString({ colors: true }), '\n')
+
+    alterServerCb && alterServerCb(err, stats)
+
     if (stats.hasErrors()) return
     if (child) {
       child.send('hmr')
@@ -113,8 +120,13 @@ cordovaConfig.plugins.push(...commonPlugins)
 cordovaConfig.plugins = cordovaConfig.plugins.filter(p => !(p instanceof webpack.HotModuleReplacementPlugin))
 cordovaConfig.performance = { hints: false }
 
+const alterCordovaCb = alterCordova && alterCordova(cordovaConfig, 'env')
+
 if (argv === 'all' || argv === 'cordovaOnly') {
   webpack(cordovaConfig).watch({}, (err, stats) => { // eslint-disable-line no-unused-expressions
     console.log('Cordova Bundles \n', stats.toString({ chunkModules: false, colors: true }), '\n')
+    alterCordovaCb && alterCordovaCb(err, stats)
   })
 }
+
+copy()

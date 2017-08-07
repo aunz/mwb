@@ -29,5 +29,7 @@ module.exports = {
     'global-require': 0,
     'import/no-dynamic-require': 0,
     'no-new-require': 0,
+    'no-mixed-operators': 0,
+    'no-plusplus': 0,
   }
 }

@@ -1,7 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
 const AssetsPlugin = require('assets-webpack-plugin')
-const shelljs = require('shelljs')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
@@ -38,7 +37,7 @@ const clientConfig = {
       'process.env.CORDOVA': false,
     }),
     new HtmlWebpackPlugin({
-      title: 'My Awesome App',
+      // title: 'My Awesome App',
       template: './src/share/index.html',
       // filename: './src/share/index.html'
     }),
@@ -98,25 +97,23 @@ const cordovaConfig = {
       'process.env.CORDOVA': true,
     }),
     new HtmlWebpackPlugin({
-      title: 'My Awesome App',
+      // title: 'My Awesome App',
       template: './src/share/index.html',
       // filename: './src/share/index.html'
     }),
   ]
 }
 
-// copy static assets
-
-shelljs.mkdir('-p', clientConfig.output.path)
-shelljs.cp('-rf', './src/public/.', clientConfig.output.path) // copy contents in the public folder into build, notice the dot ".""
-
-const argv = process.argv[2]
-if (argv === 'all' || argv === 'cordovaOnly') {
-  shelljs.mkdir('-p', cordovaConfig.output.path)
-  shelljs.cp('-rf', './src/public/', cordovaConfig.output.path)
+function copy() {
+  const { exec } = require('child_process')
+  exec('mkdir ' + clientConfig.output.path + ' && cp -rf ./src/public/. ' + clientConfig.output.path)
+  const argv = process.argv[2]
+  if (argv === 'all' || argv === 'cordovaOnly') {
+    exec('mkdir ' + cordovaConfig.output.path + ' && cp -rf ./src/public/. ' + cordovaConfig.output.path)
+  }
 }
 
-module.exports = { clientConfig, serverConfig, cordovaConfig }
+module.exports = { clientConfig, serverConfig, cordovaConfig, copy }
 
 
 function commonLoadersWithPresets({ target = 'client' } = {}) {

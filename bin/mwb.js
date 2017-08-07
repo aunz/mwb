@@ -44,7 +44,7 @@ function postinstall() {
   if (!tmp.scripts) tmp.scripts = {}
   if (tmp.scripts.mwb) return // has been installed already
   tmp.scripts.mwb = 'mwb'
-  // tmp.private = true //your app shouldn't be published in npm public :)
+  // tmp.private = true // your app shouldn't be published in npm public :)
   // tmp.license = 'UNLICENSED'
   JSON.stringify(tmp, null, 2).to('../../package.json')
   setTimeout(() => {

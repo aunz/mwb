@@ -50,7 +50,7 @@ App
 ###How it works:
 * After initiation, an entry.js file is placed in the src/client and src/server folder
 * All default webpack config files are in the tool folder, you can override these
-* `npm run dev` uses webpack to compile and watch these files and output them into the build folder -> clientBundle.js and serverBundle.js
+* `npm run dev` uses webpack to compile and watch these files and output them into the build folder -> client.js and server.js
 * serverBundle.js is run automatically and will be served at localhost:3000 (default using express js)
 * When you edit the files in the source folder, webpack re-compile required files
 * To enable hot module replacement, add `if (module.hot) {module.hot.accept()}` in your code
@@ -61,15 +61,17 @@ App
 
 ####Included loaders:
 * [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, stage-0, react), plugins (transform-runtime) and cacheDirectory (true).
-* `css!postcss` loaders for css with `autoprefixer`
+* `css!postcss` loaders for css with `autoprefixer`, `postcss-import`, `postcss-nested`, `postcss-css-variables`
 * `url-loader` for everything else with limit=10000 & name=[name]_[hash:7].[ext]
 
-Style sheet is **extracted** by `extract-text-webpack-plugin` using `css?minimize&localIdentName=[local]_[hash:7]!postcss` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client. `css?module` is applied to files with name xxx.module.css, don't mix global also local css, i.e. in global.css don't do @import './local.module.css'; and vice versa, in local.module.css don't do @import './global.css'. On server, `null-loader` is applied to global.css but `css?module` to local.module.css, the extracted styles.css will be deleted on server when built for production
+Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client.
+`css module` is applied to files with name xxx.module.css. You should not mix global and local css, i.e. in global.css don't do @import './local.module.css'; and vice versa, in local.module.css don't do @import './global.css'. On server, `null-loader` is applied to global.css but `css?module` to local.module.css, the extracted styles.css will be deleted on server when built for production.
 
 ###Included plugins
 * `extract-text-webpack-plugin`
+* `html-webpack-plugin` using template at `./src/share/index.html`
 * `webpack.optimize.AggressiveMergingPlugin`
-* `webpack.optimize.UglifyJsPlugin({compress: {warnings: false, sourceMap: false, comments: false})` 
+* `webpack.optimize.UglifyJsPlugin` 
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"node"' })`for server
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"web"' })` for clients (browser and cordova)
 * `webpack.DefinePlugin({ 'process.env.CORDOVA': true })` for cordova app
@@ -89,6 +91,9 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` using `css?minimiz
 * source map is set to `cheap-module-eval-source-map` for development
 * source map is **NOT** included in production mode
 * `client_[chunkhash:7].js` `vendor_[chunkhash:7].js` & `styles_[contenthash:7].css` in production mode for caching
+* 
+* `~` is aliased to the `src` directory. For example, `import '~/server/myModule'`
+
 
 
 ### Mongodb
@@ -110,10 +115,12 @@ In an imported file, use async & await to retrive the connection and db.
 
 ### [Cordova integration](./doc/cordova.md)
 
+### [Extending the configs](./doc/extending.md)
+
 ### Update
 
 You can update simply by typing
 ```shell 
 npm i -D mwb
 ```
-The `tool` directory will be renamed to tool.{timestamp} so your modification will still be preserved. A new tool directory will be created with the updated settings.
+The `tool` directory will be renamed to tool.{timestamp}
