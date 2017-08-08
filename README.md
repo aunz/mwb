@@ -78,6 +78,7 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial ch
 * `webpack.DefinePlugin({ 'process.env.TEST': true })` for testing
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' })` in development mode
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code elimination during minification
+* `offline-plugin` with minification on in production mode for client
 
 ### Express server
 * Listen to 3000 by default or `process.env.PORT`
@@ -85,15 +86,12 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial ch
 * Server code is hot replaced in development mode, but NOT in production mode
 * All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
 
-
 ### Misc
 * All codes wrapped inside `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
 * source map is set to `cheap-module-eval-source-map` for development
 * source map is **NOT** included in production mode
 * `client_[chunkhash:7].js` `vendor_[chunkhash:7].js` & `styles_[contenthash:7].css` in production mode for caching
-* 
 * `~` is aliased to the `src` directory. For example, `import '~/server/myModule'`
-
 
 
 ### Mongodb

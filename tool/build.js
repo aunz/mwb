@@ -2,6 +2,7 @@
 
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const OfflinePlugin = require('offline-plugin')
 
 // 2: config
 const { clientConfig, serverConfig, cordovaConfig, copy } = require('./webpack.config')
@@ -46,7 +47,7 @@ const commonPlugins = [
  */
 
 clientConfig.module.rules.push(...ExtractTextLoader)
-clientConfig.plugins.push(...commonPlugins)
+clientConfig.plugins.push(...commonPlugins, new OfflinePlugin({ ServiceWorker: { minify: true } }))
 const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
   name: 'vendor',
   minChunks: ({ resource }) => /node_modules/.test(resource), // could use /node_modules.*\.jsx?$/ to only process js
