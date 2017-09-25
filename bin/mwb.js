@@ -11,7 +11,6 @@ const command = {
   initFull,
 }
 
-
 if (!a || Object.keys(command).indexOf(a) < 0) {
   console.error('Need to supply an argument, either of:', Object.keys(command))
   process.exit(1)
@@ -22,7 +21,7 @@ if (!a || Object.keys(command).indexOf(a) < 0) {
  * Dependencies & variables
  */
 const path = require('path')
-require('shelljs/global')
+const { cp, mkdir, exec, rm, test, echo } = require('shelljs') // eslint-disable-line import/no-extraneous-dependencies
 
 const templatePath = path.resolve(__dirname, '../template') + '/'
 
@@ -46,7 +45,7 @@ function postinstall() {
   tmp.scripts.mwb = 'mwb'
   // tmp.private = true // your app shouldn't be published in npm public :)
   // tmp.license = 'UNLICENSED'
-  JSON.stringify(tmp, null, 2).to('../../package.json')
+  echo(JSON.stringify(tmp, null, 2)).to('../../package.json')
   setTimeout(() => {
     require('./ascii_cat.js').cat1() // eslint-disable-line
     console.log('To start with an express js server, type: npm run mwb init\n')
@@ -57,8 +56,6 @@ function postinstall() {
   })
 }
 
-/* global mkdir, cp, exec, test, rm */
-
 function initMin() {
   console.log(' * Creating src & test folder\n')
   mkdir('-p', 'src/client', 'src/share', 'src/server', 'src/public')
@@ -66,14 +63,14 @@ function initMin() {
 
   // server
   cp(templatePath + 'entry.js', 'src/server/entry.js')
-  ''.toEnd('src/server/app.js')
+  echo('').toEnd('src/server/app.js')
 
   // client, just an empty file
-  ''.toEnd('src/client/entry.js')
+  echo('').toEnd('src/client/entry.js')
 
   // test
-  ''.toEnd('src/server/entry.test.js')
-  ''.toEnd('src/client/entry.test.js')
+  echo('').toEnd('src/server/entry.test.js')
+  echo('').toEnd('src/client/entry.test.js')
 
   // add scripts to the existing package.json file
   // make a copy
@@ -93,7 +90,7 @@ function initMin() {
   tmp.scripts.clean = 'rm -rf build'
   tmp.scripts.cleanCordova = 'rm -rf cordova/www/build'
   tmp.scripts.test = 'rm -rf test/build && node tool/test'
-  JSON.stringify(tmp, null, 2).to('package.json')
+  echo(JSON.stringify(tmp, null, 2)).to('package.json')
   console.log(' * Boilerplate created, package.json file has been updated')
   console.log(' * The old package.json file has been renamed to', oldName, '\n')
 }
@@ -125,7 +122,7 @@ function initMongo() {
     : 'npm run clean && node tool/dev'
   const oldName = 'package.' + Date.now() + '.json'
   cp('package.json', oldName)
-  JSON.stringify(tmp, null, 2).to('package.json')
+  echo(JSON.stringify(tmp, null, 2)).to('package.json')
   cp(templatePath + 'mongo.js', 'src/server/mongo.js')
   console.log('\nA folder named db has been created, and package.json has been udpated.')
   console.log('The old package.json file has been renamed to', oldName, '\n')
@@ -158,7 +155,7 @@ function initReact() {
   cp(templatePath + 'actionCreator.js', 'src/share/actions/actionCreator.js')
   cp(templatePath + 'reducers.js', 'src/share/reducers/index.js')
   cp(templatePath + 'reducerCreator.js', 'src/share/reducers/reducerCreator.js')
-  ''.toEnd('src/share/constants.js')
+  echo('').toEnd('src/share/constants.js')
 }
 
 
