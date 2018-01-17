@@ -2,16 +2,22 @@ module.exports = {
   parser: 'babel-eslint',
   extends: 'airbnb',
   plugins: ['react'],
-/*  parserOptions: {
-    ecmaFeatures: {
-      experimentalObjectRestSpread: true,
-    },
-  },*/
-  globals: {
-    __CLIENT__: true,
-    __SERVER__: true,
-    __DEV__: true,
-    __CORDOVA__: true,
+  settings: {
+    'import/resolver': {
+      webpack: {
+        config: {
+          resolve: {
+            alias: {
+              '~': __dirname + '/src'
+            }
+          }
+        }
+      }
+    }
+  },
+  env: {
+    browser: true,
+    node: true
   },
   rules: {
     semi: [2, 'never'],
@@ -25,11 +31,22 @@ module.exports = {
     'prefer-arrow-callback': 0,
     'no-unused-expressions': 0,
     'dot-notation': 0,
-    'arrow-parens': 0,
     'global-require': 0,
-    'import/no-dynamic-require': 0,
-    'no-new-require': 0,
-    'no-mixed-operators': 0,
+    'no-underscore-dangle': 0,
+    'arrow-body-style': 0,
+    'react/jsx-filename-extension': 0,
+    'react/forbid-prop-types': 0,
+    'arrow-parens': 0,
+    'import/no-extraneous-dependencies': 0,
+    // 'import/first': 0,
+    'no-param-reassign': 0,
     'no-plusplus': 0,
+    'no-path-concat': 0,
+    'no-continue': 0,
+    'no-restricted-syntax': 0,
+    'no-bitwise': 0,
+    'no-mixed-operators': 0,
+    'import/first': 0,
+    'no-param-reassign': 0,
   }
 }

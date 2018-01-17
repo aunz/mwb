@@ -19,23 +19,44 @@ const postcssLoader = {
       // require('postcss-nesting')(),
       require('postcss-nested')(),
       require('postcss-css-variables')(),
+      require('postcss-color-function')({ preserver: true }),
       require('autoprefixer')(),
     ]
   }
 }
 
+// for product mode
+
+const minimize = { minimize: { discardComments: { removeAll: true } } }
 const ExtractTextLoader = [{
   test: /^((?!\.module).)*css$/i,
   loader: ExtractTextPlugin.extract({
     fallback,
-    use: ['css-loader', postcssLoader]
+    use: [{ loader: 'css-loader', options: minimize }, postcssLoader]
   })
 }, {
   test: /\.module\.css$/i,
   loader: ExtractTextPlugin.extract({
     fallback,
-    use: [cssModLoader, postcssLoader]
+    use: [{ ...cssModLoader, options: { ...cssModLoader.options, minimize } }, postcssLoader]
   })
+}]
+
+// for dev, as style loader can have hot module replacement on
+const styleLoader = [{
+  test: /^((?!\.module).)*css$/i,
+  use: [
+    { loader: 'style-loader' },
+    { loader: 'css-loader' },
+    postcssLoader,
+  ]
+}, {
+  test: /\.module\.css$/i,
+  use: [
+    { loader: 'style-loader' },
+    cssModLoader,
+    postcssLoader,
+  ]
 }]
 
 function getIp() {
@@ -60,4 +81,4 @@ function injectWHM(config, compiler, port = 9090) {
   }).listen(port)
 }
 
-module.exports = { ExtractTextLoader, injectWHM }
+module.exports = { ExtractTextLoader, styleLoader, injectWHM }

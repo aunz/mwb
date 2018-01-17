@@ -11,7 +11,8 @@ const { alterClient, alterServer, alterCordova } = (function () {
   try {
     return require('../mwb.config.js') // eslint-disable-line no-unresolved
   } catch (e) {
-    return {}
+    if (e.message === "cannot find module '../mwb.config.js'") return {}
+    throw e
   }
 }())
 

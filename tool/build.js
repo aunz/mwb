@@ -17,7 +17,8 @@ const { alterClient, alterServer, alterCordova } = (function () {
   try {
     return require('../mwb.config.js')
   } catch (e) {
-    return {}
+    if (e.message === "cannot find module '../mwb.config.js'") return {}
+    throw e
   }
 }())
 
@@ -48,41 +49,14 @@ const commonPlugins = [
 
 clientConfig.module.rules.push(...ExtractTextLoader)
 clientConfig.plugins.push(...commonPlugins, new OfflinePlugin({ ServiceWorker: { minify: true } }))
-const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
+const vendorChunk = new webpack.optimize.CommonsChunkPlugin({
   name: 'vendor',
   minChunks: ({ resource }) => /node_modules/.test(resource), // could use /node_modules.*\.jsx?$/ to only process js
 })
-clientConfig.plugins.push(new webpack.HashedModuleIdsPlugin(), commonsChunk)
-// clientConfig.plugins.push(commonsChunk, new require('webpack-chunk-hash'))
+const manifestChunk = new webpack.optimize.CommonsChunkPlugin({ name: 'manifest' })
+clientConfig.plugins.push(new webpack.HashedModuleIdsPlugin(), vendorChunk, manifestChunk)
 
 const alterClientCb = alterClient && alterClient(clientConfig, 'build')
-
-/*
-  There are 3+ ways to dynamically create vendor chunk for long term caching using CommonsChunkPlugin
-  After creating a commonChunk
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      minChunks: ({ resource }) => /node_modules/.test(resource),
-    })
-
-  1) Add new require('webpack-md5-hash') or require('webpack-chunk-hash')
-    The hash will be based on content, the manifest webpackJsonp function will be in the entry chunk, in this case the vendor chunk
-    There will output 2 files: vendor.xx.js and client.xx.js
-    vendor.xx.js is the entry chunk and will be loaded first
-  2) Add another commonChunk
-    new webpack.optimize.CommonsChunkPlugin('manifest') <-- can be any name, such as 'meta'
-    this will create a manifest.[xxx].js or meta.[xxx].js which contains the webpackJsonp functions
-    There will create 3 files: manifest.xx.js, vendor.xx.js and client.xx.js
-    When the client code changes, the xx in client.xx.js and the xx in manifest.xx.js will change
-    the xx in vendor.xx.js will be the same
-    no need extra plugin, but will results in 3 http requests
-  3) Add new require('chunk-manifest-webpack-plugin') after adding new webpack.optimize.CommonsChunkPlugin('manifest')
-    This plugin extract the manifest into a json file
-    Then will need inline-manifest-webpack-plugin to insert the json into the intial html along with html-webpack-plugin
-    This will result in 2 files: vendor.xx.js and client.xx.js
-
-  ** I have decided to go for option 1 as it seems simplest, clients only need to make 2 http request, but need to be dependent on the md5 plugins
-*/
 
 
 if (argv !== 'cordovaOnly') {

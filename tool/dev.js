@@ -2,16 +2,17 @@ const path = require('path')
 const child_process = require('child_process')
 
 const webpack = require('webpack')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const { clientConfig, serverConfig, cordovaConfig, copy } = require('./webpack.config')
-const { ExtractTextLoader, injectWHM } = require('./common.js')
+const { ExtractTextLoader, styleLoader, injectWHM } = require('./common.js')
 
 const { alterClient, alterServer, alterCordova } = (function () {
   try {
-    return require('../mwb.config.js')
+    return require('../mwb.config.js') // eslint-disable-line import/no-unresolved
   } catch (e) {
-    return {}
+    if (e.message === "Cannot find module '../mwb.config.js'") return {}
+    throw e
   }
 }())
 
@@ -30,7 +31,7 @@ const commonPlugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': '"development"',
   }),
-  new ExtractTextPlugin({ filename: 'styles.css' }), // has to use this for universal server client rendering
+  // new ExtractTextPlugin({ filename: 'styles.css' }), // can't do hot module replacement
 ]
 
 /**
@@ -38,9 +39,9 @@ const commonPlugins = [
  */
 
 clientConfig.devtool = 'cheap-module-eval-source-map'
-// add hot middleware on port 8080
 clientConfig.output.filename = '[name].js'
-clientConfig.module.rules.push(...ExtractTextLoader)
+clientConfig.module.rules.push(...styleLoader) // styleLoader can have hot module replacement for css on change
+// clientConfig.module.rules.push(...ExtractTextLoader)
 // clientConfig.module.noParse = /someModuleDist|anotherModuleDist/
 clientConfig.plugins.push(...commonPlugins)
 clientConfig.performance = { hints: false }
