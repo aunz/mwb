@@ -1,0 +1,1 @@
+console.log('Client test runs in node2')

@@ -1,0 +1,9 @@
+body {
+  & div {
+    border: 1px solid pink;
+  }
+}
+
+div {
+  border: 2px solid green;
+}

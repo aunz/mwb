@@ -1,89 +1,86 @@
-#Minimalist boilerplate for Webpack +/- Express 
+# Minimalist webpack config boilerplate for client and server
 
  * Hot loading for both **client** & **server**
- * Code in es2015
- * CSS module + postcss + autoprefixer
- * Assets minification for production
+ * Assets minification and chunk splitting for production
+ * Postcss, autoprefixer
  * Client files hashing for caching
  * Focus on your app logics, leave the build tools to others
 
 ### 
   
-To start
+To start, copy the **mwb.js** into your node project root. You can change its name to anything you like.
 ```shell
-mkdir myApp
-cd myApp
+node mwb # start live coding & editing in development mode
+node mwb --mode production # build the app for production
 
-npm init
-npm i -D mwb # install (i) mwb as devDependency (-D)
-
-npm run mwb init # generate the boilerplate with an express server
-npm run mwb initMin # generate the boilerplate without a server
-
-npm run dev # start live coding & editing in development mode
-
-npm run bundle # bundling the app for production
+node mwb --hot.server # enable HMR in server
 ```
 
-##Tested in node 8+, npm 5+
+## Tested in node 8+, npm 5+
 
 ----------
-###Directory structure:
+### Directory structure:
 ```
-App
- ├─ /build/
- ├─ /tool/
- └─ /src/ 
-     ├─ /client/
-     |    └─ entry.js
-     ├─ /share/
-     ├─ /server/
-     |     ├─ entry.js
-     |     ├─ app.js 
-     |     └─ main.js
-     └─ /public/
-           └─ favicon.ico
-
+  App
+   ├─ /dist/
+   |    ├─ /test/
+   |    ├─ /public/
+   |    └─ /server/
+   └─ /src/ 
+       ├─ /client/
+       |    ├─ entry.js
+       |    ├─ entry.test.js
+       |    └─ entry.node.test.js
+       ├─ /server/
+       |    ├─ entry.js
+       |    └─ entry.test.js
+       └─ /public/
+             └─ favicon.ico
 
 ```
 ---
-###How it works:
-* After initiation, an entry.js file is placed in the src/client and src/server folder
-* All default webpack config files are in the tool folder, you can override these
-* `npm run dev` uses webpack to compile and watch these files and output them into the build folder -> client.js and server.js
-* serverBundle.js is run automatically and will be served at localhost:3000 (default using express js)
-* When you edit the files in the source folder, webpack re-compile required files
-* To enable hot module replacement, add `if (module.hot) {module.hot.accept()}` in your code
-* Default webpack.config.js is in the tool directory
-
+### How it works:
+* Place the mwb.js in your root folder, you can change the name to anything you like
+* Create a directory structure as above
+* The mwb.js actually produces webpack config objects (client config and server config) and run webpack compilers internally. It reads the src/client/entry.js, processes through webpack and produces a file at dist/public/client.js. The same applies to src/server/entry.js with an output at dist/server/server.js
+* During devlopment mode, when you edit the files in the source folder, webpack re-compiles them. Hot module replacement is enabled by default for client, and can be turned on for server with `node mwb.js --mode development --hot.server`. `--mode development` is the default, you don't need to specify it.
+* You can also add entry.test.js in either client or server and run them as `node mwb --env.TEST`. The entry.test.js will be processed by webpack with all the loaders and plugins.
+* The public folder is for your static assets. All the files and folders in it will be copied to the `dist/public`.
 ---
-###Details
 
-####Included loaders:
-* [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, stage-0, react), plugins (transform-runtime) and cacheDirectory (true).
-* `css!postcss` loaders for css with `autoprefixer`, `postcss-import`, `postcss-nested`, `postcss-css-variables`
+### Dependencies
+You will need these if you have not istalled them
+```shell
+  npm i -D webpack
+  npm i -D babel-loader file-loader url-loader raw-loader null-loader
+  npm i -D style-loader css-loader postcss-loader postcss-import postcss-url postcss-cssnext
+  npm i -D babel-preset-react-app babel-preset-stage-0
+  npm i -D html-webpack-plugin extract-text-webpack-plugin offline-plugin
+  npm i -D webpack-hot-middleware
+  npm i -D eslint babel-eslint # optional 
+```
+
+### Details
+
+#### Included loaders:
+* [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, stage-0, react-app), plugins (transform-runtime) and cacheDirectory (true).
+* `css!postcss` loaders for css with `autoprefixer`, `postcss-import`, `poscss-cssnext`
 * `url-loader` for everything else with limit=10000 & name=[name]_[hash:7].[ext]
 
-Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client.
-`css module` is applied to files with name xxx.module.css. You should not mix global and local css, i.e. in global.css don't do @import './local.module.css'; and vice versa, in local.module.css don't do @import './global.css'. On server, `null-loader` is applied to global.css but `css?module` to local.module.css, the extracted styles.css will be deleted on server when built for production.
+Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client. On server, `null-loader` is applied to all css.
 
-###Included plugins
+### Included plugins
 * `extract-text-webpack-plugin`
-* `html-webpack-plugin` using template at `./src/share/index.html`
-* `webpack.optimize.AggressiveMergingPlugin`
-* `webpack.optimize.UglifyJsPlugin` 
+* `html-webpack-plugin`
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"node"' })`for server
-* `webpack.DefinePlugin({ 'process.env.APP_ENV': '"web"' })` for clients (browser and cordova)
-* `webpack.DefinePlugin({ 'process.env.CORDOVA': true })` for cordova app
+* `webpack.DefinePlugin({ 'process.env.APP_ENV': '"web"' })` for clients
 * `webpack.DefinePlugin({ 'process.env.TEST': true })` for testing
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' })` in development mode
-* `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code elimination during minification
+* `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code 
 * `offline-plugin` with minification on in production mode for client
 
-### Express server
-* Listen to 3000 by default or `process.env.PORT`
-* Use `compression` middleware, then `static('./build/public')` middleware
-* Server code is hot replaced in development mode, but NOT in production mode
+### Server
+* This is optional, in the `src\server\entry.js` you will need some kind of server logic to serve client files, see example at the src\server\entry.js
 * All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
 
 ### Misc
@@ -94,31 +91,3 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial ch
 * `~` is aliased to the `src` directory. For example, `import '~/server/myModule'`
 
 
-### Mongodb
-
-```shell
-npm run mwb initMongo
-```
-This add the latest mongodb native driver to the app. 
-This also add a file named `mongo.js` into the src/server folder.
-The mongo.js file contains and export the default connection. 
-In an imported file, use async & await to retrive the connection and db. 
-
-
-### [React & Redux](./doc/react.md)
-
-### [Writing tests](./doc/writingTests.md)
-
-### [Examples](./examples)
-
-### [Cordova integration](./doc/cordova.md)
-
-### [Extending the configs](./doc/extending.md)
-
-### Update
-
-You can update simply by typing
-```shell 
-npm i -D mwb
-```
-The `tool` directory will be renamed to tool.{timestamp}

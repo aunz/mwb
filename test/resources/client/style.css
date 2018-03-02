@@ -1,0 +1,13 @@
+@import './style2.css';
+
+body {
+  background-color: yellow;
+}
+
+body {
+  background-image: url('./bird1.png'); /* test import url */
+}
+
+div {
+  background-image: url('./bird2.jpg')
+}

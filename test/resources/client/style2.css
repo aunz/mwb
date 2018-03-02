@@ -1,0 +1,5 @@
+body {
+  & div {
+    border: 1px solid;
+  }
+}

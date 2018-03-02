@@ -1,0 +1,13 @@
+@import 'normalize.css/normalize.css';
+@import './style2.css';
+
+
+
+body {
+  background-color: yellow;
+}
+
+body {
+  width: 100vw;
+}
+
