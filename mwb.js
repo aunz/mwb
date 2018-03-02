@@ -3,7 +3,7 @@
 
   node mwb
     --mode [development | production]   default is development
-    --env.TEST    optional, set this when doing tests process.env.TEST === true 
+    --env.TEST    optional, set this when doing tests process.env.TEST === true
     --hot.server   optional, enable HMR for server
 */
 
@@ -15,7 +15,7 @@ const htmlWebpackPlugin = new (require('html-webpack-plugin'))
 })
 
 
-/****** ONLY CHANGE AFTER THIS IF YOU KNOW WHAT YOU ARE DOIG ******/
+/* ***** ONLY CHANGE AFTER THIS IF YOU KNOW WHAT YOU ARE DOIG ***** */
 
 
 /* import stuff */
@@ -23,6 +23,7 @@ const path = require('path')
 const webpack = require('webpack')
 
 const args = require('minimist')(process.argv.slice(2))
+
 if (!args.mode) args.mode = 'development'
 
 if (!['production', 'development'].includes(args.mode)) throw new Error(`The provided mode: '${args.mode}' is not correct`)
@@ -111,7 +112,7 @@ function makeConfig(target = 'client', args) {
   if (target === 'server') return {
     ...common,
     entry: {
-      server: ['./src/server/'+ entryFilename],
+      server: ['./src/server/' + entryFilename],
     },
     target: 'node',
     output: {
@@ -193,7 +194,6 @@ function makeRules(target = 'client', args) {
       test: /\.css$/i,
       use: mode === 'production' ? productionUse : developmentUse
     })
-
   } else {
     rules.push({ // don't handle css in server
       test: /\.css$/i,
@@ -222,7 +222,6 @@ function makePlugins(target = 'client', args) {
           // new (require('offline-plugin'))({ ServiceWorker: { minify: true } }),
         )
       : ''
-
   } else {
     mode === 'production'
       ? '' // plugins.push(new ExtractTextPlugin({ filename: 'styles.css', allChunks: true })) // set allChunks to true to move all css into styles.css which will be deleted in the following build step
@@ -262,7 +261,7 @@ function compile_node_devMode(config, args) {
   webpack(config).watch({}, (err, stats) => {
     if (err) throw err
     logStats(stats, 'server')
-    
+
     child
       ? isHot ? child.send({}) : child.kill() // can't use child.kill('SIGUSR2') as 'SIGUSR2' is not implemented in windows, so use child.send({}) for HMR
       : forkChild()
@@ -283,7 +282,7 @@ function compile_node_devMode(config, args) {
 async function copyPublicStuff() {
   const { promisify } = require('util')
   const mkdirp = promisify(require('mkdirp'))
-  
+
   const publicPath = path.resolve('./src/public/', '.')
   await mkdirp(publicPath)
   await mkdirp(clientConfig.output.path)

@@ -15,7 +15,7 @@ const test = require('tape')
 
 /*** top level variables ***/
 
-const testFolder = 'tmp' 
+const testFolder = 'tmp'
 const configFile = 'mwb.js'
 
 
