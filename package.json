@@ -1,6 +1,6 @@
 {
   "name": "mwb",
-  "version": "0.0.0",
+  "version": "0.0.36",
   "description": "webpack config to enable client & server hmr development",
   "main": "index.js",
   "scripts": {
