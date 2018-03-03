@@ -1,4 +1,4 @@
-# Minimalist webpack config boilerplate for client and server
+# Minimalist webpack 4 config boilerplate for client and server
 
  * Hot loading for both **client** & **server**
  * Assets minification and chunk splitting for production

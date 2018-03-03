@@ -1,8 +1,8 @@
-build
-dist
-temp
-tmp
-db
+build/
+dist/
+temp/
+tmp/
+db/
 
 
 # Created by https://www.gitignore.io/api/node

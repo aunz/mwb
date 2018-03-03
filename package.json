@@ -2,15 +2,11 @@
   "name": "mwb",
   "version": "0.0.36",
   "description": "webpack config to enable client & server hmr development",
-  "main": "index.js",
-  "scripts": {
-    "dev": "webpack --mode development",
-    "build": "webpack --mode production",
-    "test": "webpack --mode development --env.test"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "webpack"
+  ],
+  "author": "KN <aunz10@yahoo.com>",
+  "license": "MIT",
   "devDependencies": {
     "axios": "^0.18.0",
     "babel-core": "^6.26.0",
@@ -39,5 +35,8 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "webpack-hot-middleware": "^2.21.0"
-  }
+  },
+  "files": [
+    "mwb.js"
+  ]
 }
