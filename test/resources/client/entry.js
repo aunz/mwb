@@ -1,4 +1,5 @@
 import '~/client/style.css'
+import '~/client/style3.local.css'
 import '~/client/1'
 import('~/client/2')
 import('~/client/3')

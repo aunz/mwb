@@ -11,3 +11,5 @@ body {
 div {
   background-image: url('./bird2.jpg')
 }
+
+.style { color: PeachPuff; /* #FFDAB9 */ }

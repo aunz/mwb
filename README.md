@@ -23,7 +23,6 @@ node mwb --hot.server # enable HMR in server
 ```
   App
    ├─ /dist/
-   |    ├─ /test/
    |    ├─ /public/
    |    └─ /server/
    └─ /src/ 
@@ -38,6 +37,13 @@ node mwb --hot.server # enable HMR in server
              └─ favicon.ico
 
 ```
+
+To create the directory structure as above, run:
+```shell
+node mwb --init
+```
+Don't worry, it won't override anything
+
 ---
 ### How it works:
 * Place the mwb.js in your root folder, you can change the name to anything you like
@@ -58,6 +64,9 @@ You will need these if you have not istalled them
   npm i -D html-webpack-plugin extract-text-webpack-plugin offline-plugin
   npm i -D webpack-hot-middleware
   npm i -D eslint babel-eslint # optional 
+
+  # or run
+  node mwb --init
 ```
 
 ### Details
