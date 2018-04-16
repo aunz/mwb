@@ -1,15 +1,7 @@
 /* This is a template for building client and server with HMR */
 
-const htmlWebpackPluginOption = {
-  title: 'My Awesome App',
-  template: './src/client/index.html',
-}
-
-/* ***** ONLY CHANGE AFTER THIS IF YOU KNOW WHAT YOU ARE DOIG ***** */
-
 /* import stuff */
 const path = require('path')
-const execSync = require('child_process')
 const webpack = require('webpack')
 const argv = require('minimist')(process.argv.slice(2))
 
@@ -17,41 +9,23 @@ if (argv.init) { init(); process.exit() }
 if (!argv.mode) argv.mode = 'development'
 if (!['production', 'development'].includes(argv.mode)) throw new Error(`The provided mode: '${argv.mode}' is not correct`)
 
-process.env.NODE_ENV = argv.mode // has to set this for babel-preset-react-app to work
-argv.env = argv.env || {}
+argv.env = { ...(argv.env || {}), NODE_ENV: argv.mode }
 Object.keys(argv.env).forEach(e => { process.env[e] = argv.env[e] })
 
-const clientConfig = makeConfig('client', argv) // ; console.log('CCC', clientConfig)
-const serverConfig = makeConfig('server', argv) // ; console.log('SSS', serverConfig)
+const clientConfig = makeConfig('client', argv)
+const serverConfig = makeConfig('server', argv)
 
 if (argv.mode === 'production') {
-  require('child_process').execSync('rm -rf dist') // remove the dist folder
-
-  // Don't try to optimize prematurely. The defaults are choosen to fit best practices of web performance.
-  clientConfig.optimization = {
-    // splitChunks: { chunks: 'all' },
-    // splitChunks: { cacheGroups: { vendors: { chunks: 'all' } } },
-    // runtimeChunk: true // generate another file so the entry chunk file will has the same hash if
-  }
-  // chunks: all, dafault is async, https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693
-  // when all, even vendor chunks are moved out from the entry chunk
-
-  webpack(clientConfig).run((err, stats) => {
-    if (err) throw err
-    logStats(stats, 'client')
-  })
-  webpack(serverConfig).run((err, stats) => {
-    if (err) throw err
-    logStats(stats, 'server')
-  })
+  require('child_process').execSync('rm -rf dist')
+  webpack(clientConfig).run(logStats)
+  webpack(serverConfig).run(logStats)
 } else if (argv.mode === 'development') {
   compile_web_devMode(clientConfig, argv)
   compile_node_devMode(serverConfig, argv)
 
-  // For client tests to run in node env
-  if (argv.env.TEST) {
+  if (argv.env.TEST) { // For client tests to run in node env
     const clientConfigNode = makeConfig('server', argv)
-    clientConfigNode.entry.server = ['./src/client/entry.node.test.js']
+    clientConfigNode.entry = { client_in_node: ['./src/client/entry.node.test.js'] }
     clientConfigNode.output.filename = 'node.test.js'
 
     compile_node_devMode(clientConfigNode, argv)
@@ -60,7 +34,6 @@ if (argv.mode === 'production') {
 
 copyPublicStuff()
 
-// helper functions
 function makeConfig(target = 'client', args) {
   if (!['client', 'server'].includes(target)) throw new Error(`The provided target: '${target}' is not correct`)
   const { mode, env } = args
@@ -68,7 +41,7 @@ function makeConfig(target = 'client', args) {
 
   const common = {
     resolve: {
-      alias: { '~': path.resolve('./src') }
+      alias: { '~': path.resolve('./src') },
     },
     module: { rules: makeRules(target, args) },
     plugins: makePlugins(target, args),
@@ -78,6 +51,8 @@ function makeConfig(target = 'client', args) {
   if (mode !== 'production') {
     common.performance = { hints: false }
     common.devtool = 'cheap-module-eval-source-map'
+  } else {
+    // common.devtool = 'nosources-source-map' 
   }
 
   const entryFilename = isTEST ? 'entry.test.js' : 'entry.js'
@@ -87,11 +62,17 @@ function makeConfig(target = 'client', args) {
     entry: {
       client: ['./src/client/' + entryFilename],
     },
+    target: 'web',
     output: {
       filename: mode === 'production' ? '[name]_[chunkhash:7].js' : (isTEST ? 'client.test.js' : 'client.js'),
       path: path.resolve('./dist/public/'),
       publicPath: '/',
-    }
+    },
+    // Don't try to optimize prematurely. The defaults are choosen to fit best practices of web performance. https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693
+    // optimization: mode === 'development' ? {} : {
+    //   splitChunks: { chunks: 'all' }, // when all, even vendor chunks are moved out from the entry chunk
+    //   runtimeChunk: true // generate another file so the entry chunk file will has the same hash if
+    // }
   }
 
   if (target === 'server') return {
@@ -113,32 +94,39 @@ function makeConfig(target = 'client', args) {
 }
 
 function makeRules(target = 'client', args) {
-  const rules = [{
-    test: /\.jsx?$/,
+  const babelRule = {
+    test: /\.m?jsx?$/,
     exclude: /node_modules/,
     use: [{
       loader: 'babel-loader',
       query: {
         presets: [
-          ['env', {
+          ['@babel/preset-env', {
             target: target === 'client'
               ? { browsers: ['last 2 versions', '> 5%'] }
               : { node: true },
-            useBuiltIns: true,
+            useBuiltIns: 'usage',
+            shippedProposals: true,
+            modules: false,
           }],
-          'react-app',
-          'stage-0',
+          // ['@babel/preset-stage-0'],
+          '@babel/preset-react',
         ],
         cacheDirectory: true, // cache into OS temp folder by default
+        retainLines: args.mode === 'development',
+        plugins: [
+          '@babel/plugin-proposal-class-properties',
+          '@babel/plugin-syntax-dynamic-import',
+          '@babel/plugin-proposal-throw-expressions',
+          'graphql-tag'
+        ],
       }
     }],
-  }, {
-    test: /\.sql$/,
-    // exclude: /node_modules/,
-    use: ['raw-loader'],
-  }, {
-    test: /\.(?!(jsx?|json|s?css|less|html?|sql)$)([^.]+$)/, // match everything except js, jsx, json, css, scss, less. You can add more
-    // exclude: /node_modules/,
+  }
+  const sqlRule = { test: /\.sql$/, use: ['raw-loader'] }
+  const gqlRule = { test: /\.(g(raph)?ql)$/, exclude: /node_modules/, use: ['graphql-tag/loader'] }
+  const theRest = {
+    test: /\.(?!(m?jsx?|json|wasm|css|html?|sql|g(raph)?ql)$)([^.]+$)/, // match everything else....
     use: [{
       loader: 'url-loader',
       options: {
@@ -146,11 +134,10 @@ function makeRules(target = 'client', args) {
         name: '[name]_[hash:base64:5].[ext]',
         emitFile: target === 'client',
       }
-    }],
-  }, makeCSSRule(target, args, false), makeCSSRule(target, args, true)
-  ]
+    }]
+  }
 
-  return rules
+  return [babelRule, sqlRule, gqlRule, makeCSSRule(target, args, false), makeCSSRule(target, args, true), theRest]
 }
 
 function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
@@ -160,14 +147,27 @@ function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
     loader: 'css-loader' + (target === 'client' ? '' : '/locals'), // /locals doesn't embed css, only exports the identifier mappings
     options: {
       modules: useCSSModule,
-      localIdentName: '[local]_[hash:base64:5]',
+      localIdentName: '[local]_[hash:5]',
       minimize: mode === 'development' ? false : { discardComments: { removeAll: true } },
     }
   }
   const postcssLoader = {
     loader: 'postcss-loader',
     options: {
-      plugins: () => [require('postcss-import')(), require('postcss-cssnext')()]
+      plugins: () => [
+        require('postcss-import')({
+          resolve(id, basedir) {
+            if (/^\./.test(id)) return path.resolve(basedir, id) // resolve relative path anything begin with .
+            if (/^~\//.test(id)) return path.resolve('./src', id.slice(2)) // resolve alias ~
+            return path.resolve('./node_modules', id) // resolve node_modules
+          }
+        }),
+        require('postcss-cssnext')({
+          features: {
+            // customProperties: { preserve: true, appendVariables: true }
+          }
+        })
+      ]
     }
   }
   const loader = {
@@ -185,17 +185,25 @@ function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
   return loader
 }
 
-function makePlugins(target = 'client', { mode }) {
-  const ExtractTextPlugin = require('extract-text-webpack-plugin')
+function makePlugins(target = 'client', { mode, env }) {
+  const definitions = Object.keys(env).reduce((p, n) => {
+    p['process.env.' + n] = JSON.stringify(env[n])
+    return p
+  }, {})
+  definitions['process.env.APP_ENV'] = JSON.stringify(target)
+  definitions['process.env.TEST'] = JSON.stringify(env.TEST || false)
 
-  const plugins = [
-    new webpack.DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(mode) }),
-    new webpack.DefinePlugin({ 'process.env.APP_ENV': JSON.stringify(target) }),
-  ]
+  const plugins = [new webpack.DefinePlugin(definitions)]
 
   if (target === 'client') {
-    plugins.push(new (require('html-webpack-plugin'))(htmlWebpackPluginOption))
-    if (mode === 'production') plugins.push(new ExtractTextPlugin({ filename: 'style_[contenthash:base64:5].css', allChunks: false }))
+    plugins.push(new (require('html-webpack-plugin'))({
+      template: './src/client/index.html',
+    }))
+    if (mode === 'production') {
+      plugins.push(new (require('extract-text-webpack-plugin'))({
+        filename: 'style_[contenthash:base64:5].css'
+      }))
+    }
   }
 
   return plugins
@@ -213,10 +221,7 @@ function compile_web_devMode(config, args) {
     require('webpack-hot-middleware')(compiler, { log: false })(req, res)
   }).listen(port)
 
-  compiler.watch({}, (err, stats) => {
-    if (err) throw err
-    logStats(stats, 'client')
-  })
+  compiler.watch({}, logStats)
 }
 
 function compile_node_devMode(config, args) {
@@ -229,8 +234,7 @@ function compile_node_devMode(config, args) {
 
   let child
   webpack(config).watch({}, (err, stats) => {
-    if (err) throw err
-    logStats(stats, 'server')
+    logStats(err, stats)
 
     child
       ? isHot ? child.send({}) : child.kill() // can't use child.kill('SIGUSR2') as 'SIGUSR2' is not implemented in windows, so use child.send({}) for HMR
@@ -244,7 +248,7 @@ function compile_node_devMode(config, args) {
       console.error('Child server exited with code:', code, 'and signal:', signal)
       child = null
       if (code === 0) return
-      if (Date.now() - start > 1000) forkChild() // arbitrarily only after the server has started for more than 1 sec
+      if (Date.now() - start > 5000) forkChild() // arbitrarily only after the server has started for more than 5 sec
     })
   }
 }
@@ -260,9 +264,11 @@ async function copyPublicStuff() {
   promisify(require('child_process').exec)(`cp -rf "${publicPath}${path.sep}." "${clientConfig.output.path}"`).catch(console.error)
 }
 
-function logStats(stats, target) {
+function logStats(err, stats) {
+  if (err) throw err
+  const target = Object.keys(stats.compilation.options.entry)
   const statString = stats.toString({ colors: true })
-  console.log(`${target} Bundle\n${statString}\n`)
+  console.log(`\x1b[46m\n\n### ${target} bundle ###\n\n\x1b[0m${statString}\n`)
 }
 
 function getIp() {
@@ -280,11 +286,10 @@ function getIp() {
 }
 
 function init() {
-  const mkdirp = require('mkdirp')
-  const { appendFileSync, writeFileSync } = require('fs')
+  const { mkdirSync, appendFileSync, writeFileSync } = require('fs')
   const { execSync } = require('child_process')
 
-  ;['./src/client', './src/server', './src/public'].forEach(d => mkdirp.sync(d))
+  ;['./src', './src/client', './src/client/components', './src/client/styles', './src/server', './src/public'].forEach(d => { try { mkdirSync(d) } catch (e) {} }) // eslint-disable-line
   ;['./src/client/entry.js',
     './src/client/entry.test.js',
     './src/client/entry.node.test.js',
@@ -293,21 +298,21 @@ function init() {
 
   try {
     const data = `<!DOCTYPE html>
-  <html>  
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title></title>
-    <meta name="description" content="" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta http-equiv="cleartype" content="on" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-  </html>`
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title></title>
+  <meta name="description" content="" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta http-equiv="cleartype" content="on" />
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>`
     writeFileSync('./src/client/index.html', data, { flag: 'wx' })
   } catch (e) {}
 
@@ -332,7 +337,7 @@ Listening at http://$\{this.address().address}:$\{this.address().port}
 NODE_ENV: $\{process.env.NODE_ENV}
 process.pid: $\{process.pid}
 root: $\{require('path').resolve()}
-'************************************************************\`)
+************************************************************\`)
 })
 
 export default app`
@@ -351,14 +356,14 @@ export default app`
   const packageToBeInstalled = [
     'babel-loader', 'file-loader', 'url-loader', 'raw-loader', 'null-loader',
     'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-cssnext',
-    'babel-preset-react-app', 'babel-preset-stage-0',
+    '@babel/core', '@babel/preset-env', '@babel/preset-stage-0', '@babel/preset-react',
     'html-webpack-plugin', 'extract-text-webpack-plugin', 'offline-plugin',
     'webpack-hot-middleware',
     'eslint', 'babel-eslint',
-  ].filter(d => !installedPackages.includes(d))
+  ].filter(d => !installedPackages.includes(d)).join(' ')
 
   if (packageToBeInstalled.length > 0) {
-    console.log('Running npm i -D ' + packageToBeInstalled.join(' '))
-    execSync('npm i -D ' + packageToBeInstalled.join(' '))
+    console.log('Running npm i -D ' + packageToBeInstalled)
+    execSync('npm i -D ' + packageToBeInstalled)
   }
 }

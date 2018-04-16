@@ -1,4 +1,4 @@
-# Minimalist webpack 4 config boilerplate for client and server
+# Minimalist webpack **4** config boilerplate for client and server
 
  * Hot loading for both **client** & **server**
  * Assets minification and chunk splitting for production
@@ -74,29 +74,30 @@ You will need these if you have not istalled them
 #### Included loaders:
 * [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, stage-0, react-app), plugins (transform-runtime) and cacheDirectory (true).
 * `css!postcss` loaders for css with `autoprefixer`, `postcss-import`, `poscss-cssnext`
-* `url-loader` for everything else with limit=10000 & name=[name]_[hash:7].[ext]
+* To use css module, name your style files as `[file].local.css`. The suffix `.local.css` switches on the `{ option: { module: true } }` in css-loader
+* `url-loader` for everything else with limit=8192 & name=[name]_[hash:base64:5].[ext]
 
 Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client. On server, `null-loader` is applied to all css.
 
 ### Included plugins
 * `extract-text-webpack-plugin`
 * `html-webpack-plugin`
-* `webpack.DefinePlugin({ 'process.env.APP_ENV': '"node"' })`for server
-* `webpack.DefinePlugin({ 'process.env.APP_ENV': '"web"' })` for clients
-* `webpack.DefinePlugin({ 'process.env.TEST': true })` for testing
+* `webpack.DefinePlugin({ 'process.env.APP_ENV': '"server"' })`for server
+* `webpack.DefinePlugin({ 'process.env.APP_ENV': '"client"' })` for clients
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' })` in development mode
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code 
-* `offline-plugin` with minification on in production mode for client
+* Add more env by `node mwb --env.A apple --env.B banana --env.C cherry`, these will produce `webpack.DefinePlugin({ 'process.env.A': '"apple"' })` and so on
+* `offline-plugin` with minification turned on in production mode for client
 
 ### Server
-* This is optional, in the `src\server\entry.js` you will need some kind of server logic to serve client files, see example at the src\server\entry.js
+* This is optional, in the `src\server\entry.js` you will need some kind of server logic to serve client files, see example at the src\server\entry.js. Or you can create an express server using node mwb --init
 * All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
 
 ### Misc
 * All codes wrapped inside `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
 * source map is set to `cheap-module-eval-source-map` for development
 * source map is **NOT** included in production mode
-* `client_[chunkhash:7].js` `vendor_[chunkhash:7].js` & `styles_[contenthash:7].css` in production mode for caching
-* `~` is aliased to the `src` directory. For example, `import '~/server/myModule'`
+* `client_[chunkhash:7].js` `vendor_[chunkhash:7].js` & `style_[contenthash:base64:5].css` in production mode for caching
+* `~` is aliased to the `src` directory. For example, `import '~/server/myModule'` === `./src/server/myModule`
 
 

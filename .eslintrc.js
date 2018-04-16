@@ -35,7 +35,8 @@ module.exports = {
     'no-underscore-dangle': 0,
     'arrow-body-style': 0,
     'react/jsx-filename-extension': 0,
-    'react/forbid-prop-types': 0,
+    // 'react/forbid-prop-types': 0,
+    'react/require-default-props': 0,
     'arrow-parens': 0,
     'import/no-extraneous-dependencies': 0,
     // 'import/first': 0,
@@ -48,6 +49,18 @@ module.exports = {
     'no-mixed-operators': 0,
     'import/first': 0,
     'no-param-reassign': 0,
-    'no-nested-ternary': 0
+    'no-nested-ternary': 0,
+    'react/prefer-stateless-function': 0,
+    'object-curly-newline': 0,
+    'no-confusing-arrow': 0,
+    'jsx-a11y/label-has-for': 0,
+    'jsx-a11y/anchor-is-valid': [ 'error', {
+      'components': ['Link'],
+      'specialLink': ['to']
+    }],
+    'function-paren-newline': ['error', 'consistent'],
+    'import/prefer-default-export': 0,
+    'semi-style': 0,
+    'react/no-unescaped-entities': 0,
   }
 }
