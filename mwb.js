@@ -28,7 +28,7 @@ if (argv.mode === 'production') {
     clientConfigNode.entry = { client_in_node: ['./src/client/entry.node.test.js'] }
     clientConfigNode.output.filename = 'node.test.js'
 
-    compile_node_devMode(clientConfigNode, argv)
+    // compile_node_devMode(clientConfigNode, argv)
   }
 }
 
@@ -94,30 +94,29 @@ function makeConfig(target = 'client', args) {
 }
 
 function makeRules(target = 'client', args) {
+  const presets = [['@babel/preset-react']]
+  target === 'client' && presets.push(['@babel/preset-env', {
+    targets: {
+      browsers: ['last 2 versions', '> 5%'],
+    },
+    useBuiltIns: 'usage',
+    shippedProposals: true,
+    modules: false,
+  }])
   const babelRule = {
     test: /\.m?jsx?$/,
     exclude: /node_modules/,
     use: [{
       loader: 'babel-loader',
       query: {
-        presets: [
-          ['@babel/preset-env', {
-            target: target === 'client'
-              ? { browsers: ['last 2 versions', '> 5%'] }
-              : { node: true },
-            useBuiltIns: 'usage',
-            shippedProposals: true,
-            modules: false,
-          }],
-          // ['@babel/preset-stage-0'],
-          '@babel/preset-react',
-        ],
+        presets,
         cacheDirectory: true, // cache into OS temp folder by default
         retainLines: args.mode === 'development',
         plugins: [
           '@babel/plugin-proposal-class-properties',
           '@babel/plugin-syntax-dynamic-import',
           '@babel/plugin-proposal-throw-expressions',
+          '@babel/plugin-proposal-object-rest-spread',
           'graphql-tag'
         ],
       }

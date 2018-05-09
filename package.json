@@ -5,7 +5,7 @@
   "keywords": [
     "webpack"
   ],
-  "author": "KN <aunz10@yahoo.com>",
+  "author": "KN",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.42",
