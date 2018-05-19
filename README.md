@@ -80,7 +80,7 @@ You will need these if you have not istalled them
 Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client. On server, `null-loader` is applied to all css.
 
 ### Included plugins
-* `extract-text-webpack-plugin`
+* `extract-text-webpack-plugin` for production mode
 * `html-webpack-plugin`
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"server"' })`for server
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"client"' })` for clients
@@ -90,8 +90,16 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial ch
 * `offline-plugin` with minification turned on in production mode for client
 
 ### Server
-* This is optional, in the `src\server\entry.js` you will need some kind of server logic to serve client files, see example at the src\server\entry.js. Or you can create an express server using node mwb --init
+* This is optional, in the `src/server/entry.js` you will need some kind of server logic to serve client files, see example at the src/server/entry.js. Or you can create an express server using node mwb --init
 * All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
+
+### Changing the entry file
+By default, it reads `src/client/entry.js` and `src/server/entry.js`. If you need to change it, provide `--entry.client` or `--entry.server`e.g `node mwb --entry.client './other_src/entry.js'`
+
+### Running tests
+* `node mwb --env.TEST` webpack will read entry files from `src/client/entry.test.js` and `src/server/entry.test.js`
+* `node mwb --env.TEST --env.TEST_CID` webpack will read entry files from `src/client/entry.test.js` and `src/client/entry.node.test.js` and `src/server/entry.test.js`. The `entry.test.js` will be run in the web context, while the `entry.node.test.js` will be run in the Node context (useful for integration test using Puppeteer or similar tests)
+
 
 ### Misc
 * All codes wrapped inside `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
