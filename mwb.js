@@ -5,12 +5,7 @@ const path = require('path')
 const webpack = require('webpack')
 const argv = require('minimist')(process.argv.slice(2))
 
-if (argv.init) { init(); process.exit() }
-if (!argv.mode) argv.mode = 'development'
-if (!['production', 'development'].includes(argv.mode)) throw new Error(`The provided mode: '${argv.mode}' is not correct`)
-
-argv.env = { ...(argv.env || {}), NODE_ENV: argv.mode }
-Object.keys(argv.env).forEach(e => { process.env[e] = argv.env[e] })
+handleArg(argv)
 
 const clientConfig = makeConfig('client', argv)
 const serverConfig = makeConfig('server', argv)
@@ -23,12 +18,12 @@ if (argv.mode === 'production') {
   compile_web_devMode(clientConfig, argv)
   compile_node_devMode(serverConfig, argv)
 
-  if (argv.env.TEST) { // For client tests to run in node env
+  if (argv.env.TEST && argv.env.TEST_CIN) { // For test Client In Node
     const clientConfigNode = makeConfig('server', argv)
     clientConfigNode.entry = { client_in_node: ['./src/client/entry.node.test.js'] }
     clientConfigNode.output.filename = 'node.test.js'
 
-    // compile_node_devMode(clientConfigNode, argv)
+    compile_node_devMode(clientConfigNode, argv)
   }
 }
 
@@ -37,9 +32,10 @@ copyPublicStuff()
 function makeConfig(target = 'client', args) {
   if (!['client', 'server'].includes(target)) throw new Error(`The provided target: '${target}' is not correct`)
   const { mode, env } = args
-  const isTEST = mode === 'production' ? false : env.TEST
+  const isTEST = env.TEST
 
   const common = {
+    entry: { [target]: makeEntryFile(target) },
     resolve: {
       alias: { '~': path.resolve('./src') },
     },
@@ -52,16 +48,11 @@ function makeConfig(target = 'client', args) {
     common.performance = { hints: false }
     common.devtool = 'cheap-module-eval-source-map'
   } else {
-    // common.devtool = 'nosources-source-map' 
+    // common.devtool = 'nosources-source-map'
   }
-
-  const entryFilename = isTEST ? 'entry.test.js' : 'entry.js'
 
   if (target === 'client') return {
     ...common,
-    entry: {
-      client: ['./src/client/' + entryFilename],
-    },
     target: 'web',
     output: {
       filename: mode === 'production' ? '[name]_[chunkhash:7].js' : (isTEST ? 'client.test.js' : 'client.js'),
@@ -77,9 +68,6 @@ function makeConfig(target = 'client', args) {
 
   if (target === 'server') return {
     ...common,
-    entry: {
-      server: ['./src/server/' + entryFilename],
-    },
     target: 'node',
     output: {
       filename: isTEST ? 'server.test.js' : 'server.js',
@@ -90,6 +78,19 @@ function makeConfig(target = 'client', args) {
       /^[@a-z][a-z/.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
       /^.+assets\.json$/i, // these assets produced by assets-webpack-plugin
     ]
+  }
+
+  return {}
+
+  function makeEntryFile() {
+    if (typeof args.entry !== 'object' || Array.isArray(args.entry)) throw new Error('Need to provide --entry.client or --entry.server OR do not provide --entry at all to use the default')
+    if (!(target in args.entry)) return [`./src/${target}/${isTEST ? 'entry.test.js' : 'entry.js'}`]
+    if (Array.isArray(args.entry[target])) {
+      if (args.entry[target].some(el => typeof el !== 'string')) throw new Error(`--entry.${target} need to be a string`)
+      return args.entry[target]
+    }
+    if (typeof args.entry[target] !== 'string') throw new Error(`Need to provide --entry.${target}`)
+    return [args.entry[target]]
   }
 }
 
@@ -148,6 +149,7 @@ function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
       modules: useCSSModule,
       localIdentName: '[local]_[hash:5]',
       minimize: mode === 'development' ? false : { discardComments: { removeAll: true } },
+      importLoaders: 1
     }
   }
   const postcssLoader = {
@@ -161,6 +163,7 @@ function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
             return path.resolve('./node_modules', id) // resolve node_modules
           }
         }),
+        require('postcss-url')(),
         require('postcss-cssnext')({
           features: {
             // customProperties: { preserve: true, appendVariables: true }
@@ -284,6 +287,18 @@ function getIp() {
   return addresses[1]
 }
 
+function handleArg(args) {
+  if (args.init) { init(); process.exit() } // init the boiler plate: create dirs, files
+
+  if (!args.mode) args.mode = 'development'
+  if (!['production', 'development'].includes(args.mode)) throw new Error(`The provided mode: '${args.mode}' is not correct`)
+
+  args.env = { ...(args.env || {}), NODE_ENV: args.mode }
+  Object.keys(args.env).forEach(e => { process.env[e] = args.env[e] })
+  args.entry = args.entry || {}
+}
+
+
 function init() {
   const { mkdirSync, appendFileSync, writeFileSync } = require('fs')
   const { execSync } = require('child_process')
@@ -320,7 +335,7 @@ function init() {
 const app = express()
 
 app.disable('x-powered-by')
-app.set('trust proxy', 'loopback')
+app.set('trust proxy', true)
 
 app.use(express.static('./dist/public'))
 
@@ -352,17 +367,28 @@ export default app`
     Object.keys(require(path.resolve('./package.json')).dependencies || '')
   )
 
-  const packageToBeInstalled = [
+  const deps = [
+    'express', 'graphql', 'apollo-server-express', 'dotenv'
+  ].filter(d => !installedPackages.includes(d)).join(' ')
+
+  const devDeps = [
     'babel-loader', 'file-loader', 'url-loader', 'raw-loader', 'null-loader',
-    'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-cssnext',
+    'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-url', 'postcss-cssnext',
     '@babel/core', '@babel/preset-env', '@babel/preset-stage-0', '@babel/preset-react',
     'html-webpack-plugin', 'extract-text-webpack-plugin', 'offline-plugin',
     'webpack-hot-middleware',
-    'eslint', 'babel-eslint',
+    'eslint', 'babel-eslint', 'tape',
+    'react', 'react-dom', 'react-router', 'react-router-dom', 'normalize.css',
+    'apollo-boost',
   ].filter(d => !installedPackages.includes(d)).join(' ')
 
-  if (packageToBeInstalled.length > 0) {
-    console.log('Running npm i -D ' + packageToBeInstalled)
-    execSync('npm i -D ' + packageToBeInstalled)
+  if (deps.length > 0) {
+    console.log('Running npm i ' + deps)
+    execSync('npm i ' + deps)
+  }
+
+  if (devDeps.length > 0) {
+    console.log('Running npm i -D ' + devDeps)
+    execSync('npm i -D ' + devDeps)
   }
 }
