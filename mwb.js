@@ -118,7 +118,7 @@ function makeRules(target = 'client', args) {
           '@babel/plugin-syntax-dynamic-import',
           '@babel/plugin-proposal-throw-expressions',
           '@babel/plugin-proposal-object-rest-spread',
-          'graphql-tag'
+          'babel-plugin-graphql-tag'
         ],
       }
     }],
@@ -378,8 +378,9 @@ export default app`
     'html-webpack-plugin', 'extract-text-webpack-plugin', 'offline-plugin',
     'webpack-hot-middleware',
     'eslint', 'babel-eslint', 'tape',
-    'react', 'react-dom', 'react-router', 'react-router-dom', 'normalize.css',
-    'apollo-boost',
+    'normalize.css',
+    'react', 'react-dom', 'react-router', 'react-router-dom',
+    'apollo-boost', 'babel-plugin-graphql-tag'
   ].filter(d => !installedPackages.includes(d)).join(' ')
 
   if (deps.length > 0) {

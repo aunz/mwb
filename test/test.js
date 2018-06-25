@@ -38,7 +38,7 @@ const configFile = 'mwb.js'
   test('init dirs & files', test_init)
 
   test('Coyping stuff, not really a test', async t => {
-    await exec(`cp -rf ../resources${path.sep}. src`)
+    await exec(`cp -rf ..${path.sep}resources${path.sep}. src`)
     t.end()
   })
 
@@ -84,7 +84,7 @@ async function test_init(t) {
   const response = (await getRetry('http://localhost:3000')()).data
   const expectedHtml = (await readFile('./dist/public/index.html')).toString()
 
-  t.equal(response, expectedHtml, 'Server reponds with correct the html')
+  t.equal(response, expectedHtml, 'Server reponds with the correct html')
   t.ok(expectedHtml.includes(files.public.jsFiles[0]), 'The index.html has the correct script tag for js: ' + files.public.jsFiles[0])
 
   server.kill()
@@ -105,7 +105,7 @@ async function test_production_mode(t) {
 
   // build the server and client bundle
   await exec(`node ${configFile} --mode production`)
-
+  console.log('done', path.resolve())
   // read the dir for correct dir structure and file
   const files = {
     public: await readdir('./dist/public'),
@@ -128,7 +128,7 @@ async function test_production_mode(t) {
     t.ok(cssString.includes('background-image:url(/bird2_3ZQz8.jpg)'), `CSS file ${cssFile}: url loader emits file`)
     t.ok(cssString.includes('url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACA'), 'CSS file, url rule produces base64')
     t.ok(cssString.includes('.style{color:#ffdab9}'), 'CSS file, minimisation is applied')
-    t.ok(cssString.includes('.test_kUgW9{color:#ffefd5}'), 'CSS file, css module is applied')
+    t.ok(cssString.includes('.test_9a595{color:#ffefd5}'), 'CSS file, css module is applied')
   }
   // change a file and restart the building process
   await appendFile('./src/client/3.js', '\nconsole.log(1)\n')
@@ -181,7 +181,7 @@ async function test_dev_mode(t) {
   {
     const jsFileString = (await readFile('./dist/public/client.js')).toString()
     t.ok(jsFileString.indexOf('.style { color: PeachPuff') > 0, 'Client.js contains unminimised css without module renamed')
-    t.ok(jsFileString.indexOf('.test_kUgW9 { color: Papaya') > 0, 'Client.js also contains unminimised css module')
+    t.ok(jsFileString.indexOf('.test_9a595 { color: Papaya') > 0, 'Client.js also contains unminimised css module')
 
     const response = (await getRetry('http://localhost:3000')()).data
     const expectedHtml = (await readFile('./dist/public/index.html')).toString()
@@ -221,7 +221,7 @@ async function test_dev_mode_TEST(t) {
   await exec('rm -rf ./dist')
 
   // then spawn a node process
-  const child = spawn('node', [configFile, '--mode', 'development', '--env.TEST'])
+  const child = spawn('node', [configFile, '--mode', 'development', '--env.TEST', '--env.TEST_CIN'])
 
   await sleep(5000)
 
@@ -235,8 +235,8 @@ async function test_dev_mode_TEST(t) {
 
   await Promise.all([
     appendFile('./src/client/entry.test.js', '\nconsole.log(1)\n'),
-    appendFile('./src/client/entry.node.test.js', '\nconsole.log(NNNNNN)\n'),
-    appendFile('./src/server/entry.test.js', '\nconsole.log(SSSSSS)\n'),
+    appendFile('./src/client/entry.node.test.js', '\nconsole.log("NNNNNN")\n'),
+    appendFile('./src/server/entry.test.js', '\nconsole.log("SSSSSS")\n'),
   ])
 
   await sleep(2500)

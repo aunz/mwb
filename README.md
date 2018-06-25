@@ -16,7 +16,7 @@ node mwb --mode production # build the app for production
 node mwb --hot.server # enable HMR in server
 ```
 
-## Tested in node 8+, npm 5+
+## Tested in node 10+, npm 6+
 
 ----------
 ### Directory structure:
