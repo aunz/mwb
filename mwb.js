@@ -294,7 +294,7 @@ function handleArg(args) {
   if (!args.mode) args.mode = 'development'
   if (!['production', 'development'].includes(args.mode)) throw new Error(`The provided mode: '${args.mode}' is not correct`)
 
-  args.env = { ...(args.env || {}), NODE_ENV: args.mode }
+  args.env = args.env || {}
   Object.keys(args.env).forEach(e => { process.env[e] = args.env[e] })
   args.entry = args.entry || {}
 }
