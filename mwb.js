@@ -59,11 +59,18 @@ function makeConfig(target = 'client', args) {
       path: path.resolve('./dist/public/'),
       publicPath: '/',
     },
-    // Don't try to optimize prematurely. The defaults are choosen to fit best practices of web performance. https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693
-    // optimization: mode === 'development' ? {} : {
-    //   splitChunks: { chunks: 'all' }, // when all, even vendor chunks are moved out from the entry chunk
-    //   runtimeChunk: true // generate another file so the entry chunk file will has the same hash if
-    // }
+    optimization: mode === 'development' ? {} : {
+      runtimeChunk: 'single',
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all'
+          }
+        }
+      }
+    }
   }
 
   if (target === 'server') return {
@@ -206,6 +213,7 @@ function makePlugins(target = 'client', { mode, env }) {
       plugins.push(new (require('extract-text-webpack-plugin'))({
         filename: 'style_[contenthash:base64:5].css'
       }))
+      plugins.push(new webpack.HashedModuleIdsPlugin())
     }
   }
 
