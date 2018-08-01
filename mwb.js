@@ -118,7 +118,8 @@ function makeRules(target = 'client', args) {
           '@babel/plugin-syntax-dynamic-import',
           '@babel/plugin-proposal-throw-expressions',
           '@babel/plugin-proposal-object-rest-spread',
-          'babel-plugin-graphql-tag'
+          'transform-react-remove-prop-types',
+          'babel-plugin-graphql-tag',
         ],
       }
     }],
@@ -380,7 +381,7 @@ export default app`
     'eslint', 'babel-eslint', 'tape',
     'normalize.css',
     'react', 'react-dom', 'react-router', 'react-router-dom',
-    'apollo-boost', 'babel-plugin-graphql-tag'
+    'apollo-boost', 'babel-plugin-graphql-tag', 'transform-react-remove-prop-types',
   ].filter(d => !installedPackages.includes(d)).join(' ')
 
   if (deps.length > 0) {
