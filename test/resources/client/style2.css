@@ -3,3 +3,17 @@ body {
     border: 1px solid;
   }
 }
+
+
+:root { --mainColor: blue }
+
+.test1 {
+  & .test2 {
+    & .test3 {
+      color: var(--mainColor);
+    }
+  }
+}
+
+
+body { background: green; } /* test merging with style.css*/

@@ -67,7 +67,10 @@ async function prepare() {
 async function test_init(t) {
   t.plan(5)
 
+  console.log(1, 'run node ' + configFile + ' --init')
   await exec('node ' + configFile + ' --init') // init folders
+
+  console.log(2, `run node ${configFile} --mode production`)
   await exec(`node ${configFile} --mode production`) // then build
 
   const files = {
@@ -101,7 +104,7 @@ async function test_wrong_mode(t) {
 }
 
 async function test_production_mode(t) {
-  t.plan(11)
+  t.plan(12)
 
   // build the server and client bundle
   await exec(`node ${configFile} --mode production`)
@@ -115,11 +118,11 @@ async function test_production_mode(t) {
 
   t.ok(files.public.jsFiles.length > 1, 'Public dir has more than 2 js files and with correct suffix')
   t.ok(['bird2_3ZQz8.jpg', 'favicon.ico', 'index.html'].every(e => files.public.includes(e)), 'Public dir has html, ico and style and assets')
-  t.deepEqual(files.server, ['0.server.js', 'server.js'], 'Server dir has only 0.server.js & server.js, no css')
+  t.deepEqual(files.server, ['1.server.js', '1.server.js.map', 'server.js', 'server.js.map'], 'Server dir has 4 files: 1.server.js, 1.server.js.map, server.js, server.js.map, no css')
 
   {
     const htmlString = (await readFile('./dist/public/index.html')).toString()
-    const cssFile = files.public.filter(i => /^style_[-\w]{5}\.css$/.test(i))[0]
+    const cssFile = files.public.filter(i => /^0\.style_[-\w]{7}\.css$/.test(i))[0]
     const cssString = (await readFile('./dist/public/' + cssFile)).toString()
     const jsFile = files.public.filter(i => /^client_/.test(i))[0]
 
@@ -128,7 +131,11 @@ async function test_production_mode(t) {
     t.ok(cssString.includes('background-image:url(/bird2_3ZQz8.jpg)'), `CSS file ${cssFile}: url loader emits file`)
     t.ok(cssString.includes('url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACA'), 'CSS file, url rule produces base64')
     t.ok(cssString.includes('.style{color:#ffdab9}'), 'CSS file, minimisation is applied')
-    t.ok(cssString.includes('.test_9a595{color:#ffefd5}'), 'CSS file, css module is applied')
+    t.ok(cssString.includes('.test_kUgW9{color:#ffefd5}'), 'CSS file, css module is applied')
+    t.ok(cssString.includes('::-webkit-input-placeholder{'), 'CSS file, autoprefix is applied')
+    t.ok(cssString.includes('.test1 .test2 .test3{color:#00f;color:var(--mainColor)}'), 'CSS file, nesting is applied, var is applied')
+    t.ok(cssString.includes('body{background:green;background-color:#ff0;'), 'CSS file, merging css rules')
+    // t.ok(cssString.includes('/*! normalize.css'), 'CSS file, merging css rules') // not working yet
   }
   // change a file and restart the building process
   await appendFile('./src/client/3.js', '\nconsole.log(1)\n')

@@ -156,8 +156,7 @@ function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
     loader: 'css-loader' + (target === 'client' ? '' : '/locals'), // /locals doesn't embed css, only exports the identifier mappings
     options: {
       modules: useCSSModule,
-      localIdentName: '[local]_[hash:5]',
-      // minimize: mode === 'development' ? false : { discardComments: { removeAll: true } },
+      localIdentName: '[local]_[hash:base64:5]',
       importLoaders: 1
     }
   }
@@ -165,22 +164,18 @@ function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
     loader: 'postcss-loader',
     options: {
       ident: 'postcss',
-      plugins: () => {
-        const p = [
-          require('postcss-import')({
-            resolve(id, basedir) {
-              if (/^\./.test(id)) return path.resolve(basedir, id) // resolve relative path anything begin with .
-              if (/^~\//.test(id)) return path.resolve('./src', id.slice(2)) // resolve alias ~
-              return path.resolve('./node_modules', id) // resolve node_modules
-            }
-          }),
-          require('postcss-url')(),
-          require('postcss-preset-env')(),
-        ]
-
-        if (mode === 'production') p.push(require('cssnano')())
-        return p
-      }
+      plugins: () => [
+        require('postcss-import')({
+          resolve(id, basedir) {
+            if (/^\./.test(id)) return path.resolve(basedir, id) // resolve relative path anything begin with .
+            if (/^~\//.test(id)) return path.resolve('./src', id.slice(2)) // resolve alias ~
+            return path.resolve('./node_modules', id) // resolve node_modules
+          }
+        }),
+        require('postcss-url')(),
+        require('postcss-preset-env')({ stage: 0 }),
+        mode === 'production' ? require('cssnano')({ discardComments: { removeAll: true } }) : () => {}, // still a bug not working
+      ],
     }
   }
   const loader = {
@@ -383,9 +378,9 @@ export default app`
 
   const devDeps = [
     'babel-loader', 'file-loader', 'url-loader', 'raw-loader', 'null-loader',
-    'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-url',
+    'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-url', 'postcss-preset-env', 'cssnano',
     '@babel/core', '@babel/preset-env', '@babel/preset-stage-0', '@babel/preset-react',
-    'html-webpack-plugin', 'extract-text-webpack-plugin', 'offline-plugin',
+    'html-webpack-plugin', 'mini-css-extract-plugin', 'offline-plugin',
     'webpack-hot-middleware',
     'eslint', 'babel-eslint', 'tape',
     'normalize.css',

@@ -1,3 +1,4 @@
+@import 'normalize.css/normalize.css';
 @import './style2.css';
 
 body {
@@ -13,3 +14,15 @@ div {
 }
 
 .style { color: PeachPuff; /* #FFDAB9 */ }
+
+/* test vendorprefix */
+::placeholder { color: #aaa; }
+.grid { display: grid }
+
+a {
+  color: rebeccapurple;
+
+  &:hover {
+    color: color-mod(blue alpha(80%));
+  }
+}
