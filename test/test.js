@@ -104,7 +104,7 @@ async function test_wrong_mode(t) {
 }
 
 async function test_production_mode(t) {
-  t.plan(12)
+  t.plan(14)
 
   // build the server and client bundle
   await exec(`node ${configFile} --mode production`)
@@ -188,7 +188,7 @@ async function test_dev_mode(t) {
   {
     const jsFileString = (await readFile('./dist/public/client.js')).toString()
     t.ok(jsFileString.indexOf('.style { color: PeachPuff') > 0, 'Client.js contains unminimised css without module renamed')
-    t.ok(jsFileString.indexOf('.test_9a595 { color: Papaya') > 0, 'Client.js also contains unminimised css module')
+    t.ok(jsFileString.indexOf('.test_kUgW9 { color: Papaya') > 0, 'Client.js also contains unminimised css module')
 
     const response = (await getRetry('http://localhost:3000')()).data
     const expectedHtml = (await readFile('./dist/public/index.html')).toString()
