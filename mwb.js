@@ -84,7 +84,8 @@ function makeConfig(target = 'client', args) {
     externals: [
       /^[@a-z][a-z/.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
       /^.+assets\.json$/i, // these assets produced by assets-webpack-plugin
-    ]
+    ],
+    devtool: mode === 'production' ? 'source-map' : false,
   }
 
   return {}
@@ -125,7 +126,7 @@ function makeRules(target = 'client', args) {
           '@babel/plugin-syntax-dynamic-import',
           '@babel/plugin-proposal-throw-expressions',
           '@babel/plugin-proposal-object-rest-spread',
-          'transform-react-remove-prop-types',
+          'babel-plugin-transform-react-remove-prop-types',
           'babel-plugin-graphql-tag',
         ],
       }
@@ -149,45 +150,44 @@ function makeRules(target = 'client', args) {
 }
 
 function makeCSSRule(target = 'client', { mode }, useCSSModule = false) {
-  const ExtractTextPlugin = require('extract-text-webpack-plugin')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
   const cssLoader = {
     loader: 'css-loader' + (target === 'client' ? '' : '/locals'), // /locals doesn't embed css, only exports the identifier mappings
     options: {
       modules: useCSSModule,
       localIdentName: '[local]_[hash:5]',
-      minimize: mode === 'development' ? false : { discardComments: { removeAll: true } },
+      // minimize: mode === 'development' ? false : { discardComments: { removeAll: true } },
       importLoaders: 1
     }
   }
   const postcssLoader = {
     loader: 'postcss-loader',
     options: {
-      plugins: () => [
-        require('postcss-import')({
-          resolve(id, basedir) {
-            if (/^\./.test(id)) return path.resolve(basedir, id) // resolve relative path anything begin with .
-            if (/^~\//.test(id)) return path.resolve('./src', id.slice(2)) // resolve alias ~
-            return path.resolve('./node_modules', id) // resolve node_modules
-          }
-        }),
-        require('postcss-url')(),
-        require('postcss-cssnext')({
-          features: {
-            // customProperties: { preserve: true, appendVariables: true }
-          }
-        })
-      ]
+      ident: 'postcss',
+      plugins: () => {
+        const p = [
+          require('postcss-import')({
+            resolve(id, basedir) {
+              if (/^\./.test(id)) return path.resolve(basedir, id) // resolve relative path anything begin with .
+              if (/^~\//.test(id)) return path.resolve('./src', id.slice(2)) // resolve alias ~
+              return path.resolve('./node_modules', id) // resolve node_modules
+            }
+          }),
+          require('postcss-url')(),
+          require('postcss-preset-env')(),
+        ]
+
+        if (mode === 'production') p.push(require('cssnano')())
+        return p
+      }
     }
   }
   const loader = {
     test: useCSSModule ? /\.local\.css$/i : /^((?!\.local).)*css$/i,
     use: mode === 'development'
       ? [{ loader: 'style-loader' }, cssLoader, postcssLoader]
-      : ExtractTextPlugin.extract({
-        fallback: 'style-loader',
-        use: [cssLoader, postcssLoader]
-      })
+      : [{ loader: MiniCssExtractPlugin.loader }, cssLoader, postcssLoader]
   }
 
   if (target === 'server') loader.use = useCSSModule ? [cssLoader, postcssLoader] : [{ loader: 'null-loader' }]
@@ -210,9 +210,10 @@ function makePlugins(target = 'client', { mode, env }) {
       template: './src/client/index.html',
     }))
     if (mode === 'production') {
-      plugins.push(new (require('extract-text-webpack-plugin'))({
-        filename: 'style_[contenthash:base64:5].css'
+      plugins.push(new (require('mini-css-extract-plugin'))({
+        filename: 'style_[contenthash:7].css'
       }))
+
       plugins.push(new webpack.HashedModuleIdsPlugin())
     }
   }
@@ -382,14 +383,14 @@ export default app`
 
   const devDeps = [
     'babel-loader', 'file-loader', 'url-loader', 'raw-loader', 'null-loader',
-    'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-url', 'postcss-cssnext',
+    'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-url',
     '@babel/core', '@babel/preset-env', '@babel/preset-stage-0', '@babel/preset-react',
     'html-webpack-plugin', 'extract-text-webpack-plugin', 'offline-plugin',
     'webpack-hot-middleware',
     'eslint', 'babel-eslint', 'tape',
     'normalize.css',
-    'react', 'react-dom', 'react-router', 'react-router-dom',
-    'apollo-boost', 'babel-plugin-graphql-tag', 'transform-react-remove-prop-types',
+    'react', 'react-dom', 'react-router', 'react-router-dom', 'babel-plugin-transform-react-remove-prop-types',
+    'apollo-boost', 'babel-plugin-graphql-tag',
   ].filter(d => !installedPackages.includes(d)).join(' ')
 
   if (deps.length > 0) {
