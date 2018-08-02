@@ -8,7 +8,13 @@
 
 ### 
   
-To start, copy the **mwb.js** into your node project root. You can change its name to anything you like.
+To start
+```shell
+npm i -D mwb
+npm i -D webpack # it requires webpack
+```
+Then copy the **mwb.js** insides the node_modules\mwb into your node project root. You can change its name to anything you like.
+
 ```shell
 node mwb # start live coding & editing in development mode
 node mwb --mode production # build the app for production
@@ -59,13 +65,13 @@ You will need these if you have not istalled them
 ```shell
   npm i -D webpack
   npm i -D babel-loader file-loader url-loader raw-loader null-loader
-  npm i -D style-loader css-loader postcss-loader postcss-import postcss-url postcss-cssnext
-  npm i -D babel-preset-react-app babel-preset-stage-0
-  npm i -D html-webpack-plugin extract-text-webpack-plugin offline-plugin
+  npm i -D style-loader css-loader postcss-loader postcss-import postcss-url postcss-preset-env cssnano
+  npm i -D @babel/core @babel/preset-env @babel/preset-stage-0 @babel/preset-react babel-plugin-transform-react-remove-prop-types babel-plugin-graphql-tag
+  npm i -D html-webpack-plugin mini-css-extract-plugin offline-plugin
   npm i -D webpack-hot-middleware
   npm i -D eslint babel-eslint # optional 
 
-  # or run
+  # or run, this will install the required dependencies and create the directory structure
   node mwb --init
 ```
 
@@ -73,14 +79,14 @@ You will need these if you have not istalled them
 
 #### Included loaders:
 * [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, stage-0, react-app), plugins (transform-runtime) and cacheDirectory (true).
-* `css!postcss` loaders for css with `autoprefixer`, `postcss-import`, `poscss-cssnext`
+* `css!postcss` loaders for css with `autoprefixer`, `postcss-import`, `poscss-preset-env`
 * To use css module, name your style files as `[file].local.css`. The suffix `.local.css` switches on the `{ option: { module: true } }` in css-loader
 * `url-loader` for everything else with limit=8192 & name=[name]_[hash:base64:5].[ext]
 
-Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial chunk. The subsequent chunks will be inlined using `style-loader` in the client. On server, `null-loader` is applied to all css.
+Style sheet is **extracted** by `mini-css-extract-plugin` in the client for production mode. During development mode, `style-loader` is used. On server, `null-loader` is applied to all css.
 
 ### Included plugins
-* `extract-text-webpack-plugin` for production mode
+* `mini-css-extract-plugin` for production mode
 * `html-webpack-plugin`
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"server"' })`for server
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"client"' })` for clients
@@ -94,7 +100,7 @@ Style sheet is **extracted** by `extract-text-webpack-plugin` for the initial ch
 * All native modules and assets.json are excluded (treated as external) by webpack using `/^[@a-z][a-z/\.\-0-9]*$/i,` and `/^.?assets\.json$/i` in server, this speeds up build time
 
 ### Changing the entry file
-By default, it reads `src/client/entry.js` and `src/server/entry.js`. If you need to change it, provide `--entry.client` or `--entry.server`e.g `node mwb --entry.client './other_src/entry.js'`
+By default, it reads `src/client/entry.js` and `src/server/entry.js`. If you need to change it, provide `--entry.client` or `--entry.server` e.g `node mwb --entry.client "./other_src/entry.js"`
 
 ### Running tests
 * `node mwb --env.TEST` webpack will read entry files from `src/client/entry.test.js` and `src/server/entry.test.js`
@@ -102,10 +108,11 @@ By default, it reads `src/client/entry.js` and `src/server/entry.js`. If you nee
 
 
 ### Misc
-* All codes wrapped inside `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
-* source map is set to `cheap-module-eval-source-map` for development
-* source map is **NOT** included in production mode
-* `client_[chunkhash:7].js` `vendor_[chunkhash:7].js` & `style_[contenthash:base64:5].css` in production mode for caching
+* All codes wrapped insides `if (process.env.NODE_ENV !== 'production') {}` or `if (process.env.NODE_ENV == 'development') {}` or `if(module.hot) {}` are removed for production
+* Source map is set to `cheap-module-eval-source-map` for development
+  * Source map is set to `false` in production mode for client, so **NO** source map
+  * Source map is set to `source-map` in production mode for server, check out [source-map-support](https://github.com/evanw/node-source-map-support)
+* `client_[chunkhash:7].js` `vendor_[chunkhash:7].js` & `style_[contenthash:7].css` in production mode for caching
 * `~` is aliased to the `src` directory. For example, `import '~/server/myModule'` === `./src/server/myModule`
 
 
