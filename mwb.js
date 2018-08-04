@@ -85,7 +85,7 @@ function makeConfig(target = 'client', args) {
       /^[@a-z][a-z/.\-0-9]*$/i, // native modules will be excluded, e.g require('react/server')
       /^.+assets\.json$/i, // these assets produced by assets-webpack-plugin
     ],
-    devtool: mode === 'production' ? 'source-map' : false,
+    devtool: mode === 'production' ? 'sourcemap' : common.devtool
   }
 
   return {}
