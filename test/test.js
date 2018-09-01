@@ -13,9 +13,7 @@ const readFile = promisify(fs.readFile)
 const appendFile = promisify(fs.appendFile)
 const symlink = promisify(fs.symlink)
 
-
 const test = require('tape')
-
 
 /* ** top level variables ** */
 const testTmpFolder = 'tmp'
@@ -59,8 +57,8 @@ async function prepare() {
   await mkdirp(testTmpFolder)
   await Promise.all([
     symlink(`../../${configFile}`, `./${testTmpFolder}/${configFile}`, 'file'),
-    symlink('../../node_modules', `./${testTmpFolder}/node_modules`, 'dir'),
-    symlink('../../package.json', `./${testTmpFolder}/package.json`, 'file'),
+    await exec(`cp ../package.json ./${testTmpFolder}/package.json`),
+    await exec('npm i -D webpack normalize.css'),
   ])
 }
 
@@ -192,7 +190,7 @@ async function test_dev_mode(t) {
 
     const response = (await getRetry('http://localhost:3000')()).data
     const expectedHtml = (await readFile('./dist/public/index.html')).toString()
-    t.equal(response, expectedHtml, 'Server reponds with correct the html')
+    t.equal(response, expectedHtml, 'Server reponds with the correct html')
   }
 
   // change a file
@@ -219,7 +217,6 @@ async function test_dev_mode(t) {
 
   t.end()
 }
-
 
 async function test_dev_mode_TEST(t) {
   t.plan(5)
@@ -274,7 +271,6 @@ function getRetry(...arg) {
 async function sleep(duration = 1000) {
   await new Promise(res => setTimeout(res, duration))
 }
-
 
 function retryFunction(fn) {
   return async function (nRetry = 10, interval = 1000) {
