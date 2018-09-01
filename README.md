@@ -66,7 +66,7 @@ You will need these if you have not istalled them
   npm i -D webpack
   npm i -D babel-loader file-loader url-loader raw-loader null-loader
   npm i -D style-loader css-loader postcss-loader postcss-import postcss-url postcss-preset-env cssnano
-  npm i -D @babel/core @babel/preset-env @babel/preset-stage-0 @babel/preset-react babel-plugin-transform-react-remove-prop-types babel-plugin-graphql-tag
+  npm i -D @babel/core @babel/preset-env @babel/preset-react babel-plugin-transform-react-remove-prop-types babel-plugin-graphql-tag
   npm i -D html-webpack-plugin mini-css-extract-plugin offline-plugin
   npm i -D webpack-hot-middleware
   npm i -D eslint babel-eslint # optional 
@@ -78,7 +78,7 @@ You will need these if you have not istalled them
 ### Details
 
 #### Included loaders:
-* [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, stage-0, react-app), plugins (transform-runtime) and cacheDirectory (true).
+* [`babel-loader`](https://github.com/babel/babel-loader) with presets (env, react-app), plugins (transform-runtime) and cacheDirectory (true).
 * `css!postcss` loaders for css with `autoprefixer`, `postcss-import`, `poscss-preset-env`
 * To use css module, name your style files as `[file].local.css`. The suffix `.local.css` switches on the `{ option: { module: true } }` in css-loader
 * `url-loader` for everything else with limit=8192 & name=[name]_[hash:base64:5].[ext]
