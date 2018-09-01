@@ -91,7 +91,7 @@ Style sheet is **extracted** by `mini-css-extract-plugin` in the client for prod
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"server"' })`for server
 * `webpack.DefinePlugin({ 'process.env.APP_ENV': '"client"' })` for clients
 * `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' })` in development mode
-* `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code 
+* `webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' })` in production mode to aid dead code elimination
 * Add more env by `node mwb --env.A apple --env.B banana --env.C cherry`, these will produce `webpack.DefinePlugin({ 'process.env.A': '"apple"' })` and so on
 * `offline-plugin` with minification turned on in production mode for client
 
