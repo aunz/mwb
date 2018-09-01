@@ -126,9 +126,8 @@ function makeRules(target = 'client', args) {
           '@babel/plugin-syntax-dynamic-import',
           '@babel/plugin-proposal-throw-expressions',
           '@babel/plugin-proposal-object-rest-spread',
-          'babel-plugin-transform-react-remove-prop-types',
           'babel-plugin-graphql-tag',
-        ],
+        ].concat(args.mode === 'production' ? 'babel-plugin-transform-react-remove-prop-types' : []),
       }
     }],
   }
