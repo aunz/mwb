@@ -378,7 +378,8 @@ export default app`
   const devDeps = [
     'babel-loader', 'file-loader', 'url-loader', 'raw-loader', 'null-loader',
     'style-loader', 'css-loader', 'postcss-loader', 'postcss-import', 'postcss-url', 'postcss-preset-env', 'cssnano',
-    '@babel/core', '@babel/preset-env', '@babel/preset-stage-0', '@babel/preset-react',
+    '@babel/core', '@babel/preset-env', '@babel/preset-react',
+    '@babel/plugin-proposal-class-properties', '@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-throw-expressions', '@babel/plugin-proposal-object-rest-spread',
     'html-webpack-plugin', 'mini-css-extract-plugin', 'offline-plugin',
     'webpack-hot-middleware',
     'eslint', 'babel-eslint', 'tape',
